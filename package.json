@@ -1,0 +1,15 @@
+{
+  "name": "webprog",
+  "version": "1.0.0",
+  "description": "Web Programming Coursework",
+  "main": "svr.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node svr"
+  },
+  "author": "Reece Birchmore",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
