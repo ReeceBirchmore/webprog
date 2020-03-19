@@ -3,24 +3,47 @@
 import * as Render from '../../Javascript/render.js';
 
 
-export class Input {
+const styles = {
+  'background-color': 'white',
+  'width': '90vw',
+  'min-height': '20%',
+  'margin-top': '1rem',
+  'border':'thin solid grey',
+  'border-radius': '12px',
+  'display':'flex',
+  'flex-direction':'column',
+  'align-items':'center',
+  'box-sizing':'border-box',
+  'padding':'1rem',
+  'text-align':'left!important'
+};
+
+
+
+
+export default class Input {
   constructor(props) {
-    this.createCard(props);
-    Render.render(this.card);
+    this.createInput(props);
+    this.generateType(props);
+    this.generateStyles();
+    return this.el;
   }
+    
   
-
-  //Functions to contain state of the card
-
-
-
-  //Create card
-  createCard(props) {
-    this.card = document.createElement("div");
-      this.card.id = props.id;
+  createInput(props) {
+    this.el = document.createElement("input");
+      this.el.id = props.id;
+      
   }
 
+    generateType(props) {
+      this.el.setAttribute('type', props.type)
+    }
 
+
+    generateStyles() {
+      this.el.setAttribute("style", Render.useStyles(styles));
+    }
 
 }
 

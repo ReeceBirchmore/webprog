@@ -3,6 +3,7 @@
 import * as Render from '../../Javascript/render.js';
 import * as Quiz from '../../Containers/Quiz/index.js'
 
+
 const styles = {
   'background-color': 'white',
   'width': '40vw',
@@ -10,11 +11,26 @@ const styles = {
   'margin-top':'1rem'
 };
 
+
+function addHandler(el, props) {
+  
+    el.addEventListener("click", function() {
+      if(props.action === 'Quiz.upDown') {
+        Quiz.upDown(props.param);
+      }
+      if(props.action === 'routerNav') {
+        Router.get(props.action)
+      }
+    })
+
+}
+
+
 export default class Button {
   constructor(props) {
     this.createBtn(props);
     this.generateStyles();
-    this.addHandler(props)
+    addHandler(this.el, props)
     Render.render(this.el, Render.$('root'));
     Render.renderText(this.el, props.name);
   }
@@ -28,11 +44,8 @@ export default class Button {
       this.el.setAttribute("style", Render.useStyles(styles));
     }
 
-    addHandler(props) {
-      this.el.addEventListener("click", function() {
-        Quiz.upDown(props.action);
-      })
-    }
+    
+    
 
   }
 

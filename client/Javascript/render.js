@@ -1,7 +1,5 @@
 'use strict'
 
-
-
 //Shorthand display function, to be moved!
 function $(id) {
     return document.querySelector("#" + id);
@@ -9,35 +7,47 @@ function $(id) {
 const body = $("root");
 
 
+// #endregion
+// ////////////////////////////////////////////////////////////// SET RENDER STATE
+// #region State Handling
 
-/****************************************************************
+function setState(type, props) {
+    console.log(type, props);
+
+
+} 
+
+
+
+
+// #endregion
+// ////////////////////////////////////////////////////////////// RENDER ELEMENTS
+// #region Element Rendering
+
+ /******************************
  * 
- *  The process for rendering content to the page will follow
- *  a react style methodlogy of producing stateless/stateful
- *  content that will update/mutate the children only instead
- *  of the entire node tree, increasing performance and
- *  efficiency
+ * @param {HTMLElement} el 
+ * @param {HTMLElement} domNode 
  * 
- *
- ***************************************************************/
+ ******************************/
 
 function render(el, domNode) {
-    //find domNode later
+
     domNode.appendChild(el);
+    return;
 }
 
 
 
+// #endregion
+// ////////////////////////////////////////////////////////////// STYLE ELEMENTS
+// #region Use Styling
 
-
-
-/****************************************************************
+ /************************
  * 
- *  The process for applying CSS styles to elements will follow
- *  a basic react approach, allowing inline styles to be set via
- *  the class page for each component, with modification via JS
- *
- ***************************************************************/
+ * @param {Object} object 
+ * 
+ ************************/
 
 function useStyles(object) {
     const styleString = (
@@ -52,16 +62,36 @@ function useStyles(object) {
 
 
 
+// #endregion
+// ////////////////////////////////////////////////////////////// TEXT ELEMENTS
+// #region Text Rendering
+
+ /**************************
+ * 
+ * @param {HTMLElement} el 
+ * @param {String} propText 
+ * 
+ **************************/
 
 function renderText(el, propText) {
-    const text = document.createTextNode(propText);
+    const text = document.createElement("p");
+    const textContent = document.createTextNode(propText);
+        text.appendChild(textContent);
         el.appendChild(text);
-    return text;
+    return textContent;
 }
 
 
 
+// #endregion
+// ////////////////////////////////////////////////////////////// REMOVE RENDERED ELEMENT
+// #region Remove Rendered Element
 
+ /*************************
+ * 
+ * @param {HTMLElement} el
+ *  
+ *************************/
 
 function removeRender(el) {
     $('root').removeChild(el);
@@ -70,5 +100,24 @@ function removeRender(el) {
 
 
 
+// #endregion
+// ////////////////////////////////////////////////////////////// REMOVE RENDERED ELEMENT
+// #region Remove Rendered Element
 
-export { render, $, useStyles, renderText, removeRender }
+ /*************************
+ * 
+ * @param {HTMLElement} el
+ *  
+ *************************/
+
+function name() {
+
+    return;
+}
+
+
+// #endregion
+// ////////////////////////////////////////////////////////////// EXPORTS
+// #region Exports
+
+export { render, $, useStyles, renderText, removeRender, setState }

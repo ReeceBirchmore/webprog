@@ -22,17 +22,11 @@ const Nav = new NavBar({id:"test"});
 //Deploy the router
 const router = new Router();
 
-
-
-router.get('home', function(req) {
-    //const newCard = new Card({id:"test2"});
+router.get('home', function(req, params) {
     index();
 });
-router.get('quiz', function(req, quizID) {
-    console.log(req)
-    //const newCard = new Card({id:"test2"});
-    console.log(req)
-    Quiz.generateDeck(quizID);
+router.get('quiz/:id', function(req, params) {
+    Quiz.generateQuiz(params);
 });
 
 /*

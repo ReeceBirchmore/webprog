@@ -9,8 +9,15 @@ const router = express.Router();
 const port = 8080;
 
 app.use(express.static('client'));
+
+
 app.use('/api', router);
 app.use('*', express.static("client"));
+router.get('yeet', (req, res) => console.log("ERERERE"));
+
+
+
+
 
 
 
@@ -26,5 +33,5 @@ app.use('*', express.static('client'));
 
 router.get('yeet', (req, res) => console.log("ERERERE"));
 */
-app.listen(port)
+app.listen(port);
 

@@ -16,38 +16,49 @@ export default class Router {
             this.routes.forEach(route => {
                 if(route.uri === uri) throw new Error('error');
             });
-
-
-
             const route = {
                 uri,
                 callback
             }
-
-            this.getUrlVars(); 
-            console.log(this.getUrlVars()["id"]);
-            
-                    
-
-
+                this.getUrlVars(); 
+                this.getParams(window.location.pathname);
+                //console.log(this.getParams(window.location.pathname))
+                //console.log(this.getUrlVars()["id"]);
             this.routes.push(route)
-
-
         }
+
+
+
+
+
+//Initialise Router
+
+
+//Check if URL exists
+        //If does
+            //Check parameters
+            //return values
+        //If does not
+            //Create in route array
+            //Check parameters
+            //return values
+
+
+
+
+
 
         init() {
             this.routes.some(route => {
-
-            let regEx = new RegExp(route.uri.replace(/:[^\s/]+/g, '([\\w-]+)'));
-            //let regEx = new RegExp(route.uri.replace(`^${route.uri}$`));
-            let path = window.location.pathname;
-         
-            if(path.match(regEx)) {
-                const params = this.getParams(path);
-                let req = { path }
-                return route.callback.call(this, req, params[0]);
-            }
-
+                let regEx = new RegExp(route.uri.replace(/:[^\s/]+/g, '([\\w-]+)'));
+                //let regEx = new RegExp(route.uri.replace(`^${route.uri}$`));
+                let path = window.location.pathname;
+                if(path.match(regEx)) {
+                    const params = this.getParams(path);
+                    let req = { path }
+                    //console.log(params)
+                    return route.callback.call(this, req, params);
+                }   
             })
         }
 
@@ -76,14 +87,14 @@ export default class Router {
 
             getParams(path) {
 
-                console.log(path)
-        
+                //console.log(path)
+                //console.log(path.split("/").length - 2)
                 const numParams = path.split("/").length - 1
-        
                 const url = path.split( '/' );
-        
+                //console.log(url)
                 if(numParams === 2) {
-                    return [( url[ url.length - 1 ] )];
+                    //console.log(( url[ url.length - 2 ] ))
+                    return [( url )];
                 } else if(numParams === 3) {
                     return [( url[ url.length - 2 ] ), ( url[ url.length - 1 ] )];
                 } else if(numParams === 4) {
@@ -95,6 +106,10 @@ export default class Router {
 
 
 
+
+            navigate() {
+
+            }
 
 
 
