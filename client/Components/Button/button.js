@@ -8,9 +8,21 @@ import * as FX from '../../Javascript/fx.js';
 const directionControlStyles = {
   'background-color': 'white',
   'width': '40vw',
-  'height': '5rem',
+  'height': '3rem',
   'margin-top':'1rem'
 };
+
+const next = {
+  'width':'100%!important'
+}
+
+const previous = {
+
+}
+
+const submit = {
+
+}
 
 const closeStyles = {
  //code
@@ -27,9 +39,23 @@ const confirmStyles = {
 
 function addHandler(el, props) {
     el.addEventListener("click", function() {
-      if(props.action === 'Quiz.upDown') {
-        Quiz.upDown(props.param);
+      if(props.action === 'Quiz.up') {
+        FX.moveCard();
+        setTimeout(function() {
+          Quiz.up(); 
+         }, 100);
+
       }
+
+      if(props.action === 'Quiz.down') {
+          Quiz.down(); 
+        setTimeout(function() {
+          FX.returnCard();
+         }, 100);
+         
+      }
+
+
       if(props.action === 'routerNav') {
         Router.get(props.action)
       }
@@ -54,9 +80,9 @@ function addHandler(el, props) {
 export default class Button {
   constructor(props) {
     this.createBtn(props);
-    this.generateStyles();
+    this.generateStyles(props);
     addHandler(this.el, props)
-    Render.render(this.el, Render.$('root'));
+    this.renderPoint(props);
     Render.renderText(this.el, props.name);
   }
   
@@ -65,10 +91,18 @@ export default class Button {
         this.el.id = props.id;
     }
 
-    generateStyles() {
+    generateStyles(props) {
       this.el.setAttribute("style", Render.useStyles(directionControlStyles));
     }
 
+
+    renderPoint(props) {
+      if(!props.render) {
+        Render.render(this.el, Render.$('root'));
+      } else {
+        Render.render(this.el, Render.$(props.render))
+      }
+    }
     
     
 

@@ -62,11 +62,22 @@ export function toastClear() {
 *
 **************************************************************************/
 
+
+//Use hashtag question number to gather data and use that to fill the progress bar as appropriate
 export function progressCheck(val, quizLength) {
     let prog = Render.$('progressSpan');
     prog.style.width = (val / (quizLength - 1)) * 100 + "%";
 }
 
+
+/*
+    console.log(param);
+    console.log(parseInt(value), "Value")
+    console.log(value + param)
+    value = value + param;
+    let prog = Render.$('progressSpan');
+    prog.style.width = ((value / Quiz.quiz[1].questions.length) * 100) + "%";
+}*/
 
 
 
@@ -75,22 +86,6 @@ export function progressCheck(val, quizLength) {
 
 /*************************************************************************
 *
-* Card Flow Animation Management
+* Progress Bar Animation Management
 *
 **************************************************************************/
-export function moveCard() {
-
-    Render.$('card').classList.add('completed');
-    setTimeout(function() {
-        Render.$('card').classList.add('nextCard');
-    }, 120);
-}
-
-
-export function returnCard() {
-
-        Render.$('card').classList.add('completed');
-        setTimeout(function() {
-            Render.$('card').classList.add('nextCard');
-        }, 100);
-}
