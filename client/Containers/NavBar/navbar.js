@@ -23,9 +23,9 @@ const profile = {
 
 
 
-function handleProfile(props) {
-  Render.setState('visibility', props);
-}
+// function handleProfile(props) {
+//   Render.setState('visibility', props);
+// }
 
 
 
@@ -33,7 +33,7 @@ function handleProfile(props) {
 export default class NavBar {
   constructor(props) {
     this.createFrame(props);
-    this.displayProfile(props);
+    //this.displayProfile(props);
     
     //Render.setState(this.el);
   }
@@ -50,7 +50,7 @@ export default class NavBar {
         this.profile = document.createElement("div");
           this.profile.id = props.id + "Profile";
           this.profile.setAttribute("style", Render.useStyles(profile));
-          handleProfile(props);
+          //handleProfile(props);
           Render.render(this.profile, this.el);
     }
 

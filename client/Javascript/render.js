@@ -11,11 +11,11 @@ const body = $("root");
 // ////////////////////////////////////////////////////////////// SET RENDER STATE
 // #region State Handling
 
-function setState(type, props) {
-    console.log(type, props);
+// function setState(type, props) {
+//     console.log(type, props);
 
 
-} 
+// } 
 
 
 
@@ -73,12 +73,13 @@ function useStyles(object) {
  * 
  **************************/
 
-function renderText(el, propText) {
-    const text = document.createElement("p");
+function renderText(el, propText, tag) {
+    let textTag = tag ? tag : "p"; 
+    const text = document.createElement(textTag);
     const textContent = document.createTextNode(propText);
         text.appendChild(textContent);
         el.appendChild(text);
-    return textContent;
+    return text;
 }
 
 
@@ -99,25 +100,8 @@ function removeRender(el) {
 }
 
 
-
-// #endregion
-// ////////////////////////////////////////////////////////////// REMOVE RENDERED ELEMENT
-// #region Remove Rendered Element
-
- /*************************
- * 
- * @param {HTMLElement} el
- *  
- *************************/
-
-function name() {
-
-    return;
-}
-
-
 // #endregion
 // ////////////////////////////////////////////////////////////// EXPORTS
 // #region Exports
 
-export { render, $, useStyles, renderText, removeRender, setState }
+export { render, $, useStyles, renderText, removeRender }

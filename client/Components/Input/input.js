@@ -3,20 +3,9 @@
 import * as Render from '../../Javascript/render.js';
 
 
-const styles = {
-  'background-color': 'white',
-  'width': '90vw',
-  'min-height': '20%',
-  'margin-top': '1rem',
-  'border':'thin solid grey',
-  'border-radius': '12px',
-  'display':'flex',
-  'flex-direction':'column',
-  'align-items':'center',
-  'box-sizing':'border-box',
-  'padding':'1rem',
-  'text-align':'left!important'
-};
+function setState(props) {
+  
+}
 
 
 
@@ -24,22 +13,27 @@ const styles = {
 export default class Input {
   constructor(props) {
     this.createInput(props);
-    this.generateType(props);
-    this.generateStyles();
+    this.setType(props);
+    //this.generateStyles();
     return this.el;
   }
-    
-  
-  createInput(props) {
-    this.el = document.createElement("input");
-      this.el.id = props.id;
-      
-  }
 
-    generateType(props) {
-      this.el.setAttribute('type', props.type)
+    //attach keyup event listener
+    keyUpEventListener(props) {
+      
+    }
+    
+    createInput(props) {
+      this.el = document.createElement("input");
+        this.el.id = props.id;
+        this.el.classList.add("input");
     }
 
+    setType(props) {
+      if(props.type === 'multi-select') props.type = 'checkbox';
+      if(props.type === 'single-select') props.type = 'radio';
+      this.el.setAttribute('type', props.type);
+    } 
 
     generateStyles() {
       this.el.setAttribute("style", Render.useStyles(styles));
