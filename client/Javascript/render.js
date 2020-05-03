@@ -1,9 +1,13 @@
 'use strict'
 
+import Toast from '/Components/Toast/toast.js';
+
+
 //Shorthand display function, to be moved!
 function $(id) {
     return document.querySelector("#" + id);
 }
+
 const body = $("root");
 
 
@@ -32,7 +36,7 @@ const body = $("root");
  ******************************/
 
 function render(el, domNode) {
-    
+
     domNode.appendChild(el);
     return;
 }
@@ -100,8 +104,23 @@ function removeRender(el) {
 }
 
 
+
+// #endregion
+// ////////////////////////////////////////////////////////////// CREATE TOAST POPUP ELEMENT
+// #region Create Toast Function
+
+
+function createToast(message, action, actionText) {
+    let toast = new Toast({id:'toast', text: message, action: action, actionText: actionText})
+    render(toast, $('root'));
+}
+
+
 // #endregion
 // ////////////////////////////////////////////////////////////// EXPORTS
 // #region Exports
 
-export { render, $, useStyles, renderText, removeRender }
+
+
+
+export { render, $, useStyles, renderText, removeRender, createToast }

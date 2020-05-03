@@ -11,6 +11,8 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
+    "pg": "^8.0.2",
+    "pgtools": "^0.3.0",
     "postgres": "^1.0.2"
   }
 }

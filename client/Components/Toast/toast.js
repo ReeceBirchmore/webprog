@@ -4,15 +4,6 @@ import * as Render from '../../Javascript/render.js';
 import * as FX from '../../Javascript/fx.js';
 
 
-const actionStyles = {
-  'color': '#ffeb3b',
-  'text-transform': 'uppercase',
-  'padding-left':'2rem',
-}
-
-
-
-
 function dismiss() {
   FX.toastClear();
 }
@@ -43,7 +34,8 @@ export default class Toast {
       let action = props.action;
       this.action = Render.renderText(this.el, props.actionText);
       this.action.addEventListener("click", action);
-        this.action.setAttribute("style", Render.useStyles(actionStyles));
+        this.action.classList.add('toastAction');
+      //this.action.setAttribute("style", Render.useStyles(actionStyles));
     }
 
     animate() {

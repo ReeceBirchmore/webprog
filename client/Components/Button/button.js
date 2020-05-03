@@ -3,6 +3,7 @@
 import * as Render from '../../Javascript/render.js';
 import * as Quiz from '../../Containers/Quiz/index.js';
 import * as FX from '../../Javascript/fx.js';
+import * as Card from '../../Containers/Quiz/index.js';
 
 
 const directionControlStyles = {
@@ -40,19 +41,21 @@ const confirmStyles = {
 function addHandler(el, props) {
     el.addEventListener("click", function() {
       if(props.action === 'Quiz.up') {
-        FX.moveCard();
-        setTimeout(function() {
-          Quiz.up(); 
-         }, 100);
+        Quiz.increase(0);
+        
+        // FX.moveCard();
+        // setTimeout(function() {
+        //   Quiz.up(); 
+        //  }, 100);
 
       }
 
       if(props.action === 'Quiz.down') {
-          Quiz.down(); 
-        setTimeout(function() {
-          FX.returnCard();
-         }, 100);
-         
+        //   Quiz.down(); 
+        // setTimeout(function() {
+        //   FX.returnCard();
+        //  }, 100);
+        Quiz.decrease(0);
       }
 
 
