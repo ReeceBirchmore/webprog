@@ -18,6 +18,10 @@ async function getMessages(req, res) {
     res.json(await q.listMessages());
   }
 
+
+
+
+  
 async function getQuizzes(req, res) {
     const result = await q.listQuizzes(req.params.id);
     if (!result) {
@@ -67,6 +71,7 @@ function asyncWrap(f) {
   app.get('*/quizid/:id', asyncWrap(getQuizzes));
   app.get('*/api/questions/:id', asyncWrap(getQuestions));
   app.get('*/api/option/:id', asyncWrap(getOptions));
+  app.get('*/api/quizzes', asyncWrap(getQuizzes));
 
 
 

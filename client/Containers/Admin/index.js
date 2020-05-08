@@ -29,6 +29,9 @@ let footer = new Footer({id:'Footer'});
 
 
 
+
+
+
 // #endregion
 // ////////////////////////////////////////////////////////////// Generate Quiz
 // #region  Generate Quiz Setup
@@ -44,10 +47,7 @@ export function generatePage() {
 }
 
 
-
-
-
-new Toggle({id:'toggletest'});
+//new Toggle({id:'toggletest'});
   
 
 

@@ -21,37 +21,19 @@ import * as FX from '../../Javascript/fx.js';
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // #endregion
 // ////////////////////////////////////////////////////////////// Generate Page Template
 // #region  Generate Page Template
 
 
 //let screen = new Screen({id: 'quiz'});
-
 let footer = new Footer({id:'Footer'});
 
+
+
+
+
+let quizID;
 
 
 // #endregion
@@ -65,16 +47,13 @@ let footer = new Footer({id:'Footer'});
  *************************/
 
 export function generateQuiz(params) {
-    let quizID = params[0];
-    let mode = params[1];
-    console.log(params)
-    //generateDeck(quizID, mode);
+    quizID = params[0];
+    let mode = params[1];  
     generateQuestionObjects(params);
-
-
-    //displayCards(Quiz.quiz[quizID].questions);
-    // cardGeneration(quizID, mode);
 }
+
+
+
 
 
 // #endregion
@@ -89,9 +68,7 @@ export function generateQuiz(params) {
  **************************/
 
 let arrOfCards = [];
-let arrOfInputs = [];
 let quizObject;
-const stack = [];
 
 let next;
 let prev;
@@ -112,29 +89,6 @@ let prev;
 */
     //let btn3 = new Button({id: "TEST2", name:"Previous Question", action: "toast"});
 
-/*
-function cardGeneration(quizID, mode) {
-    quizObject = Quiz.quiz[quizID];
-    for(let i = 0; i < quizObject.questions.length; i ++) {        
-        //let qNum = new QuestionNumber({id: i});
-        //Work on seperating text generation from the card to the rendering file! The card should NOT handle rendering text
-        let card = new Card({id: 'card' + quizObject.questions[i].id, title: quizObject.questions[i].text});
-        arrOfCards.push(card);
-        let input = new Input({id: quizObject.questions[i].id, type: quizObject.questions[i].type});
-        arrOfInputs.push(input);
-    }
-    if(mode === 'flow') {
-        prev = new Button({id: "prevbtn", name:"Previous Question", action: "Quiz.down", param: -1, render: "Footer"});
-        next = new Button({id: "nextbtn", name:"Next Question", action: "Quiz.up", param: +1, render: "Footer"}); 
-        Render.render(arrOfCards[0], Render.$('root'));
-        arrOfCards[0].style.transform = "translateX(0)";
-        Render.render(arrOfInputs[0], arrOfCards[0]);
-        let progress = new Progress({id: "progressBar"})
-    } else {
-        linear();  
-    } 
-}
-*/
 
 
 /*************************************************************************
@@ -148,49 +102,12 @@ export let cardCount;
 
 
 
-function displayCards(questions) {
-    let count = 0;
-    //Generate the cards, push cards into arrOfCards
-    questions.forEach(question => {
-        console.log(question)
-        let card = new Card({id: 'card-' + count, title: question.text });
-            card.classList.add("card");
-            count = count + 1;
-            card.id = "card-" + count;
-        arrOfCards.push(card);
-
-        let input = new Input({id: question.id, type: question.type});
-        arrOfInputs.push(input);
-
-
-    });
-    cardCount = 1;
-    cardStacking(questions);
-}
 
 
 
 
 
 
-
-
-
-
-
-/*************************************************************************
-*
-* Shuffle cards about to ensure consistent pile layout (REDUNDANT)
-*
-**************************************************************************/
-
-
-export function addCard(count) {
-    console.log("Add a card");
-    Render.$('root').appendChild(arrOfCards[count]);
-    arrOfCards[count].style.marginTop = (-count * 5) + "%";
-    arrOfCards[count].style.zIndex = -count;
-}
 
 
 
@@ -202,25 +119,18 @@ export function addCard(count) {
 *
 **************************************************************************/
 
-
-
 function generateQuestionObjects(params) {
-    console.log(params[1]);
     if(params[1] === 'flow') {
         prev = new Button({id: "prevbtn", name:"Previous Question", action: "Quiz.down", param: -1, render: "Footer"});
         next = new Button({id: "nextbtn", name:"Next Question", action: "Quiz.up", param: +1, render: "Footer"}); 
     }
-    console.log(params);
     generateQuestions(params);
     let progress = new Progress({id: "progressBar"})
 }
 
-
 async function generateQuestions(params) {
-    console.log(params)
     //Fetch all questions related to the parameter given in the URL
     const response = await fetch('../../api/questions/' + params[0]);
-    console.log(params)
         let questions;
         if (response.ok) {
             questions = await response.json();
@@ -228,11 +138,30 @@ async function generateQuestions(params) {
             questions.forEach(question => {
                 let card = new Card({id: 'card-' + i++, title: question.question });
                     card.classList.add("card");
+                    
+                    
+                    
+                    if(question.options != null) {
+                        for(let x = 0; x < question.options.length; x++) {
+                            let input = new Input({id: 'input-' + x + "question-" + i, type:  question.input, options: question.options[x] });
+                                input.classList.add("input");
+                            (card).appendChild(input);
+                        }
+                    } else {
+                        let input2 = new Input({id: 'input-question-' + i, type: question.input });
+                                input2.classList.add("input");
+                            (card).appendChild(input2);
+                    }
+
+
                 arrOfCards.push(card);
                 return arrOfCards;
             });
-            cardStacking();
-            generateOptions(params);
+            if(params[1] === 'flow') {
+                stackManager();
+            } else {
+                linear();
+            }
             return;
         } else {
             questions = [{ msg: 'Failed to load cards' }];
@@ -242,195 +171,113 @@ async function generateQuestions(params) {
 }
 
 
-
-
-async function generateOptions(params) {
-    const optionlist = await fetch('../../api/option/' + params[0]);
-            let options;
-            if(optionlist.ok) {
-                options = await optionlist.json();
-                //For multiple option types
-                options.forEach(option => {
-                    let input = new Input({id: 'card-' + option.questionid, title: option.option, type: option.type });
-                        input.classList.add("input");
-                    //Render.$('card-' + option.questionid).appendChild(input);
-                });
-                return options;
-            } else {
-                options = [{ msg: 'Failed to load options'}];
-                Render.createToast(questions[0].msg, FX.toastClear, "Close");
-                return;
-            }
-}
-
-
 /*************************************************************************
 *
 * Stack the cards into a neat pile of viewable cards
 *
 **************************************************************************/
 
+let newArr = [];
 
-function cardStacking() {
-    for(let i = 0; i < arrOfCards.length; i++) {
-        arrOfCards[i].style.marginTop = (-i * 5) + "%";
-        arrOfCards[i].style.zIndex = -i;
+function stackManager(val) {
+
+    if(!val) {
+        for(let i = 0; i < 3; i++) {
+            if(arrOfCards[i]) {
+                newArr.push(arrOfCards[i]);
+                Render.$('root').appendChild(newArr[i]);
+            }
+        }
+        sortDeck();
+        return;
     }
-    for(let i = 0; i < 3; i++) {
-        stack.push(arrOfCards[i]);
-        console.log(stack);
-        Render.$('root').appendChild(stack[i]);
+
+    newArr = [];
+    if(val === 'increase') {
+        if(arrOfCards) {
+            newArr.push(arrOfCards[j], arrOfCards[j + 1], arrOfCards[j + 2]);
+        }
+        sortDeck();
+        return;
+    } else {
+        if(arrOfCards) {
+            newArr.push(arrOfCards[j], arrOfCards[j + 1], arrOfCards[j + 2])
+        }
+        sortDeck();
+        return;
     }
-    
 }
 
 
 
-function stackManager() {
-    //only allow up to 4 cards in the stack by adding to the start and end
-
-    let length = stack.length;
-
-    stack.shift();
-        console.log(stack);
-        console.log(j);
-
-    stack.push(arrOfCards[(j + 2)]);
-        console.log(stack);
-
-
-    
+function sortDeck() {
+    for(let i = 0; i < newArr.length; i++) {
+        if(newArr[i]) {
+            newArr[i].classList.add("card-add");
+            newArr[i].style.transform = "scale(" + (1 - (0.1*i)) +")";
+            //newArr[i].style.width = 70 - (i * 10) + "vw";
+            newArr[i].style.visibility = "visible";
+            newArr[i].style.marginTop = 0 + (i * - 10) + "%";
+            newArr[i].style.zIndex = -i;
+            newArr[i].style.transitionDelay = 0.1 * i + "s";
+        }
+    }
+ 
 }
-
-
-
-
-
-/***************
- * 
- * TODO LIST:
- *  - Create observable to monitor and maintain Js value to determine which buttons should
- * be visible
- *  - Work on submission functionality
- *  - Work on pulling data from the database as opposed to a fuckin text file
- *  - Work on displaying questions properly
- *  - Using local storage to pre-populate fields
- *  - Using real time validation (with observables) 
- * 
- * 
- * 
- * 
- * 
- * 
- */
-
-
-
-
-// #endregion
-// ////////////////////////////////////////////////////////////// FLOW COUNTER
-// #region Flow Increase and Decrease
-
- /*********************
- * 
- * @param { Int } val
- *  
- **********************/
-
 
 
 
 /*************************************************************************
 *
-* Sort stack, ensure consistency within pile, up/down functions
+* Up Down functions to control the flow of cards
 *
 **************************************************************************/
 
-
 let j = 0;
 
-
 export function increase() {
-    //Render.removeRender(Render.$('card'));
-    j++;
+
+    //Manage storage of answers given!
+    if(j < arrOfCards.length) {
+        
+
+
+
     //Move topmost card down below screen view
-    Render.$('card-' + j).classList.add('card-remove');
-    stackManager();
-
-
-    //Shuffle next 3 cards down (staggered delay to add)
-    for(let i = 0; i < 3; i++) {
-        if(arrOfCards[i + j]) {
-            arrOfCards[i + j].style.marginTop = (-i * 5) + "%";
-        } else {
-            console.log("Card does not exist");
+    
+        
+        j++;
+        Render.$('card-' + j).classList.add('card-remove');
+        stackManager('increase');
+        if(arrOfCards[j + 2]) {
+            Render.$('root').appendChild(arrOfCards[j + 2]);
         }
+
+
+        FX.progressCheck(j, arrOfCards.length + 1);
+        window.localStorage.setItem(quizID, j);
     }
-    //Insert a new card at the bottom of the deck, have it animate
-    if(arrOfCards[j + 2]) {
-        Render.$('root').appendChild(arrOfCards[j + 2]);
+    if(j === arrOfCards.length) {
+        console.log("END OF QUIZ");
+        //quizEnd();
     }
-    
-
-
-    
-
-    FX.progressCheck(j, arrOfCards.length + 1);
-    console.log(j);
-    //Render.render(arrOfCards[j], Render.$('root'));
-    //Render.render(arrOfInputs[j], arrOfCards[j]);
 }
 
 export function decrease() {
-        
     if(j != 0) {
-        console.log(j);
-        Render.$('root').appendChild(arrOfCards[j]);
         Render.$('card-' + j).classList.remove('card-remove');
-
-
-        //Remove the bottom card from the deck
-        stackManager();
-
-        //shuffle 3 cards back up
-
-        for(let i = 0; i < 3; i++) {
-            if(arrOfCards[i - j]) {
-                arrOfCards[i - j].style.marginTop = (-i * 5) + "%";
-            } else {
-                console.log("Card does not exist");
-            }
-        }
-
-
         j--;
+        stackManager('decrease');
+        if(arrOfCards[j + 3]) {
+            Render.$('root').removeChild(arrOfCards[j + 3]);
+        }
         FX.progressCheck(j, arrOfCards.length + 1);
-        
-        
-        
-        
-        // Render.render(arrOfCards[j], Render.$('root'));
-        // Render.render(arrOfInputs[j], arrOfCards[j]);
-    }
-
-
-
-}
-
-
-
-
-
-export function animateStack(cardCount, operand) {
-    if(operand > 1) {
-        Render.$('card' + cardCount).classList.remove("cardFlip");
-        cardCount = cardCount + 1;
-    } else {
-        cardCount = cardCount - 1;
-
-        Render.$('card' + cardCount).classList.remove("cardFlip");
+        window.localStorage.setItem(quizID, j);
     }
 }
+
+
+
 
 
 
@@ -499,8 +346,7 @@ export function upDown(val) {
 function linear() {
     for(let i = 0; i < arrOfCards.length; i++) {
         Render.render(arrOfCards[i], Render.$('root'));
-        Render.render(arrOfInputs[i], arrOfCards[i]);
-
+        arrOfCards[i].style.position = "relative";
     }
 }
 

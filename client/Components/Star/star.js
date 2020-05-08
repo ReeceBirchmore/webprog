@@ -38,53 +38,8 @@ const confirmStyles = {
 }
 
 
-function addHandler(el, props) {
-    el.addEventListener("click", function() {
-      if(props.action === 'Quiz.up') {
-        Quiz.increase(0);
-        
-        // FX.moveCard();
-        // setTimeout(function() {
-        //   Quiz.up(); 
-        //  }, 100);
 
-      }
-
-      if(props.action === 'Quiz.down') {
-        //   Quiz.down(); 
-        // setTimeout(function() {
-        //   FX.returnCard();
-        //  }, 100);
-        Quiz.decrease(0);
-      }
-
-
-      if(props.action === 'routerNav') {
-        Router.get(props.action)
-      }
-
-
-
-      if(props.action === 'toast') {
-        FX.toastManagement();
-      }
-
-
-      if(props.action === 'progress') {
-        FX.progressCheck(props.param)
-      }
-
-
-      if(props.action === 'openQuiz') {
-        Quiz.openQuiz(props.param);
-      }
-
-    })
-
-}
-
-
-export default class Button {
+export default class Star {
   constructor(props) {
     this.createBtn(props);
     this.generateStyles(props);

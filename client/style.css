@@ -19,8 +19,13 @@ body, html {
     display:flex;
     align-items: center;
     flex-direction: column;
-    overflow-y: hidden;
+    overflow: hidden;
+    transition: 4s;
 }
+
+
+
+
 
 
 /*************************************************************************
@@ -210,8 +215,10 @@ h2 {
     background-color: white;
     width: 70vw;
     position: absolute;
-    top: 6rem;
-    min-height: 40%;
+    top: 10rem;
+    min-height: 60%;
+    max-height: 60%;
+    overflow: hidden;
     margin-top: 1rem;
     border: thin solid grey;
     border-radius: 0.2rem;
@@ -221,10 +228,11 @@ h2 {
     padding: 1rem;
     text-align: left;
     box-shadow: 0 0 0 rgba(0,0,0,0.01), 0 2px 5px rgba(0,0,0,0.22);
-    transition: 1.5s;
+    transition: 0.7s cubic-bezier(.32,.5,.82,.86);
     will-change:transform;
     transform: translateX(0) rotate(0);
 }
+
 
 .card-remove {
   background-color: white;
@@ -241,9 +249,8 @@ h2 {
   padding: 1rem;
   text-align: left;
   box-shadow: 0 0 0 rgba(0,0,0,0.01), 0 2px 5px rgba(0,0,0,0.22);
-  transition: 1.5s;
-  transform: translateY(200%);
-  transition: 1.5s;
+  transition: 0.7s cubic-bezier(.32,.5,.82,.86);
+  transform: translateY(200%) scale(0.3)!important;
 }
 
 
@@ -328,7 +335,7 @@ h2 {
 
 .input {
     background-color: white;
-    width: 87%;
+    width: 10%;
     min-height: 1vh;
     margin-top: 1rem;
     border: solid thin grey;
@@ -338,6 +345,35 @@ h2 {
     align-items: flex-start;
     padding: 1rem;
     text-align: left;
+}
+
+
+.textbox {
+  background-color: white;
+  width: 85%;
+  min-height: 1vh;
+  margin-top: 1rem;
+  border: solid thin grey;
+  border-radius: 0.2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 1rem;
+  text-align: left;
+}
+
+.label {
+  width:10%;
+  color: black;
+}
+
+.container {
+  display:flex;
+  flex-direction: row;
+  align-items: center;
+  text-align: center;
+  justify-content: left;
+  width:100%;
 }
 
 .radio {
