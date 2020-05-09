@@ -8,16 +8,18 @@ function setState(props) {
 }
 
 
-
+export let answers = [];
+export let question = new Object;
+let selection;
+let inputIndex;
 
 export default class Input {
   constructor(props) {
-
+    this.test(props);
     
-    this.createInput(props);
-    this.setType(props);
-
-    this.keyUpEventListener(this.el);
+    //this.createInput(props);
+    //this.setType(props);
+    
 
     /*
     this.createContainer();
@@ -26,10 +28,30 @@ export default class Input {
     //this.generateStyles();
     this.createLabel(props);
     */
-    return this.el;
+    return this.group;
   }
 
  
+
+  test(props) {
+    this.group = document.createElement('div');
+      this.group.classList.add('group');
+    let input = document.createElement('input');
+      input.type = props.type;
+      input.id = props.id
+    let highlight = document.createElement('span');
+      highlight.classList.add('highlight')
+    let bar = document.createElement('span');
+      bar.classList.add('bar');
+    this.group.appendChild(input);
+    this.group.appendChild(highlight);
+    this.group.appendChild(bar);
+    this.keyUpEventListener(input, props);
+  }
+
+
+
+
 
 
     setType(props) {
@@ -53,11 +75,8 @@ export default class Input {
       this.el = document.createElement("input");
         this.el.id = props.id;
         this.el.classList.add("input");
-        //console.log(this.el)
-        //this.contain.appendChild(this.el);
         return this.el;
     }
-
 
 
 
@@ -80,26 +99,25 @@ export default class Input {
 
 
     //attach keyup event listener
-    keyUpEventListener(el) {
-      let answers = [];
-      let question = new Object;
-        this.el.onblur = function() {
-          console.log(el.value);
-
-          if(answers.find(question => question = el.id)) {
-            console.log(el.id)
-          }
-
-              question.id = el.id,
-              question.value = el.value
-
-
-            answers.push(question);
-          
-          
-            console.log(answers);
-            console.log(answers[0])
+    keyUpEventListener(el, props) {
+      console.log(props)
+      el.onkeyup = function() {
+        selection = el.value;
         }
+      el.onblur = function() {
+        inputIndex = answers.findIndex((question => question.id == el.id))
+        if(inputIndex >= 0) {
+          answers[inputIndex].value = el.value;
+        } else {
+          question = new Object ({
+            id: el.id,
+            title: props.title,
+            value: el.value
+          });
+          answers.push(question);
+        }
+        //console.log(answers);
+      }
     }
 
     // generateStyles() {

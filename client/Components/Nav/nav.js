@@ -30,19 +30,22 @@ const profile = {
 
 
 
-export default class NavBar {
+export default class Nav {
   constructor(props) {
     this.createFrame(props);
-    //this.displayProfile(props);
+    this.displayTitle(props);
+    this.displayQuestions(props);
     
-    //Render.setState(this.el);
+    
+    Render.render(this.el, Render.$('root'));
+    
+    return this.el;
   }
    
     createFrame(props) {
         this.el = document.createElement("div");
           this.el.id = props.id + "Nav";
-          //this.el.setAttribute("style", Render.useStyles(navbar));
-          Render.render(this.el, Render.$('nav'));
+          this.el.classList.add("nav");
     }
 
     //Handle profile button
@@ -56,7 +59,14 @@ export default class NavBar {
 
     //Handle Title
     displayTitle(props) {
-      //code,
+      Render.renderText(this.el, props.title, "h2");
+      console.log(props.title)
+    }
+
+
+    displayQuestions(props) {
+      let qLength = Render.renderText(this.el, props.questions + " questions");
+
     }
 
 

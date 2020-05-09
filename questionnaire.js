@@ -24,20 +24,21 @@ sql.on('error', (err) => {
 
 
 
-async function listQuizzes() {
-  console.log("Quizzes");
-  const q = 'SELECT * FROM quizzes LIMIT 10;';
-  const result = await sql.query(q);
+async function getQuizDetails(id) {
+  console.log("Quizzes", id);
+  const q = 'SELECT * FROM quizzes WHERE id = $1;';
+  const result = await sql.query(q, [id]);
+  console.log(result)
   return result.rows;
 }
 
 
-async function listOptions(questionid) {
-  console.log("options", questionid);
-  const q = 'SELECT * FROM options WHERE quizid = $1;';
-  const result = await sql.query(q, [questionid]);
-  return result.rows;
-}
+// async function listOptions(questionid) {
+//   console.log("options", questionid);
+//   const q = 'SELECT * FROM options WHERE quizid = $1;';
+//   const result = await sql.query(q, [questionid]);
+//   return result.rows;
+// }
 
 
 async function listQuestions(quizid) {
@@ -49,7 +50,6 @@ async function listQuestions(quizid) {
 
 
 module.exports = {
-  listQuizzes,
+  getQuizDetails,
   listQuestions,
-  listOptions,
 };

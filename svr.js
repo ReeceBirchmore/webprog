@@ -14,20 +14,21 @@ app.use(express.static('client', { extensions: ['html'] }));
 
 
 
-async function getMessages(req, res) {
-    res.json(await q.listMessages());
-  }
 
 
 
 
   
 async function getQuizzes(req, res) {
-    const result = await q.listQuizzes(req.params.id);
+  console.log(req, res);
+  console.log("DJFDJFJDFJ");
+  console.log(req.params.id)
+    const result = await q.getQuizDetails(req.params.id);
     if (!result) {
       res.status(404).send('No match for that ID.');
       return;
     }
+    console.log(result);
     res.json(result);
 }
 
@@ -66,12 +67,10 @@ function asyncWrap(f) {
 
 
 
-
-  app.get('*/api/messages', asyncWrap(getMessages));
   app.get('*/quizid/:id', asyncWrap(getQuizzes));
   app.get('*/api/questions/:id', asyncWrap(getQuestions));
   app.get('*/api/option/:id', asyncWrap(getOptions));
-  app.get('*/api/quizzes', asyncWrap(getQuizzes));
+  app.get('*/api/quizzes/:id', asyncWrap(getQuizzes));
 
 
 

@@ -13,17 +13,35 @@ export default class Card {
     if(props.title) {
       Render.renderText(this.el, props.title);
     }
-    //Render.render(this.el, Render.$('root'));
     
+
+    if(props.answers) {
+      this.showAnswers(props);
+    }
     return this.el;
-    //Try not to render within the component generator!
-    //
   }
   
     createCard(props) {
       this.el = document.createElement("div");
         this.el.id = props.id;
         this.el.classList.add("card")
+    }
+
+
+    showAnswers(props) {
+      Render.renderText(this.el, "Your answers:", "h2");
+      for(let i = 0; i < props.answers.answers.length; i++) {
+        let container = document.createElement('div');
+          container.classList.add('previewContainer');
+        let qNum = Render.renderText(container, props.answers.answers[i].title + ":");
+          qNum.classList.add('qNum');
+        let preview = Render.renderText(container, props.answers.answers[i].value);
+          preview.classList.add('previewText');
+        //console.log(container)
+
+        this.el.appendChild(container)
+
+      }
     }
 
     generateStyles() {

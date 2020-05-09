@@ -2,7 +2,7 @@
 
 
 import Card from '/Components/Card/card.js';
-import QuizCard from '/Components/QuizCard/quizcard.js';
+import SubmissionCard from '/Components/SubmissionCard/submissioncard.js';
 import Button from '/Components/Button/button.js';
 import Input from '/Components/Input/input.js';
 import Toast from '/Components/Toast/toast.js';
@@ -10,6 +10,8 @@ import Progress from '/Components/Progress/progress.js';
 import QuestionNumber from '/Components/QuestionNumber/questionnumber.js'
 import Modal from '/Components/Modal/modal.js';
 import Footer from '/Components/Footer/footer.js';
+import Nav from '/Components/Nav/nav.js'
+import { answers } from '/Components/Input/input.js';
 
 
 
@@ -31,9 +33,22 @@ let footer = new Footer({id:'Footer'});
 
 
 
+//Variables to sort!
+let quizID; //ID of quiz
+let j = 0; //Counter
+let title;
 
 
-let quizID;
+let arrOfCards = [];
+let quizObject;
+
+let quizAnswers = new Object;
+
+let next;
+let prev;
+let toLin;
+
+
 
 
 // #endregion
@@ -56,6 +71,9 @@ export function generateQuiz(params) {
 
 
 
+
+
+
 // #endregion
 // ////////////////////////////////////////////////////////////// GENERATE CARDS AND INPUTS
 // #region Generate Cards
@@ -67,11 +85,6 @@ export function generateQuiz(params) {
  * 
  **************************/
 
-let arrOfCards = [];
-let quizObject;
-
-let next;
-let prev;
 
 
 //let toast = new Toast({id:'toast', text:"Quiz Submitted Succesfully", action: FX.toastClear , actionText: "Close"})
@@ -97,8 +110,6 @@ let prev;
 *
 **************************************************************************/
 
-let maxCards = 3; //Maximum cards to show on screen
-export let cardCount;
 
 
 
@@ -121,26 +132,32 @@ export let cardCount;
 
 function generateQuestionObjects(params) {
     if(params[1] === 'flow') {
-        prev = new Button({id: "prevbtn", name:"Previous Question", action: "Quiz.down", param: -1, render: "Footer"});
-        next = new Button({id: "nextbtn", name:"Next Question", action: "Quiz.up", param: +1, render: "Footer"}); 
+        prev = new Button({id: "prevbtn", name:"Previous Question", action: "Quiz.down", param: -1, render: "Footer", type: "previous"});
+        next = new Button({id: "nextbtn", name:"Next Question", action: "Quiz.up", param: +1, render: "Footer", type: "next"}); 
+        //toLin = new Button({id: "toLin", name:"Switch to Linear", action: "toLinear", param: +1, }); 
     }
-    generateQuestions(params);
-    let progress = new Progress({id: "progressBar"})
+    generateQuestionnaire(params);
+    new Progress({id: "progressBar"})
 }
 
-async function generateQuestions(params) {
-    //Fetch all questions related to the parameter given in the URL
+async function generateQuestionnaire(params) {
+    const questionnaire = await fetch('../../api/quizzes/' + params[0])
+        let qData;
+        if (questionnaire.ok) {
+            qData = await questionnaire.json();
+        } else {
+            qData = [{ msg: 'Failed to load cards' }];
+            return;
+        }
     const response = await fetch('../../api/questions/' + params[0]);
         let questions;
         if (response.ok) {
             questions = await response.json();
+            new Nav({id:"Quiz", title: qData[0].title, questions:questions.length});
             let i = 1;
             questions.forEach(question => {
                 let card = new Card({id: 'card-' + i++, title: question.question });
                     card.classList.add("card");
-                    
-                    
-                    
                     if(question.options != null) {
                         for(let x = 0; x < question.options.length; x++) {
                             let input = new Input({id: 'input-' + x + "question-" + i, type:  question.input, options: question.options[x] });
@@ -148,12 +165,10 @@ async function generateQuestions(params) {
                             (card).appendChild(input);
                         }
                     } else {
-                        let input2 = new Input({id: 'input-question-' + i, type: question.input });
+                        let input2 = new Input({id: 'input-question-' + i, type: question.input, title: question.question });
                                 input2.classList.add("input");
                             (card).appendChild(input2);
                     }
-
-
                 arrOfCards.push(card);
                 return arrOfCards;
             });
@@ -180,6 +195,55 @@ async function generateQuestions(params) {
 let newArr = [];
 
 function stackManager(val) {
+
+
+//This entire section needs reworking
+
+
+    //Previous button handling! WILL NEED ITS OWN FUNCTION SOON
+    if(j === 0) {
+        Render.$('prevbtn').disabled = true;
+        Render.$('prevbtn').classList.add('disabled');
+    }
+    else {
+        Render.$('prevbtn').disabled = false;
+        Render.$('prevbtn').classList.remove('disabled');
+    }
+
+    if(j != arrOfCards.length) {
+        if(Render.$('submitbtn')) {
+            Render.$('submitbtn').style.display = "none";
+        }
+        if(Render.$('card-submit')) {
+            Render.$('card-submit').style.display = "none";
+        }
+    }
+
+    //Display all given answers and give option to submit quiz
+    if(j === arrOfCards.length) {
+
+        if(Render.$('submitbtn')) {
+            Render.$('submitbtn').style.display = "block";
+        } else {
+            let submit = new Button({id: 'submitbtn', type: 'submit', render: 'Footer'});
+        }
+        
+
+        if(Render.$('card-submit')) {
+            Render.$('card-submit').style.display = "block";
+        } else {
+            let submissioncard = new Card({id:'card-submit', answers: { answers }});
+                submissioncard.classList.add('card-submit');
+            Render.$('root').appendChild(submissioncard);
+        }
+        
+  
+    }
+
+
+//End of horrible section
+
+
 
     if(!val) {
         for(let i = 0; i < 3; i++) {
@@ -213,17 +277,72 @@ function stackManager(val) {
 function sortDeck() {
     for(let i = 0; i < newArr.length; i++) {
         if(newArr[i]) {
-            newArr[i].classList.add("card-add");
-            newArr[i].style.transform = "scale(" + (1 - (0.1*i)) +")";
-            //newArr[i].style.width = 70 - (i * 10) + "vw";
-            newArr[i].style.visibility = "visible";
-            newArr[i].style.marginTop = 0 + (i * - 10) + "%";
             newArr[i].style.zIndex = -i;
+            newArr[i].classList.add("card-add");
+            newArr[i].style.transform = "translateY(" + (i * - 10) + "%) scale(" + (1 - (0.1*i)) +")";          
             newArr[i].style.transitionDelay = 0.1 * i + "s";
         }
     }
- 
+    nextCard();  
 }
+
+
+/*************************************************************************
+*
+* Discard Stack, turn into linear mode
+*
+**************************************************************************/
+
+export function toLinear() {
+
+    let j = 0;
+    let position;
+
+
+
+    for(let i of arrOfCards) {
+
+        Render.$('root').appendChild(i);
+        setTimeout(function() {
+            j++
+            let position = i.getBoundingClientRect();
+
+            i.style.transform = "translateY(" + (position.height * j) + "px)";
+        }, 100);
+    }
+
+
+    // for(let i = 0; i < arrOfCards.length; i++) {
+
+    //     Render.$('root').appendChild(arrOfCards[i]);
+
+    //     if(arrOfCards[i - 1]) {
+    //         position = arrOfCards[i - 1].getBoundingClientRect();
+    //     } else {
+    //         console.log("First card")
+    //         position = arrOfCards[i].getBoundingClientRect();
+    //     }
+
+
+
+    //      console.log(position.bottom);
+    //         arrOfCards[i].style.transform = "translateY(" + (position.bottom + 100) + "px)";
+    //         console.log(arrOfCards[i].style.transform)
+    // }
+
+
+    // arrOfCards.forEach(card => {
+    //     i++;
+    //     Render.$('root').appendChild(card);
+    //     setTimeout(function() {
+
+    //         card.style.transform = "translateY(" + j * 10 + "%)";
+    //     }, 100);
+    // })
+
+}
+
+
 
 
 
@@ -233,27 +352,13 @@ function sortDeck() {
 *
 **************************************************************************/
 
-let j = 0;
 
 export function increase() {
-
     //Manage storage of answers given!
     if(j < arrOfCards.length) {
-        
-
-
-
-    //Move topmost card down below screen view
-    
-        
         j++;
         Render.$('card-' + j).classList.add('card-remove');
         stackManager('increase');
-        if(arrOfCards[j + 2]) {
-            Render.$('root').appendChild(arrOfCards[j + 2]);
-        }
-
-
         FX.progressCheck(j, arrOfCards.length + 1);
         window.localStorage.setItem(quizID, j);
     }
@@ -263,14 +368,21 @@ export function increase() {
     }
 }
 
+function nextCard() {
+    if(arrOfCards[j + 2]) {
+        Render.$('root').appendChild(arrOfCards[j + 2]);
+    }
+}
+
 export function decrease() {
     if(j != 0) {
         Render.$('card-' + j).classList.remove('card-remove');
         j--;
-        stackManager('decrease');
         if(arrOfCards[j + 3]) {
             Render.$('root').removeChild(arrOfCards[j + 3]);
         }
+        stackManager('decrease');
+        
         FX.progressCheck(j, arrOfCards.length + 1);
         window.localStorage.setItem(quizID, j);
     }
@@ -283,7 +395,19 @@ export function decrease() {
 
 
 
+export function answerStorage(value) {
 
+
+    const answerStore = {
+        quiz: quizID,
+        answers: [{
+            questionid: j,
+            answer: value
+        }
+        ]
+    }
+
+}
 
 
 
