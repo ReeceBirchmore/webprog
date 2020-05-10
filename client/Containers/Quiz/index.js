@@ -388,7 +388,7 @@ export async function submitQuiz() {
     const quizAnswersTest = await fetch('../../api/answers/' + quizID)
         if (quizAnswersTest.ok) {
             test = await quizAnswersTest.json();
-            console.log(test[28].answers);
+            console.log(test[15].response);
         } else {
             test = [{ msg: 'Failed to load cards' }];
             return;

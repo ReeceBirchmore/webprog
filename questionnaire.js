@@ -68,9 +68,10 @@ async function getAnswerData(quizid) {
   console.log(result.rows, "RESULTS")
   const responses = new Array;
   result.rows.forEach(question => {
+    responses.push(JSON.parse(question.answers))
     console.log("QUESTIONS", JSON.parse(question.answers));
   })
-  console.log(responses)
+  console.log(responses);
 
   return responses;
 }
