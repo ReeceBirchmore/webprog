@@ -1,7 +1,10 @@
 'use strict'
 
-import * as Render from '../../Javascript/render.js';
 
+import Modal from '../../Components/Modal/modal.js';
+
+import * as Render from '../../Javascript/render.js';
+import { j } from '../../Containers/Quiz/index.js';
 
 const navbar = {
     'position':'fixed',
@@ -14,12 +17,6 @@ const navbar = {
     'justify-content':'space-between'
 };
 
-const profile = {
-    'background-color': 'white',
-    'z-index':' 10000',
-    'width': '10vw',
-    'background-image': 'url("./assets/images/account.svg")' 
-}
 
 
 
@@ -35,10 +32,8 @@ export default class Nav {
     this.createFrame(props);
     this.displayTitle(props);
     this.displayQuestions(props);
-    
-    
+    //this.eventHandler(props);
     Render.render(this.el, Render.$('root'));
-    
     return this.el;
   }
    
@@ -60,7 +55,6 @@ export default class Nav {
     //Handle Title
     displayTitle(props) {
       Render.renderText(this.el, props.title, "h2");
-      console.log(props.title)
     }
 
 
@@ -69,6 +63,14 @@ export default class Nav {
 
     }
 
+
+
+    eventHandler(props) {
+      this.el.addEventListener("click", function() {
+        console.log(j);
+        let modal = new Modal({text: "Click to continue", title:"Example Questionnaire"})
+      });
+    }
 
     //Handle Hamburger menu
     displayMenuButton(props) {

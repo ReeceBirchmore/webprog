@@ -8,7 +8,7 @@ function setState(props) {
 }
 
 
-export let answers = [];
+export let answers = {response: [] };
 export let question = new Object;
 let selection;
 let inputIndex;
@@ -105,24 +105,21 @@ export default class Input {
         selection = el.value;
         }
       el.onblur = function() {
-        inputIndex = answers.findIndex((question => question.id == el.id))
+        inputIndex = answers.response.findIndex((question => question.id == el.id))
         if(inputIndex >= 0) {
-          answers[inputIndex].value = el.value;
+          answers.response[inputIndex].value = el.value;
         } else {
           question = new Object ({
             id: el.id,
             title: props.title,
             value: el.value
           });
-          answers.push(question);
+          answers.response.push(question);
+          console.log(answers);
         }
-        //console.log(answers);
       }
     }
 
-    // generateStyles() {
-    //   this.el.setAttribute("style", Render.useStyles(styles));
-    // }
 
 }
 

@@ -116,6 +116,28 @@ function createToast(message, action, actionText) {
 }
 
 
+
+// #endregion
+// ////////////////////////////////////////////////////////////// STATE TOGGLING
+// #region Toggle States
+
+
+//Toggle Visibility
+function toggleState(element) {
+    
+}
+
+//Toggle Expansion
+
+function toggleExpand(element) {
+
+}
+
+
+
+
+
+
 // #endregion
 // ////////////////////////////////////////////////////////////// EXPORTS
 // #region Exports

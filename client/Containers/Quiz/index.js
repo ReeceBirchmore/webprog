@@ -35,14 +35,12 @@ let footer = new Footer({id:'Footer'});
 
 //Variables to sort!
 let quizID; //ID of quiz
-let j = 0; //Counter
+export let j = 0; //Counter
 let title;
 
 
 let arrOfCards = [];
 let quizObject;
-
-let quizAnswers = new Object;
 
 let next;
 let prev;
@@ -195,11 +193,7 @@ async function generateQuestionnaire(params) {
 let newArr = [];
 
 function stackManager(val) {
-
-
 //This entire section needs reworking
-
-
     //Previous button handling! WILL NEED ITS OWN FUNCTION SOON
     if(j === 0) {
         Render.$('prevbtn').disabled = true;
@@ -225,7 +219,7 @@ function stackManager(val) {
         if(Render.$('submitbtn')) {
             Render.$('submitbtn').style.display = "block";
         } else {
-            let submit = new Button({id: 'submitbtn', type: 'submit', render: 'Footer'});
+            let submit = new Button({id: 'submitbtn', type: 'submit', action: 'submit', render: 'Footer'});
         }
         
 
@@ -239,12 +233,7 @@ function stackManager(val) {
         
   
     }
-
-
 //End of horrible section
-
-
-
     if(!val) {
         for(let i = 0; i < 3; i++) {
             if(arrOfCards[i]) {
@@ -279,7 +268,7 @@ function sortDeck() {
         if(newArr[i]) {
             newArr[i].style.zIndex = -i;
             newArr[i].classList.add("card-add");
-            newArr[i].style.transform = "translateY(" + (i * - 10) + "%) scale(" + (1 - (0.1*i)) +")";          
+            newArr[i].style.transform = "translateY(" + (i * - 2.5) + "%) scale(" + (1 - (0.1*i)) +")";          
             newArr[i].style.transitionDelay = 0.1 * i + "s";
         }
     }
@@ -294,12 +283,8 @@ function sortDeck() {
 **************************************************************************/
 
 export function toLinear() {
-
     let j = 0;
     let position;
-
-
-
     for(let i of arrOfCards) {
 
         Render.$('root').appendChild(i);
@@ -310,27 +295,18 @@ export function toLinear() {
             i.style.transform = "translateY(" + (position.height * j) + "px)";
         }, 100);
     }
-
-
     // for(let i = 0; i < arrOfCards.length; i++) {
-
     //     Render.$('root').appendChild(arrOfCards[i]);
-
     //     if(arrOfCards[i - 1]) {
     //         position = arrOfCards[i - 1].getBoundingClientRect();
     //     } else {
     //         console.log("First card")
     //         position = arrOfCards[i].getBoundingClientRect();
     //     }
-
-
-
     //      console.log(position.bottom);
     //         arrOfCards[i].style.transform = "translateY(" + (position.bottom + 100) + "px)";
     //         console.log(arrOfCards[i].style.transform)
     // }
-
-
     // arrOfCards.forEach(card => {
     //     i++;
     //     Render.$('root').appendChild(card);
@@ -382,7 +358,6 @@ export function decrease() {
             Render.$('root').removeChild(arrOfCards[j + 3]);
         }
         stackManager('decrease');
-        
         FX.progressCheck(j, arrOfCards.length + 1);
         window.localStorage.setItem(quizID, j);
     }
@@ -395,17 +370,30 @@ export function decrease() {
 
 
 
-export function answerStorage(value) {
+const data = { username: 'example' };
+
+export async function submitQuiz() {
+    await fetch('../../api/submit/' + quizID, {
+    method: 'POST', // or 'PUT'
+    body: JSON.stringify(answers),
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    });
 
 
-    const answerStore = {
-        quiz: quizID,
-        answers: [{
-            questionid: j,
-            answer: value
+
+    let test;
+
+    const quizAnswersTest = await fetch('../../api/answers/' + quizID)
+        if (quizAnswersTest.ok) {
+            test = await quizAnswersTest.json();
+            console.log(test[28].answers);
+        } else {
+            test = [{ msg: 'Failed to load cards' }];
+            return;
         }
-        ]
-    }
+
 
 }
 
@@ -413,16 +401,7 @@ export function answerStorage(value) {
 
 
 
-
-
-
-
-
-
-
-
-
-//let j = 0;
+/*
 
 export function upDown(val) {
     
@@ -431,7 +410,6 @@ export function upDown(val) {
     FX.progressCheck(j, quizObject.questions.length);
 
 
-    /* Handle the card display here */
 
     Render.render(arrOfCards[j], Render.$('root'));
     Render.render(arrOfInputs[j], arrOfCards[j]);
@@ -440,8 +418,6 @@ export function upDown(val) {
         }
 
 
-
-    /* Handle the button control here */
     console.log(j)
     if(j == 0 || !j) {
         Render.$('prevbtn').style.display = "none";
@@ -473,6 +449,8 @@ function linear() {
         arrOfCards[i].style.position = "relative";
     }
 }
+
+*/
 
     
 

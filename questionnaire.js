@@ -49,7 +49,36 @@ async function listQuestions(quizid) {
 }
 
 
+
+async function quizSubmission(data, quizid) {
+  console.log(data, quizid, "DATA");
+  let test = JSON.stringify(data);
+  console.log(test, "STRINGIFIED");
+  const q = 'INSERT INTO answers (answers, quizid) VALUES( $1, $2)';
+  const result = await sql.query(q, [test, quizid]);
+  console.log(result.rows, "Rows")
+  return result.rows;
+}
+
+
+async function getAnswerData(quizid) {
+  console.log(quizid);
+  const q = 'SELECT * FROM answers WHERE quizid =  $1;';
+  const result = await sql.query(q, [quizid]);
+  console.log(result.rows, "RESULTS")
+  const responses = new Array;
+  result.rows.forEach(question => {
+    console.log("QUESTIONS", JSON.parse(question.answers));
+  })
+  console.log(responses)
+
+  return responses;
+}
+
+
 module.exports = {
   getQuizDetails,
   listQuestions,
+  quizSubmission,
+  getAnswerData
 };

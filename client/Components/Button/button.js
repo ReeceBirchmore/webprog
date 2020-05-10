@@ -84,6 +84,11 @@ function addHandler(el, props) {
         Quiz.toLinear(props.param);
       }
 
+
+      if(props.action === 'submit') {
+        Quiz.submitQuiz();
+      }
+
     })
 
 }

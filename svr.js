@@ -20,9 +20,6 @@ app.use(express.static('client', { extensions: ['html'] }));
 
   
 async function getQuizzes(req, res) {
-  console.log(req, res);
-  console.log("DJFDJFJDFJ");
-  console.log(req.params.id)
     const result = await q.getQuizDetails(req.params.id);
     if (!result) {
       res.status(404).send('No match for that ID.');
@@ -40,14 +37,25 @@ async function getQuestions(req, res) {
     res.status(404).send('No match for that ID.');
     return;
   }
-  console.log(result);
   res.json(result);
 }
 
 
-async function getOptions(req, res) {
-  console.log("getting options");
-  const result = await q.listOptions(req.params.id);
+
+async function submitQuiz(req, res) {
+  console.log('Submitting');
+  const result = await q.quizSubmission(req.body, req.params.id);
+  if (!result) {
+    res.status(404).send('No match for that ID.');
+    return;
+  }
+  res.json(result);
+}
+
+
+
+async function getAnswers(req, res) {
+  const result = await q.getAnswerData(req.params.id);
   if (!result) {
     res.status(404).send('No match for that ID.');
     return;
@@ -69,8 +77,12 @@ function asyncWrap(f) {
 
   app.get('*/quizid/:id', asyncWrap(getQuizzes));
   app.get('*/api/questions/:id', asyncWrap(getQuestions));
-  app.get('*/api/option/:id', asyncWrap(getOptions));
+  //app.get('*/api/option/:id', asyncWrap(getOptions));
   app.get('*/api/quizzes/:id', asyncWrap(getQuizzes));
+  app.get('*/api/answers/:id', asyncWrap(getAnswers));
+
+
+  app.post('*/api/submit/:id', express.json(), asyncWrap(submitQuiz));
 
 
 

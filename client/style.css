@@ -21,6 +21,8 @@ body, html {
     flex-direction: column;
     overflow: hidden;
     z-index: 1;
+    
+    background-color: rebeccapurple;
 }
 
 
@@ -36,7 +38,7 @@ body, html {
 
 
 .nav {
-  background-color: white;
+  background-color: teal;
   width: 85vw;
   position: absolute;
   top: 1rem;
@@ -201,35 +203,6 @@ h2 {
 
 
 
-/*************************************************************************
-*
-* Quiz Selector Card Default Style Management
-*
-**************************************************************************/
-
-.quizCard {
-    background-color: white;
-    width: 85vw;
-    min-height: 20vh;
-    margin-top: 1rem;
-    border: thin solid grey;
-    border-radius: 0.2rem;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 1rem;
-    text-align: left!important;
-    line-height: 7px;
-    transition: .3s box-shadow,.3s -webkit-transform cubic-bezier(.155,1.105,.295,1.12);
-}
-
-.quizCard:hover{
-    transform: scale(1.05);
-    box-shadow: 0 10px 20px rgba(0,0,0,.12), 0 4px 8px rgba(0,0,0,.06);
-}
-
-
-
 
 /*************************************************************************
 *
@@ -243,20 +216,21 @@ h2 {
     position: absolute;
     top: 12rem;
     min-height: 40%;
+    outline: none;
     max-height: 40%;
     overflow: hidden;
     margin-top: 1rem;
-    border: thin solid grey;
     border-radius: 0.4rem;
     display: flex;
     flex-direction: column;
     align-items: left;
     padding: 1rem;
     text-align: left;
-    box-shadow: 0 0 0 rgba(0,0,0,0.01), 0 2px 5px rgba(0,0,0,0.22);
+    box-shadow: 0 0 0 rgba(0,0,0,0.01), 0 2px 5px rgba(0,0,0,1.22);
     transition: transform 0.5s cubic-bezier(.32,.5,.82,.86);
     will-change:transform;
     transform: translateX(0) rotate(0);
+    transform-origin: top;
     -webkit-animation: fade-in 1s cubic-bezier(0.390, 0.575, 0.565, 1.000) both;
     animation: fade-in 1s cubic-bezier(0.390, 0.575, 0.565, 1.000) both;
 }
@@ -285,6 +259,7 @@ h2 {
 .card-remove {
   transition: transform 0.5s cubic-bezier(.32,.5,.82,.86);
   will-change: transform;
+  transform-origin: top;
   transform: translateY(200%) scale(0.3)!important;
   z-index:10000!important;
 }
@@ -560,7 +535,7 @@ input:focus ~ .highlight {
   height:auto;
   border-radius:0.4rem;
   background-color: teal;
-  box-shadow: 0 6px 10px 0 #666;
+  box-shadow: 0 6px 10px;
   border: none;
   outline: none;
   transition: all 0.1s ease-in-out;
