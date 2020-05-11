@@ -47,6 +47,17 @@ export function toastClear() {
 
 
 
+/*************************************************************************
+*
+* Modal Animation Management
+*
+**************************************************************************/
+
+export function bounceModal() {
+    console.log(Render.$('modal'))
+    Render.$('modal').classList.add('bounce-in')
+}
+
 
 
 

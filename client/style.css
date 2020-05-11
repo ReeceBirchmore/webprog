@@ -6,7 +6,7 @@ body, html {
     height:100vh;
     margin:0;
     padding:0;
-    overflow:scroll;
+    overflow:hidden;
 }
 
 /* Put into screens folder when made */
@@ -21,12 +21,13 @@ body, html {
     flex-direction: column;
     overflow: hidden;
     z-index: 1;
-    
     background-color: rebeccapurple;
 }
 
 
-
+.hr.divider {
+    border-top: 3px solid #bbb;
+}
 
 
 
@@ -39,9 +40,9 @@ body, html {
 
 .nav {
   background-color: teal;
-  width: 85vw;
+  width: 90vw;
   position: absolute;
-  top: 1rem;
+  top: 0.5rem;
   height: auto;
   overflow: hidden;
   margin-top: 1rem;
@@ -51,7 +52,7 @@ body, html {
   flex-direction: column;
   align-items: center;
   box-shadow: 0 0 0 rgba(0,0,0,0.01), 0 2px 5px rgba(0,0,0,0.22);
-  z-index: 10000000000;
+  z-index: 100;
 }
 
 .profile {
@@ -70,6 +71,7 @@ body, html {
 
 p {
     font-family: 'Roboto', serif;
+    color: black;
 }
 
 h2 {
@@ -95,7 +97,7 @@ h2 {
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
-  margin: 3px;
+  margin: 0.1rem;
   margin-left: auto;
   margin-right: auto;
 }
@@ -103,8 +105,8 @@ h2 {
 
 .qNum {
   font-weight: bold;
-  padding-left:0px!important;
-  margin-left:0!important;
+  padding:0px!important;
+  margin:0!important;
 }
 
 .previewText {
@@ -127,9 +129,10 @@ h2 {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    color: white;
-    width: auto;
-    min-width: 65%;
+    color: white!important;
+    width: 70vw;
+    margin-left:auto;
+    margin-right:auto;
     height: 5vh;
     line-height: 22px;
     opacity: 1;
@@ -141,10 +144,11 @@ h2 {
     border-radius: 0.2rem;
     align-items:center;
     text-align:center;
-    z-index: 999999;
+    z-index: 999999999999999!important;
 }
 
 .toastAction {
+  padding-left:0.5rem;
   color: #ffeb3b;
   text-transform: uppercase;
 }
@@ -261,7 +265,7 @@ h2 {
   will-change: transform;
   transform-origin: top;
   transform: translateY(200%) scale(0.3)!important;
-  z-index:10000!important;
+  z-index:10!important;
 }
 
 
@@ -269,6 +273,21 @@ h2 {
   z-index:-1000;
 }
 
+
+.card-quizlist {
+  background-color: white;
+  width: 70vw;
+  height: auto;
+  margin-top: 1rem;
+  border-radius: 0.4rem;
+  display: flex;
+  flex-direction: row;
+  align-items: left;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  box-shadow: 0 0 0 rgba(0,0,0,0.01), 0 2px 5px rgba(0,0,0,1.22);
+}
 
 
 
@@ -327,7 +346,16 @@ h2 {
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(0, 0, 0, 0.25);
+    -webkit-animation: bounce-in-bottom 0.2s both;
+    animation: bounce-in-bottom 0.2s both;
+    z-index:10000!important;
+}
+
+.modal-bg {
+  height:100vh;
+  width:100vw;
+  background-color: rgba(0, 0, 0, 0.75);
+  z-index:1000!important;
 }
 
 .modal-content {
@@ -335,13 +363,93 @@ h2 {
     position: absolute;
     top: 20vh;
     left:5vw;
-    width: 90%;
+    width: 90vw;
+    padding: 1rem;
+    box-sizing: border-box;
     height: 20%;
     background-color: white;
 }
 
-.mdl-card__actions { background-color: rgba(222, 222, 222, 0.25); }
+@-webkit-keyframes bounce-in-bottom {
+  0% {
+    -webkit-transform: translateY(50px);
+            transform: translateY(50px);
+    -webkit-animation-timing-function: ease-in;
+            animation-timing-function: ease-in;
+    opacity: 0;
+  }
 
+  100% {
+    -webkit-transform: translateY(0);
+            transform: translateY(0);
+    -webkit-animation-timing-function: ease-out;
+            animation-timing-function: ease-out;
+  }
+}
+@keyframes bounce-in-bottom {
+  0% {
+    -webkit-transform: translateY(50px);
+            transform: translateY(50px);
+    -webkit-animation-timing-function: ease-in;
+            animation-timing-function: ease-in;
+    opacity: 0;
+  }
+
+  100% {
+    -webkit-transform: translateY(0);
+            transform: translateY(0);
+    -webkit-animation-timing-function: ease-out;
+            animation-timing-function: ease-out;
+  }
+}
+
+
+
+.modal-destroy {
+  -webkit-animation: bounce-out-bottom 0.2s both;
+    animation: bounce-out-bottom 0.2s both;
+}
+
+
+.modal-bg-destroy {
+  -webkit-animation: fade-out 0.2s ease-out both;
+  animation: fade-out 0.2s ease-out both;
+}
+
+@-webkit-keyframes bounce-out-bottom {
+  0% {
+    -webkit-transform: translateY(0);
+            transform: translateY(0);
+    -webkit-animation-timing-function: ease-out;
+            animation-timing-function: ease-out;
+    opacity: 0;
+  }
+
+  100% {
+    -webkit-transform: translateY(50px);
+            transform: translateY(50px);
+    -webkit-animation-timing-function: ease-out;
+            animation-timing-function: ease-out;
+    opacity: 1;
+  }
+}
+@keyframes bounce-out-bottom {
+  0% {
+    -webkit-transform: translateY(0);
+            transform: translateY(0);
+    -webkit-animation-timing-function: ease-out;
+            animation-timing-function: ease-out;
+    opacity: 1;
+  }
+
+  100% {
+    -webkit-transform: translateY(50px);
+            transform: translateY(50px);
+    -webkit-animation-timing-function: ease-out;
+            animation-timing-function: ease-out;
+    opacity: 0;
+  }
+}
 
 
 
@@ -484,7 +592,6 @@ input:focus ~ .highlight {
 **************************************************************************/
 
 .footer {
-    z-index: 10000;
     width:100vw;
     height:10%;
     position: absolute;
@@ -546,6 +653,7 @@ input:focus ~ .highlight {
   margin: 8px;
   margin-left: auto;
   margin-right: auto;
+  z-index:10000000;
 }
 
 .right {
@@ -564,7 +672,7 @@ input:focus ~ .highlight {
 .next:before {
   display: block;
   content: "\203a";
-  color: white;
+  color: black;
 }
 
 .prev {
@@ -590,7 +698,27 @@ input:focus ~ .highlight {
   background-color: gray;
 }
 
+.fab {
+  border-radius: 50%;
+  position: absolute;
+  background-color: white;
+  bottom: 3rem!important;
+  right: 1.3rem;
+  width:auto;
+  margin: 1rem;
+  padding: 1rem;
+  height:auto;  
+  font-size:1rem;
+  font-weight: bold!important;
+}
 
+.fab::before {
+  display: block;
+  content: "\0002B";
+  color: black;
+  
+
+}
 
 @-webkit-keyframes fade-in {
   0% {

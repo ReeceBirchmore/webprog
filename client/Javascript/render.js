@@ -111,6 +111,7 @@ function removeRender(el) {
 
 
 function createToast(message, action, actionText) {
+    console.log("SDHFSDH")
     let toast = new Toast({id:'toast', text: message, action: action, actionText: actionText})
     render(toast, $('root'));
 }

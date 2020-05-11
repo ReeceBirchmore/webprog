@@ -2,6 +2,7 @@
 
 
 const express = require('express');
+const path = require('path');
 const app = express();
 const q = require('./questionnaire');
 
@@ -10,16 +11,31 @@ const router = express.Router();
 
 const port = 8080;
 
-app.use(express.static('client', { extensions: ['html'] }));
+// app.use(express.static('client', { extensions: ['html'] }));
 
 
 
 
+app.use('/api', router);
+app.use(express.static(__dirname + '/client'))
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '/client/index.html'))
+})
 
 
+
+async function getAllQuizzes(req, res) {
+  const result = await q.listAllQuizzes();
+  if(!result) {
+    res.status(404).send('No Quizzes Found');
+    return;
+  }
+  res.json(result);
+}
 
   
 async function getQuizzes(req, res) {
+  console.log(req.params.id, "REQ PARAMS ID")
     const result = await q.getQuizDetails(req.params.id);
     if (!result) {
       res.status(404).send('No match for that ID.');
@@ -76,15 +92,12 @@ function asyncWrap(f) {
 
 
   app.get('*/quizid/:id', asyncWrap(getQuizzes));
-  app.get('*/api/questions/:id', asyncWrap(getQuestions));
-  //app.get('*/api/option/:id', asyncWrap(getOptions));
-  app.get('*/api/quizzes/:id', asyncWrap(getQuizzes));
-  app.get('*/api/answers/:id', asyncWrap(getAnswers));
+  router.get('/questions/:id', asyncWrap(getQuestions));
+  router.get('/quizzes/:id', asyncWrap(getQuizzes));
+  router.get('/answers/:id', asyncWrap(getAnswers));
+  router.get('/quizlist', asyncWrap(getAllQuizzes));
 
-
-  app.post('*/api/submit/:id', express.json(), asyncWrap(submitQuiz));
-
-
+  router.post('/submit/:id', express.json(), asyncWrap(submitQuiz));
 
 
 
@@ -95,28 +108,6 @@ function asyncWrap(f) {
 
 
 
-// app.use('*/api', router);
-app.use('*', express.static("client"));
-// router.get('/yeet', asyncWrap(getMessages));
-// router.get('/quiz', function() { console.log("test");})
-
-
-
-
-
-
-//var msg = require('./homepage.js');
-
-/*
-
-const router = express.Router();
-app.use(express.static('client'));
-
-/*app.use('/api', router);
-app.use('*', express.static('client'));
-
-router.get('yeet', (req, res) => console.log("ERERERE"));
-*/
 
 
 app.listen(port);

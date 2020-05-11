@@ -2,6 +2,7 @@
 
 
 import Modal from '../../Components/Modal/modal.js';
+import Navlinks from '/Components/Navlinks/navlinks.js';
 
 import * as Render from '../../Javascript/render.js';
 import { j } from '../../Containers/Quiz/index.js';
@@ -32,14 +33,14 @@ export default class Nav {
     this.createFrame(props);
     this.displayTitle(props);
     this.displayQuestions(props);
-    //this.eventHandler(props);
+    this.eventHandler(props);
     Render.render(this.el, Render.$('root'));
     return this.el;
   }
    
     createFrame(props) {
         this.el = document.createElement("div");
-          this.el.id = props.id + "Nav";
+          this.el.id = props.id;
           this.el.classList.add("nav");
     }
 
@@ -59,8 +60,9 @@ export default class Nav {
 
 
     displayQuestions(props) {
-      let qLength = Render.renderText(this.el, props.questions + " questions");
-
+      if(props.questions) {
+        Render.renderText(this.el, props.questions + " questions");
+      }
     }
 
 

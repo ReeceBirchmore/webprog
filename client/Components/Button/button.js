@@ -136,7 +136,6 @@ export default class Button {
           Render.renderText(text, "Submit");
             text.classList.add("div")
             this.el.appendChild(text);
-          
           this.el.classList.add("button");
           this.el.classList.add("right");
         }

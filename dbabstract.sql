@@ -24,7 +24,7 @@ INSERT INTO Quizzes (title) VALUES ("Pompey Reality Test");
 INSERT INTO Questions (question, quizid) VALUES ("Are you gay", 1)
 
 
-CREATE TABLE IF NOT EXISTS Answers (
+CREATE TABLE IF NOT EXISTS answers (
     id SERIAL PRIMARY KEY,
     answers  text,
     quizid INTEGER REFERENCES quizzes(id)

@@ -100,7 +100,6 @@ export default class Input {
 
     //attach keyup event listener
     keyUpEventListener(el, props) {
-      console.log(props)
       el.onkeyup = function() {
         selection = el.value;
         }
@@ -108,6 +107,7 @@ export default class Input {
         inputIndex = answers.response.findIndex((question => question.id == el.id))
         if(inputIndex >= 0) {
           answers.response[inputIndex].value = el.value;
+          console.log(answers.response[inputIndex].value)
         } else {
           question = new Object ({
             id: el.id,
@@ -115,11 +115,8 @@ export default class Input {
             value: el.value
           });
           answers.response.push(question);
-          console.log(answers);
         }
       }
     }
-
-
 }
 

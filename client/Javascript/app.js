@@ -41,7 +41,7 @@ router.get('/quiz/:id/:type', function(req, params) {
 });
 
 router.get('admin', function(req, params) {
-    Admin.generatePage();
+    Admin.generatePage(params);
 });
 
 

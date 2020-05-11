@@ -30,15 +30,17 @@ export default class Card {
 
     showAnswers(props) {
       Render.renderText(this.el, "Your answers:", "h2");
-      for(let i = 0; i < props.answers.answers.length; i++) {
+      console.log(props.answers.answers.response)
+      for(let i = 0; i < props.answers.answers.response.length; i++) {
         let container = document.createElement('div');
           container.classList.add('previewContainer');
-        let qNum = Render.renderText(container, props.answers.answers[i].title + ":");
+        let qNum = Render.renderText(container,  (i + 1) + ". " + props.answers.answers.response[i].title);
           qNum.classList.add('qNum');
-        let preview = Render.renderText(container, props.answers.answers[i].value);
+        let preview = Render.renderText(container, props.answers.answers.response[i].value);
           preview.classList.add('previewText');
-        //console.log(container)
-
+        let divider = document.createElement("hr");
+          divider.classList.add('divider')
+        this.el.appendChild(divider);
         this.el.appendChild(container)
 
       }

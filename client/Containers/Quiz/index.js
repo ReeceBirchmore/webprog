@@ -7,10 +7,10 @@ import Button from '/Components/Button/button.js';
 import Input from '/Components/Input/input.js';
 import Toast from '/Components/Toast/toast.js';
 import Progress from '/Components/Progress/progress.js';
-import QuestionNumber from '/Components/QuestionNumber/questionnumber.js'
+import QuestionNumber from '/Components/QuestionNumber/questionnumber.js';
 import Modal from '/Components/Modal/modal.js';
 import Footer from '/Components/Footer/footer.js';
-import Nav from '/Components/Nav/nav.js'
+import Nav from '/Components/Nav/nav.js';
 import { answers } from '/Components/Input/input.js';
 
 
@@ -62,6 +62,8 @@ let toLin;
 export function generateQuiz(params) {
     quizID = params[0];
     let mode = params[1];  
+    
+    //Render.createToast("Welcome to the admin page", FX.toastClear, "Close")
     generateQuestionObjects(params);
 }
 
@@ -88,6 +90,8 @@ export function generateQuiz(params) {
 //let toast = new Toast({id:'toast', text:"Quiz Submitted Succesfully", action: FX.toastClear , actionText: "Close"})
 //Render.render(toast, Render.$('root'));
 
+
+
 //let quizCard = new QuizCard({id: 1, quizTitle: "Test Title", questions: "7", expire: "Test Date", author: "Test Author"});
 //let progress = new Progress({id: "progressBar"})
 //let qNum = new QuestionNumber({id: '1'});
@@ -104,11 +108,9 @@ export function generateQuiz(params) {
 
 /*************************************************************************
 *
-* Generate the all cards for the screen (REDUNDANT)
+* Generate the splash screen
 *
 **************************************************************************/
-
-
 
 
 
@@ -132,14 +134,15 @@ function generateQuestionObjects(params) {
     if(params[1] === 'flow') {
         prev = new Button({id: "prevbtn", name:"Previous Question", action: "Quiz.down", param: -1, render: "Footer", type: "previous"});
         next = new Button({id: "nextbtn", name:"Next Question", action: "Quiz.up", param: +1, render: "Footer", type: "next"}); 
-        //toLin = new Button({id: "toLin", name:"Switch to Linear", action: "toLinear", param: +1, }); 
+        //toLin = new Button({id: "toLin", name:"Switch to Linear", action: "toLinear", param: +1, render: "Footer"}); 
     }
     generateQuestionnaire(params);
     new Progress({id: "progressBar"})
 }
 
 async function generateQuestionnaire(params) {
-    const questionnaire = await fetch('../../api/quizzes/' + params[0])
+    const questionnaire = await fetch('/api/quizzes/' + params[0])
+    console.log(questionnaire)
         let qData;
         if (questionnaire.ok) {
             qData = await questionnaire.json();
@@ -147,7 +150,8 @@ async function generateQuestionnaire(params) {
             qData = [{ msg: 'Failed to load cards' }];
             return;
         }
-    const response = await fetch('../../api/questions/' + params[0]);
+    const response = await fetch('/api/questions/' + params[0]);
+    console.log(response)
         let questions;
         if (response.ok) {
             questions = await response.json();
@@ -230,8 +234,6 @@ function stackManager(val) {
                 submissioncard.classList.add('card-submit');
             Render.$('root').appendChild(submissioncard);
         }
-        
-  
     }
 //End of horrible section
     if(!val) {
@@ -266,6 +268,8 @@ function stackManager(val) {
 function sortDeck() {
     for(let i = 0; i < newArr.length; i++) {
         if(newArr[i]) {
+            document.querySelectorAll('[data-foo]');
+            newArr[i].tabIndex = i
             newArr[i].style.zIndex = -i;
             newArr[i].classList.add("card-add");
             newArr[i].style.transform = "translateY(" + (i * - 2.5) + "%) scale(" + (1 - (0.1*i)) +")";          
@@ -370,10 +374,9 @@ export function decrease() {
 
 
 
-const data = { username: 'example' };
 
 export async function submitQuiz() {
-    await fetch('../../api/submit/' + quizID, {
+    await fetch('/api/submit/' + quizID, {
     method: 'POST', // or 'PUT'
     body: JSON.stringify(answers),
     headers: {
@@ -382,19 +385,16 @@ export async function submitQuiz() {
     });
 
 
-
     let test;
 
-    const quizAnswersTest = await fetch('../../api/answers/' + quizID)
+    const quizAnswersTest = await fetch('/api/answers/' + quizID)
         if (quizAnswersTest.ok) {
             test = await quizAnswersTest.json();
-            console.log(test[15].response);
+            console.log(test[14].response); //Test[0] is because an array is returned, response[0] is response number 0 out of the list of responses given
         } else {
             test = [{ msg: 'Failed to load cards' }];
             return;
         }
-
-
 }
 
 

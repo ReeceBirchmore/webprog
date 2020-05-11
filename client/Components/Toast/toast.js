@@ -15,9 +15,7 @@ function dismiss() {
 export default class Toast {
   constructor(props) {
     this.createToast(props);
-    if(props.text) {
-      Render.renderText(this.el, props.text);
-    }
+    if(props.text) Render.renderText(this.el, props.text);
     this.actionButton(props);
     Render.render(this.el, Render.$('root'));
     this.animate();

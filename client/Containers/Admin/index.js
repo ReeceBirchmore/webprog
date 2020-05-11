@@ -2,15 +2,19 @@
 
 
 import Card from '/Components/Card/card.js';
-import QuizCard from '/Components/QuizCard/quizcard.js';
+import SubmissionCard from '/Components/SubmissionCard/submissioncard.js';
 import Button from '/Components/Button/button.js';
 import Input from '/Components/Input/input.js';
 import Toast from '/Components/Toast/toast.js';
 import Progress from '/Components/Progress/progress.js';
-import QuestionNumber from '/Components/QuestionNumber/questionnumber.js'
+import QuestionNumber from '/Components/QuestionNumber/questionnumber.js';
 import Modal from '/Components/Modal/modal.js';
 import Footer from '/Components/Footer/footer.js';
-import Toggle from '/Components/Toggle/toggle.js';
+import Nav from '/Components/Nav/nav.js';
+import Fab from '../../Components/Fab/fab.js';
+import QuizCard from '../../Components/QuizCard/quizcard.js';
+import { answers } from '/Components/Input/input.js';
+
 
 
 import * as Quiz from '/Javascript/quiz.js';
@@ -42,8 +46,11 @@ let footer = new Footer({id:'Footer'});
  * 
  *************************/
 
-export function generatePage() {
-    Render.createToast("Welcome to the admin page", FX.toastClear, "Close")
+export function generatePage(params) {
+    Render.createToast("Welcome to the admin page", FX.toastClear, "Close");
+    let nav = new Nav({id:'nav', title: "Administrator Console", links:['View Responses', 'Link 2', 'Link 3']});
+    let fab = new Fab({id: "fab", name:"Next Question", action: "Quiz.up", param: +1, type: "next"})
+    displayQuizzes(params);
 }
 
 
@@ -52,26 +59,29 @@ export function generatePage() {
 
 
 // #endregion
-// ////////////////////////////////////////////////////////////// GENERATE CARDS AND INPUTS
-// #region Generate Quiz List
+// ////////////////////////////////////////////////////////////// DISPLAY THE QUIZZES AVAILABLE ON THE DATABASE
+// #region Display Available Quizzes
+
+
+let quizListObject;
+
+export async function displayQuizzes(params) {
+    console.log(params);
+    const questionnaire = await fetch('/api/quizlist/')
+        if (questionnaire.ok) {
+            quizListObject = await questionnaire.json();
+        } else {
+            quizListObject = [{ msg: 'Failed to load cards' }];
+            return;
+        }
+        console.log(quizListObject);
+        quizListObject.forEach(quiz => {
+            let quizCard = new QuizCard({id: quiz.id, quizTitle: quiz.title, });
+        });
+}
 
 
 
-
-
-// #endregion
-// ////////////////////////////////////////////////////////////// FLOW COUNTER
-// #region Flow Increase and Decrease
-
-
-
-
-
-
-
-// #endregion
-// ////////////////////////////////////////////////////////////// DISPLAY LINEAR
-// #region Display All Elements Linear
 
 
 
