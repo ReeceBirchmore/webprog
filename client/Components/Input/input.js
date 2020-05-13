@@ -7,7 +7,7 @@ function setState(props) {
   //set text here if exists within the local storage
 }
 
-
+export let textHolder;
 export let answers = {response: [] };
 export let question = new Object;
 let selection;
@@ -16,18 +16,6 @@ let inputIndex;
 export default class Input {
   constructor(props) {
     this.test(props);
-    
-    //this.createInput(props);
-    //this.setType(props);
-    
-
-    /*
-    this.createContainer();
-    this.createInput(props);
-    this.setType(props);
-    //this.generateStyles();
-    this.createLabel(props);
-    */
     return this.group;
   }
 
@@ -38,6 +26,7 @@ export default class Input {
       this.group.classList.add('group');
     let input = document.createElement('input');
       input.type = props.type;
+      input.placeholder = props.placeholder;
       input.id = props.id
     let highlight = document.createElement('span');
       highlight.classList.add('highlight')
@@ -102,12 +91,13 @@ export default class Input {
     keyUpEventListener(el, props) {
       el.onkeyup = function() {
         selection = el.value;
+        console.log(selection)
         }
       el.onblur = function() {
+        textHolder = el.value;
         inputIndex = answers.response.findIndex((question => question.id == el.id))
         if(inputIndex >= 0) {
           answers.response[inputIndex].value = el.value;
-          console.log(answers.response[inputIndex].value)
         } else {
           question = new Object ({
             id: el.id,

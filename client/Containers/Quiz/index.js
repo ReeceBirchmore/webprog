@@ -46,7 +46,7 @@ let next;
 let prev;
 let toLin;
 
-
+let params;
 
 
 // #endregion
@@ -59,7 +59,8 @@ let toLin;
  * 
  *************************/
 
-export function generateQuiz(params) {
+export function generateQuiz(param) {
+    params = param;
     quizID = params[0];
     let mode = params[1];  
     
@@ -115,7 +116,7 @@ export function generateQuiz(params) {
 
 
 
-
+let qData;
 
 
 
@@ -141,15 +142,16 @@ function generateQuestionObjects(params) {
 }
 
 async function generateQuestionnaire(params) {
-    const questionnaire = await fetch('/api/quizzes/' + params[0])
-    console.log(questionnaire)
-        let qData;
+    const questionnaire = await fetch('/api/quizzes/' + params[0])       
         if (questionnaire.ok) {
             qData = await questionnaire.json();
+            console.log(qData)
         } else {
             qData = [{ msg: 'Failed to load cards' }];
             return;
         }
+        
+        qData[0].id;
     const response = await fetch('/api/questions/' + params[0]);
     console.log(response)
         let questions;
@@ -268,12 +270,10 @@ function stackManager(val) {
 function sortDeck() {
     for(let i = 0; i < newArr.length; i++) {
         if(newArr[i]) {
-            document.querySelectorAll('[data-foo]');
-            newArr[i].tabIndex = i
             newArr[i].style.zIndex = -i;
             newArr[i].classList.add("card-add");
             newArr[i].style.transform = "translateY(" + (i * - 2.5) + "%) scale(" + (1 - (0.1*i)) +")";          
-            newArr[i].style.transitionDelay = 0.1 * i + "s";
+            newArr[i].style.transitionDelay = 0.3 * i + "s";
         }
     }
     nextCard();  
@@ -376,21 +376,18 @@ export function decrease() {
 
 
 export async function submitQuiz() {
-    await fetch('/api/submit/' + quizID, {
-    method: 'POST', // or 'PUT'
-    body: JSON.stringify(answers),
-    headers: {
-        'Content-Type': 'application/json',
-    },
+    await fetch('/api/submit/' + params[0], {
+        method: 'POST', // or 'PUT'
+        body: JSON.stringify(answers),
+        headers: {
+            'Content-Type': 'application/json',
+        },
     });
-
-
     let test;
-
-    const quizAnswersTest = await fetch('/api/answers/' + quizID)
+    const quizAnswersTest = await fetch('/api/answers/' + qData[0].id)
         if (quizAnswersTest.ok) {
             test = await quizAnswersTest.json();
-            console.log(test[14].response); //Test[0] is because an array is returned, response[0] is response number 0 out of the list of responses given
+            console.log(test); //Test[0] is because an array is returned, response[0] is response number 0 out of the list of responses given
         } else {
             test = [{ msg: 'Failed to load cards' }];
             return;
@@ -453,7 +450,5 @@ function linear() {
 */
 
     
-
-
 
 

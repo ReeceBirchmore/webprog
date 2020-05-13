@@ -9,12 +9,14 @@ import Toast from '/Components/Toast/toast.js';
 import Progress from '/Components/Progress/progress.js';
 import QuestionNumber from '/Components/QuestionNumber/questionnumber.js';
 import Modal from '/Components/Modal/modal.js';
+import ModalContent from '/Components/Modal/modal-content.js';
 import Footer from '/Components/Footer/footer.js';
 import Nav from '/Components/Nav/nav.js';
 import Fab from '../../Components/Fab/fab.js';
 import QuizCard from '../../Components/QuizCard/quizcard.js';
-import { answers } from '/Components/Input/input.js';
 
+import { answers } from '/Components/Input/input.js';
+import { filebutton, quiztitle } from '/Components/Modal/modal-content.js';
 
 
 import * as Quiz from '/Javascript/quiz.js';
@@ -46,11 +48,17 @@ let footer = new Footer({id:'Footer'});
  * 
  *************************/
 
-export function generatePage(params) {
-    Render.createToast("Welcome to the admin page", FX.toastClear, "Close");
-    let nav = new Nav({id:'nav', title: "Administrator Console", links:['View Responses', 'Link 2', 'Link 3']});
-    let fab = new Fab({id: "fab", name:"Next Question", action: "Quiz.up", param: +1, type: "next"})
+ let params;
+
+export function generatePage(param) {
+    console.log(param)
+    params = param;
+    Render.createToast("Quiz Submitted", FX.toastClear, "Undo");
+    //let nav = new Nav({id:'nav', title: "Administrator Console", links:['View Responses', 'Link 2', 'Link 3']});
+    //let fab = new Fab({id: "fab", name:"Next Question", action: "Quiz.up", param: +1, type: "next"})
+    
     displayQuizzes(params);
+    allowUpload();
 }
 
 
@@ -63,26 +71,85 @@ export function generatePage(params) {
 // #region Display Available Quizzes
 
 
+
 let quizListObject;
 
 export async function displayQuizzes(params) {
-    console.log(params);
-    const questionnaire = await fetch('/api/quizlist/')
-        if (questionnaire.ok) {
-            quizListObject = await questionnaire.json();
+    const quizlist = await fetch('/api/quizlist/');
+        if (quizlist.ok) {
+            quizListObject = await quizlist.json();
         } else {
             quizListObject = [{ msg: 'Failed to load cards' }];
             return;
         }
-        console.log(quizListObject);
         quizListObject.forEach(quiz => {
             let quizCard = new QuizCard({id: quiz.id, quizTitle: quiz.title, });
         });
+    let createQuizButton = new QuizCard({id: 'card-create', option: 'create-quiz'});
+
 }
 
 
 
 
+export function createNewQuiz(title) {
+  console.log(title)
+}
+
+
+import {textHolder} from '/Components/Input/input.js';
+
+
+
+
+export async function uploadJSON() {
+    console.log("Uploading")
+    console.log({filebutton}.filebutton.files[0].text())
+    const jsonfile = await {filebutton}.filebutton.files[0].text();
+    upload(jsonfile);
+}
+
+
+async function upload(jsonfile) {
+    await fetch('/api/upload', {
+        method: 'POST', // or 'PUT'
+        body: jsonfile,
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+    console.log(jsonfile)
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function makeid(length) {
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+}
+    
+    
+
+export async function uploadQuiz() {
+    console.log(makeid(5));
+}    
 
 
     

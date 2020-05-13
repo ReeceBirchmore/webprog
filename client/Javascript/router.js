@@ -51,7 +51,6 @@ export default class Router {
         init() {
             this.routes.some(route => {
                 let regEx = new RegExp(route.uri.replace(/:[^\s/]+/g, '([\\w-]+)'));
-                console.log(regEx)
                 //let regEx = new RegExp(route.uri.replace(`^${route.uri}$`));
                 let path = window.location.pathname;
                 if(path.match(regEx)) {

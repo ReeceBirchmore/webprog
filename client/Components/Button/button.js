@@ -2,59 +2,19 @@
 
 import * as Render from '../../Javascript/render.js';
 import * as Quiz from '../../Containers/Quiz/index.js';
+import * as Admin from '../../Containers/Admin/index.js';
 import * as FX from '../../Javascript/fx.js';
 import * as Card from '../../Containers/Quiz/index.js';
 
-
-const directionControlStyles = {
-  'background-color': 'white',
-  'width': '40vw',
-  'height': '3rem',
-  'margin-top':'1rem'
-};
-
-const next = {
-  'width':'100%!important'
-}
-
-const previous = {
-
-}
-
-const submit = {
-
-}
-
-const closeStyles = {
- //code
-}
-
-const submitStyles = {
- //code
-}
-
-const confirmStyles = {
-  //code
-}
 
 
 function addHandler(el, props) {
     el.addEventListener("click", function() {
       if(props.action === 'Quiz.up') {
         Quiz.increase(0);
-        
-        // FX.moveCard();
-        // setTimeout(function() {
-        //   Quiz.up(); 
-        //  }, 100);
-
       }
 
       if(props.action === 'Quiz.down') {
-        //   Quiz.down(); 
-        // setTimeout(function() {
-        //   FX.returnCard();
-        //  }, 100);
         Quiz.decrease(0);
       }
 
@@ -89,9 +49,21 @@ function addHandler(el, props) {
         Quiz.submitQuiz();
       }
 
+
+      if(props.action === 'upload') {
+        Admin.uploadJSON();
+      }
+
+      if(props.action === 'createQuiz') {
+        console.log(props.param)
+        Admin.createNewQuiz(props.param);
+      }
+
     })
 
 }
+
+export let input1;
 
 
 export default class Button {
@@ -101,6 +73,7 @@ export default class Button {
     addHandler(this.el, props)
     this.renderPoint(props);
     //Render.renderText(this.el, props.name);
+    
   }
   
     createBtn(props) {
@@ -140,7 +113,13 @@ export default class Button {
           this.el.classList.add("right");
         }
 
-
+        if(props.type === 'create') {
+          let text = document.createElement("div");
+          Render.renderText(text, "Create Quiz");
+            text.classList.add("div")
+            this.el.appendChild(text);
+          this.el.classList.add("upload");
+        }
     }
 
 

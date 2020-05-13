@@ -17,10 +17,26 @@ const port = 8080;
 
 
 app.use('/api', router);
+
+
 app.use(express.static(__dirname + '/client'))
+
+// app.use('/assets', express.static(__dirname + '/client/Assets/avatar.png'));
+
+
+// app.get('/assets/*', (req, res) => {
+//   console.log(req.params[0], "PARAM REQUEST")
+//   console.log(__dirname, "ASSETS ");
+//   res.sendFile(path.join(__dirname, '/client/assets/' + req.params[0]));
+// })
+
 app.get('*', (req, res) => {
+  console.log(req.params, "REQUEST");
+  console.log(__dirname)
   res.sendFile(path.join(__dirname, '/client/index.html'))
 })
+
+
 
 
 
@@ -35,7 +51,6 @@ async function getAllQuizzes(req, res) {
 
   
 async function getQuizzes(req, res) {
-  console.log(req.params.id, "REQ PARAMS ID")
     const result = await q.getQuizDetails(req.params.id);
     if (!result) {
       res.status(404).send('No match for that ID.');
@@ -69,6 +84,16 @@ async function submitQuiz(req, res) {
 }
 
 
+async function uploadQuiz(req, res) {
+  console.log('uploading quiz', req);
+  console.log(req.body);
+  const result = await q.quizUpload(req.body);
+  if (!result) {
+    res.status(404).send('No match for that ID.');
+    return;
+  }
+  res.json(result);
+}
 
 async function getAnswers(req, res) {
   const result = await q.getAnswerData(req.params.id);
@@ -98,7 +123,7 @@ function asyncWrap(f) {
   router.get('/quizlist', asyncWrap(getAllQuizzes));
 
   router.post('/submit/:id', express.json(), asyncWrap(submitQuiz));
-
+  router.post('/upload', express.json(), asyncWrap(uploadQuiz));
 
 
 

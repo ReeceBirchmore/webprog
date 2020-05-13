@@ -21,7 +21,7 @@ body, html {
     flex-direction: column;
     overflow: hidden;
     z-index: 1;
-    background-color: rebeccapurple;
+    background-color: #CCE0DE;
 }
 
 
@@ -39,15 +39,12 @@ body, html {
 
 
 .nav {
-  background-color: teal;
-  width: 90vw;
+  background-color: white;
+  width: 100vw;
   position: absolute;
-  top: 0.5rem;
+  top: 0rem;
   height: auto;
   overflow: hidden;
-  margin-top: 1rem;
-  border: thin solid grey;
-  border-radius: 0.3rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -77,7 +74,7 @@ p {
 h2 {
     font-family: 'Roboto', serif;
     font-size: 1.5rem;
-    font-weight: normal;
+    font-weight: bold;
 }
 
 
@@ -264,7 +261,7 @@ h2 {
   transition: transform 0.5s cubic-bezier(.32,.5,.82,.86);
   will-change: transform;
   transform-origin: top;
-  transform: translateY(200%) scale(0.3)!important;
+  transform: translateY(200%)!important;
   z-index:10!important;
 }
 
@@ -273,8 +270,7 @@ h2 {
   z-index:-1000;
 }
 
-
-.card-quizlist {
+.card-quiz-list {
   background-color: white;
   width: 70vw;
   height: auto;
@@ -282,11 +278,18 @@ h2 {
   border-radius: 0.4rem;
   display: flex;
   flex-direction: row;
-  align-items: left;
   align-items: center;
   justify-content: center;
   padding: 1rem;
   box-shadow: 0 0 0 rgba(0,0,0,0.01), 0 2px 5px rgba(0,0,0,1.22);
+}
+
+.card-quiz-add-icon {
+  display:flex;
+  padding:1rem;
+  background-image: url('./Assets/Images/add.png');
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 
@@ -314,7 +317,7 @@ h2 {
     display: block;
     height: 100%;
     width:0%;
-    background-color: rgb(43,194,83);
+    background-color: black;
     background-image: linear-gradient(
       center bottom,
       rgb(43,194,83) 37%,
@@ -337,28 +340,6 @@ h2 {
 **************************************************************************/
 
 .modal {
-    display: block;
-    position: fixed;
-    z-index: 1;
-    margin-left: auto;
-    margin-right: auto;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    -webkit-animation: bounce-in-bottom 0.2s both;
-    animation: bounce-in-bottom 0.2s both;
-    z-index:10000!important;
-}
-
-.modal-bg {
-  height:100vh;
-  width:100vw;
-  background-color: rgba(0, 0, 0, 0.75);
-  z-index:1000!important;
-}
-
-.modal-content {
     border-radius:5px;
     position: absolute;
     top: 20vh;
@@ -366,8 +347,30 @@ h2 {
     width: 90vw;
     padding: 1rem;
     box-sizing: border-box;
-    height: 20%;
+    height: auto;
     background-color: white;
+    -webkit-animation: bounce-in-bottom 0.2s both;
+    animation: bounce-in-bottom 0.2s both;
+    z-index:1000000000!important;
+}
+
+.modal-bg {
+  height:100%;
+  position: absolute;
+  top:0;
+  width:100%;
+  background-color: rgba(0, 0, 0, 0.75);
+  z-index:1000000!important;
+}
+
+.modal-content {
+    padding: 1rem;
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    box-sizing: border-box;
+
 }
 
 @-webkit-keyframes bounce-in-bottom {
@@ -463,7 +466,7 @@ h2 {
 /* form starting stylings ------------------------------- */
 .group 			  { 
   position:relative; 
-  margin-bottom:45px; 
+  margin-bottom:1rem; 
 }
 input 				{
   font-size:18px;
@@ -627,8 +630,29 @@ input:focus ~ .highlight {
 }
 
 
+/*************************************************************************
+*
+* Divider Default Style Management
+*
+**************************************************************************/
 
-
+.separator {
+  width:100%;
+  display: flex;
+  align-items: center;
+  text-align: center;
+}
+.separator::before, .separator::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #000;
+}
+.separator::before {
+  margin-right: .25em;
+}
+.separator::after {
+  margin-left: .25em;
+}
 
 
 /*************************************************************************
@@ -683,7 +707,7 @@ input:focus ~ .highlight {
 .prev:before {
   display: block;
   content: "\2039";
-  color: white;
+  color: black;
 }
 
 .div {
@@ -700,15 +724,18 @@ input:focus ~ .highlight {
 
 .fab {
   border-radius: 50%;
+  display:flex;
+  align-items: center;
+  justify-content: center;
   position: absolute;
   background-color: white;
   bottom: 3rem!important;
   right: 1.3rem;
-  width:auto;
+  width:1rem;
   margin: 1rem;
   padding: 1rem;
-  height:auto;  
-  font-size:1rem;
+  height:1rem;  
+  font-size:2rem;
   font-weight: bold!important;
 }
 
@@ -716,9 +743,43 @@ input:focus ~ .highlight {
   display: block;
   content: "\0002B";
   color: black;
-  
-
 }
+
+.upload::-webkit-file-upload-button {
+  visibility: hidden;
+}
+
+
+.upload {
+  width: 70vw;
+  height:auto;
+  border-radius:0.4rem;
+  background-color: teal;
+  box-shadow: 0 6px 10px;
+  border: none;
+  outline: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 8px;
+  margin-left: auto;
+  margin-right: auto;
+  z-index:10000000;
+}
+
+.upload::before {
+
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 10pt;
+  padding:1rem;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+
 
 @-webkit-keyframes fade-in {
   0% {

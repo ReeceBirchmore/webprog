@@ -35,7 +35,7 @@ async function listAllQuizzes() {
 
 
 async function getQuizDetails(id) {
-  const q = 'SELECT * FROM quizzes WHERE id = $1;';
+  const q = 'SELECT * FROM quizzes WHERE quizid = $1;';
   const result = await sql.query(q, [id]);
   return result.rows;
 }
@@ -46,7 +46,6 @@ async function getQuizDetails(id) {
 
 
 async function listQuestions(quizid) {
-  console.log("questions");
   const q = 'SELECT * FROM questions WHERE quizid = $1;';
   const result = await sql.query(q, [quizid]);
   return result.rows;
@@ -55,19 +54,41 @@ async function listQuestions(quizid) {
 
 
 async function quizSubmission(data, quizid) {
-  console.log(data, quizid, "DATA");
-  let test = JSON.stringify(data);
-  console.log(test, "STRINGIFIED");
+  let quizdata = JSON.stringify(data);
   const q = 'INSERT INTO answers (answers, quizid) VALUES( $1, $2) ';
-  const result = await sql.query(q, [test, quizid]);
-  console.log(result.rows, "Rows")
+  const result = await sql.query(q, [quizdata, quizid]);
   return result.rows;
 }
 
 
 
 
+async function quizUpload(data) {
+  console.log(data, "ALL DATA")
+  console.log(data.name);
 
+
+
+  //Need to insert all the data, we must break it down first to make legibility clearer!
+
+  let title = data.name;
+  let questionsArr = data.questions; //valid end datas, .id, .text, .type, .options(ARRAY)
+
+  
+  
+  let quizdata = JSON.stringify(data);
+
+
+
+
+
+
+
+  //const q = 'INSERT INTO questions (question, options,input) VALUES( $1, $2) ';
+  //const result = await sql.query(q, [quizdata, quizid]);
+  //return result.rows;
+  return;
+}
 
 
 
@@ -92,5 +113,6 @@ module.exports = {
   listQuestions,
   quizSubmission,
   getAnswerData,
-  listAllQuizzes
+  listAllQuizzes,
+  quizUpload,
 };
