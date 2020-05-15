@@ -110,9 +110,8 @@ function removeRender(el) {
 // #region Create Toast Function
 
 
-function createToast(message, action, actionText) {
-    console.log("SDHFSDH")
-    let toast = new Toast({id:'toast', text: message, action: action, actionText: actionText})
+function createToast(message, action, actionText, params) {
+    let toast = new Toast({id:'toast', text: message, action: action, actionText: actionText, param: params})
     render(toast, $('root'));
 }
 
@@ -137,8 +136,6 @@ function toggleExpand(element) {
 
 
 
-
-
 // #endregion
 // ////////////////////////////////////////////////////////////// EXPORTS
 // #region Exports
@@ -146,4 +143,4 @@ function toggleExpand(element) {
 
 
 
-export { render, $, useStyles, renderText, removeRender, createToast }
+export { render, $, useStyles, renderText, removeRender, createToast,  }

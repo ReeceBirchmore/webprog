@@ -12,16 +12,33 @@ const sql = new Postgres({
   port: 5432,
 });
 
-
-
-
-
 sql.connect();
 
 sql.on('error', (err) => {
   console.error('SQL Fail', err);
   sql.end();
 });
+
+
+
+
+
+function makeid(length) {
+  var result           = '';
+  var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  var charactersLength = characters.length;
+  for ( var i = 0; i < length; i++ ) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
+  
+
+
+
+
+
+
 
 
 
@@ -64,30 +81,35 @@ async function quizSubmission(data, quizid) {
 
 
 async function quizUpload(data) {
-  console.log(data, "ALL DATA")
-  console.log(data.name);
-
-
-
-  //Need to insert all the data, we must break it down first to make legibility clearer!
-
   let title = data.name;
   let questionsArr = data.questions; //valid end datas, .id, .text, .type, .options(ARRAY)
+  //Step 1, run the ID Generator
+  let uid = makeid(5);
+  //Step 2, create the quiz entry in the quizzes table
+  const quizq = 'INSERT INTO Quizzes (title, quizid) VALUES ($1, $2)';
+  const quizResult = await sql.query(quizq, [title, uid]);
+  //Step 3, insert the questions into the database
+  questionsArr.forEach(async question => {
+    const questionq = 'INSERT INTO questions (question, quizid, input, options) VALUES( $1, $2, $3, $4) ';
+    const questionResult = await sql.query(questionq, [question.text, uid, question.type, question.options]);
+  });
+  return uid;
+}
 
-  
-  
-  let quizdata = JSON.stringify(data);
 
+async function deleteAQuiz(uid) {
+  console.log(uid, "PRINT");
+  const quiz = 'DELETE from Quizzes Questions where quizid = $1;';
+  const result = await sql.query(quiz, [uid]);
+  return true;
+}
 
-
-
-
-
-
-  //const q = 'INSERT INTO questions (question, options,input) VALUES( $1, $2) ';
-  //const result = await sql.query(q, [quizdata, quizid]);
-  //return result.rows;
-  return;
+async function generateNewQuiz(data) {
+  let uid = makeid(5);
+  let title = JSON.parse(data);
+  const quizq = 'INSERT INTO Quizzes (title, quizid) VALUES ($1, $2)';
+  const quizResult = await sql.query(quizq, [title.value, uid]);
+  return uid;
 }
 
 
@@ -102,8 +124,6 @@ async function getAnswerData(quizid) {
     responses.push(JSON.parse(question.answers))
     console.log("QUESTIONS", JSON.parse(question.answers));
   })
-  console.log(responses);
-
   return responses;
 }
 
@@ -115,4 +135,6 @@ module.exports = {
   getAnswerData,
   listAllQuizzes,
   quizUpload,
+  deleteAQuiz,
+  generateNewQuiz
 };

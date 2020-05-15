@@ -19,20 +19,25 @@ import * as Card from '../../Containers/Quiz/index.js';
 
 let linger;
 let destroy;
+let bool = false;
 
 export function toastManagement() {
-
+    bool = false;
     setTimeout(function() {
     Render.$('toast').classList.add('appear');
     }, 100);
 
     linger = setTimeout(function() {
+        if(!bool) {
         Render.$('toast').classList.add('remove'); 
         Render.$('toast').classList.remove('appear');
+        }
     }, 3000);
 
     destroy = setTimeout(function() {
-        Render.$('root').removeChild(Render.$('toast'))
+        if(!bool) {
+        Render.$('root').removeChild(Render.$('toast'));
+        }
     }, 3500);
 }
 
@@ -41,7 +46,8 @@ export function toastClear() {
     Render.$('toast').classList.remove('appear');
 
     setTimeout(function() {
-        Render.$('root').removeChild(Render.$('toast'))
+        bool = true;
+        Render.$('root').removeChild(Render.$('toast'));
     }, 100);
 }
 

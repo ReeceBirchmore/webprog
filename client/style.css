@@ -19,10 +19,31 @@ body, html {
     display:flex;
     align-items: center;
     flex-direction: column;
-    overflow: hidden;
+    overflow-y: scroll;
     z-index: 1;
     background-color: #CCE0DE;
 }
+
+
+.adminScreen {
+  position: absolute;
+  width:100%;
+  height:100%;
+  margin:0;
+  padding:0;
+  display:flex;
+  align-items: center;
+  flex-direction: column;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  z-index: 1;
+  background-color: #CCE0DE;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
 
 
 .hr.divider {
@@ -39,17 +60,18 @@ body, html {
 
 
 .nav {
-  background-color: white;
+  background-color: black;
+  color: white;
+  height:10vh;
+  position: sticky;
+  top:0;
   width: 100vw;
-  position: absolute;
-  top: 0rem;
-  height: auto;
-  overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
   box-shadow: 0 0 0 rgba(0,0,0,0.01), 0 2px 5px rgba(0,0,0,0.22);
-  z-index: 100;
+  z-index: 10000!important;
+  box-shadow: 0 0 0 rgba(0,0,0,0.01), 0 2px 5px rgba(0,0,0,1.22);
 }
 
 .profile {
@@ -74,7 +96,6 @@ p {
 h2 {
     font-family: 'Roboto', serif;
     font-size: 1.5rem;
-    font-weight: bold;
 }
 
 
@@ -144,9 +165,14 @@ h2 {
     z-index: 999999999999999!important;
 }
 
+.toast p {
+  text-align: left;
+  color: white;
+}
+
 .toastAction {
   padding-left:0.5rem;
-  color: #ffeb3b;
+  color: #ffeb3b!important;
   text-transform: uppercase;
 }
 
@@ -270,19 +296,107 @@ h2 {
   z-index:-1000;
 }
 
-.card-quiz-list {
+
+
+
+.card-edit {
   background-color: white;
   width: 70vw;
-  height: auto;
+  min-height: 40%;
+  outline: none;
+  max-height: 40%;
+  overflow: hidden;
   margin-top: 1rem;
   border-radius: 0.4rem;
   display: flex;
+  flex-direction: column;
+  align-items: left;
+  padding: 1rem;
+  text-align: left;
+  box-shadow: 0 0 0 rgba(0,0,0,0.01), 0 2px 5px rgba(0,0,0,1.22);
+  transition: transform 0.5s cubic-bezier(.32,.5,.82,.86);
+  will-change:transform;
+  transform: translateX(0) rotate(0);
+  transform-origin: top;
+  -webkit-animation: fade-in 1s cubic-bezier(0.390, 0.575, 0.565, 1.000) both;
+  animation: fade-in 1s cubic-bezier(0.390, 0.575, 0.565, 1.000) both;
+}
+
+/* POTENTIALLY MERGE THIS WITH QUIZLIST BUTTON CONTAINER? */
+
+.card-edit-button-container {
+  display: flex;
+  justify-content: left;
   flex-direction: row;
+  width:auto;
+  justify-content: flex-end;
+}
+
+
+
+
+
+.card-quiz-list {
+  background-color: white;
+  width: 80vw;
+  height: auto;
+  margin-top: 1rem;
+  border-radius: 0.4rem;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   padding: 1rem;
   box-shadow: 0 0 0 rgba(0,0,0,0.01), 0 2px 5px rgba(0,0,0,1.22);
 }
+
+.card-quiz-title-container {
+  display: flex;
+  width:100%;
+  height:auto;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: row;
+  text-overflow: ellipse;
+  white-space: pre-wrap;
+  overflow: hidden;
+}
+
+
+.card-quiz-overview-container {
+  width:100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-direction: row;
+}
+
+.card-quiz-buttons-container {
+  display: flex;
+  justify-content: left;
+  flex-direction: row;
+  width:auto;
+  justify-content: flex-end;
+}
+
+
+.card-quiz-details-container {
+  display: flex;
+  width:50%;
+  line-height: 0em;
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+
+
+
+
+
+
 
 .card-quiz-add-icon {
   display:flex;
@@ -340,23 +454,24 @@ h2 {
 **************************************************************************/
 
 .modal {
-    border-radius:5px;
-    position: absolute;
-    top: 20vh;
-    left:5vw;
-    width: 90vw;
+    border-radius:5px 5px 0 0;
+    position: fixed;
+    bottom:0;
+    /* top: 20vh;
+    left:5vw; */
+    width: 100vw;
     padding: 1rem;
     box-sizing: border-box;
     height: auto;
     background-color: white;
-    -webkit-animation: bounce-in-bottom 0.2s both;
-    animation: bounce-in-bottom 0.2s both;
+    -webkit-animation: bounce-in-bottom 0.2s cubic-bezier(0.390, 0.575, 0.565, 1.000) both;
+    animation: bounce-in-bottom 0.2s cubic-bezier(0.390, 0.575, 0.565, 1.000) both;
     z-index:1000000000!important;
 }
 
 .modal-bg {
   height:100%;
-  position: absolute;
+  position: fixed;
   top:0;
   width:100%;
   background-color: rgba(0, 0, 0, 0.75);
@@ -405,6 +520,33 @@ h2 {
             animation-timing-function: ease-out;
   }
 }
+
+@-webkit-keyframes scale-up {
+  0% {
+    -webkit-transform: scale(0.5);
+            transform: scale(0.5);
+    opacity: 0;
+  }
+  100% {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+    opacity: 1;
+  }
+}
+@keyframes scale-up {
+  0% {
+    -webkit-transform: scale(0.5);
+            transform: scale(0.5);
+    opacity: 0;        
+  }
+  100% {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+    opacity: 1;
+  }
+}
+
+
 
 
 
@@ -657,6 +799,42 @@ input:focus ~ .highlight {
 
 /*************************************************************************
 *
+* Icons Default Style Management
+*
+**************************************************************************/
+
+.icon {
+  display:flex;
+  padding:1rem;
+  margin:0.5rem;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+
+.bin {
+  background-image: url('./Assets/Images/binoutline.png');
+}
+
+.icon-next {
+  background-image: url('./Assets/Images/next.png');
+  display:flex;
+  padding:0.5rem!important;
+  background-repeat: no-repeat;
+  background-size: cover; 
+}
+
+.edit {
+  background-image: url('./Assets/Images/editoutline.png');
+}
+
+.settings {
+  background-image: url('./Assets/Images/settingsoutline.png');
+}
+
+
+/*************************************************************************
+*
 * Buttons Default Style Management
 *
 **************************************************************************/
@@ -673,7 +851,6 @@ input:focus ~ .highlight {
   display: flex;
   align-items: center;
   justify-content: center;
-  position: absolute;
   margin: 8px;
   margin-left: auto;
   margin-right: auto;
@@ -681,11 +858,17 @@ input:focus ~ .highlight {
 }
 
 .right {
+  position: absolute;
+  bottom:0.5rem;
   right:1rem;
+  margin-bottom: 1rem;
 }
 
 .left {
+  position: absolute;
+  bottom:0.5rem;
   left: 1rem;
+  margin-bottom: 1rem;
 }
 
 .next {
@@ -727,22 +910,22 @@ input:focus ~ .highlight {
   display:flex;
   align-items: center;
   justify-content: center;
-  position: absolute;
-  background-color: white;
-  bottom: 3rem!important;
-  right: 1.3rem;
+  position: fixed;
+  background-color: black;
+  bottom: 2rem;
+  right: 1.1rem;
   width:1rem;
   margin: 1rem;
   padding: 1rem;
+  box-shadow: 0 0 0 rgba(0,0,0,0.01), 0 2px 5px rgba(0,0,0,1.22);
   height:1rem;  
   font-size:2rem;
-  font-weight: bold!important;
 }
 
 .fab::before {
   display: block;
   content: "\0002B";
-  color: black;
+  color: white;
 }
 
 .upload::-webkit-file-upload-button {

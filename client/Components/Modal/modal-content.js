@@ -9,8 +9,7 @@ import * as Render from '../../Javascript/render.js';
 import * as FX from '../../Javascript/fx.js';
 
 
-export let quiztitle;
-export let quizAuthor;
+let quiztitle;
 export let filebutton;
 
 export function createUpload() {
@@ -25,7 +24,6 @@ export function createUpload() {
   Render.$('upload-label').appendChild(filebutton);
   Render.renderText(Render.$('upload-label'), "Upload Quiz");
   
-  
   filebutton.addEventListener('change', function() {
     Admin.uploadJSON();
   });
@@ -36,6 +34,7 @@ export function createUpload() {
 
 export default class ModalContent {
   constructor(props) {
+    console.log(props);
     this.createModalContent(props);
     this.handleModalInformation(props);
   }
@@ -45,6 +44,7 @@ export default class ModalContent {
         this.elcontent.id = "modal-content";
         this.elcontent.classList.add("modal-content");
         Render.$('modal').appendChild(this.elcontent);
+        console.log(Render.$('modal-content'))
         this.elcontent.addEventListener('click',function (event){
           event.stopPropagation();
        });
@@ -53,36 +53,61 @@ export default class ModalContent {
 
     handleModalInformation(props) {
       Render.renderText(this.elcontent, props.title, "h2");
-      if(props.type === 'upload') {
 
-          
+      if(props.type === 'upload') {
         createUpload();
 
         //CREATE DIVIDER, MAKE OWN COMPONENT
-
         let divider = document.createElement("div");
           divider.classList.add("separator");
-        Render.renderText(divider, "Or");
+        Render.renderText(divider, "or");
         Render.$('modal-content').appendChild(divider);
-
-        
         Render.renderText(Render.$('modal-content'), "Generate a new Quiz", "h2");
+
           quiztitle = new Input({id: 'upload-title', type: 'text', placeholder: "Quiz Name" });
           this.elcontent.appendChild(quiztitle);
             quiztitle.classList.add("input");
-
-
-
          let btn = new Button({id: "start-create-quiz", name:"start-create-quiz", action: "createQuiz", render: "modal", type: 'create'});
-          
-
       }
+
+
       if(props.type === 'info') {
-        //code for info screen here
-        //use props.message
+        let linkBox = new Input({id: 'link', type: 'text', value: props.text});
+        this.elcontent.appendChild(linkBox);
+          linkBox.classList.add('input');
+        new Button({id: "copy-link", name:"copy-link", action: "copy", render: "modal-content", text: 'Copy Link'});
+
+        //CREATE DIVIDER, MAKE OWN COMPONENT
+        let divider = document.createElement("div");
+          divider.classList.add("separator");
+        Render.renderText(divider, "or");
+        Render.$('modal-content').appendChild(divider);
+        Render.renderText(Render.$('modal-content'), "Edit Quiz", "h2");
+      }
+
+
+
+
+      if(props.type === 'info-quiz') {
+        let linkBox = new Input({id: 'link', type: 'text', value: props.text});
+        this.elcontent.appendChild(linkBox);
+          linkBox.classList.add('input');
+        new Button({id: "copy-link", name:"copy-link", action: "copy", render: "modal-content", text: 'Copy Link'});
       }
 
     }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

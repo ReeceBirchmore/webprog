@@ -15,27 +15,41 @@ let inputIndex;
 
 export default class Input {
   constructor(props) {
-    this.test(props);
+    this.setType(props);
+    this.createInputType(props);
     return this.group;
   }
 
  
 
-  test(props) {
+  createInputType(props) {
     this.group = document.createElement('div');
       this.group.classList.add('group');
-    let input = document.createElement('input');
-      input.type = props.type;
-      input.placeholder = props.placeholder;
-      input.id = props.id
-    let highlight = document.createElement('span');
-      highlight.classList.add('highlight')
-    let bar = document.createElement('span');
-      bar.classList.add('bar');
-    this.group.appendChild(input);
-    this.group.appendChild(highlight);
-    this.group.appendChild(bar);
-    this.keyUpEventListener(input, props);
+
+    if(props.type === 'select') {
+      let input = document.createElement('select');
+        if(props.placeholder) input.placeholder = props.placeholder;
+        if(props.value) input.value = props.value;
+        input.id = props.id;
+      this.group.appendChild(input);
+    }
+
+
+    if(props.type === 'text') {  
+      let input = document.createElement('input');
+        input.type = props.type;
+        if(props.placeholder) input.placeholder = props.placeholder;
+        if(props.value) input.value = props.value;
+        input.id = props.id
+      let highlight = document.createElement('span');
+        highlight.classList.add('highlight')
+      let bar = document.createElement('span');
+        bar.classList.add('bar');
+      this.group.appendChild(input);
+      this.group.appendChild(highlight);
+      this.group.appendChild(bar);
+      this.keyUpEventListener(input, props);
+    }
   }
 
 
@@ -44,13 +58,32 @@ export default class Input {
 
 
     setType(props) {
-      if(props.type === 'multi-select') { props.type = 'checkbox' }
-      else if(props.type === 'single-select') { props.type = 'radio' }
-      else { this.el.classList.add("textbox") }
-      this.el.setAttribute('type', props.type);
-      this.el.setAttribute('min', 0);
-      this.el.setAttribute('max', 50)
+      //if(props.type === 'multi-select') { props.type = 'checkbox'; this.createTextBox(props); return; }
+      //if(props.type === 'single-select') { props.type = 'radio'; this.createTextBox(props); return; }
+      if(props.type === 'dropdown') { props.type = 'select'; console.log("DROPDOWN"); this.createDropDown(props); return;}
+      if(props.type === 'text') {  }
     } 
+
+
+
+
+    createDropDown(props) {
+      let input = document.createElement('input');
+        input.type = props.type;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     createContainer() {
@@ -87,11 +120,16 @@ export default class Input {
 
 
 
-    //attach keyup event listener
+
+
+
+
+
+
+
     keyUpEventListener(el, props) {
       el.onkeyup = function() {
         selection = el.value;
-        console.log(selection)
         }
       el.onblur = function() {
         textHolder = el.value;

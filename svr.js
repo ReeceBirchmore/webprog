@@ -31,8 +31,6 @@ app.use(express.static(__dirname + '/client'))
 // })
 
 app.get('*', (req, res) => {
-  console.log(req.params, "REQUEST");
-  console.log(__dirname)
   res.sendFile(path.join(__dirname, '/client/index.html'))
 })
 
@@ -56,13 +54,11 @@ async function getQuizzes(req, res) {
       res.status(404).send('No match for that ID.');
       return;
     }
-    console.log(result);
     res.json(result);
 }
 
 
 async function getQuestions(req, res) {
-  console.log("getting questions");
   const result = await q.listQuestions(req.params.id);
   if (!result) {
     res.status(404).send('No match for that ID.');
@@ -74,7 +70,6 @@ async function getQuestions(req, res) {
 
 
 async function submitQuiz(req, res) {
-  console.log('Submitting');
   const result = await q.quizSubmission(req.body, req.params.id);
   if (!result) {
     res.status(404).send('No match for that ID.');
@@ -84,9 +79,10 @@ async function submitQuiz(req, res) {
 }
 
 
+
+
+
 async function uploadQuiz(req, res) {
-  console.log('uploading quiz', req);
-  console.log(req.body);
   const result = await q.quizUpload(req.body);
   if (!result) {
     res.status(404).send('No match for that ID.');
@@ -94,6 +90,33 @@ async function uploadQuiz(req, res) {
   }
   res.json(result);
 }
+
+
+
+async function createQuiz(req, res) {
+  const result = await q.generateNewQuiz(JSON.stringify(req.body));
+  if (!result) {
+    res.status(404).send('No match for that ID.');
+    return;
+  }
+  res.json(result);
+}
+
+
+async function deleteQuiz(req, res) {
+  console.log("Deleting Quiz")
+  console.log(req.params.id);
+  const result = await q.deleteAQuiz(req.params.id)
+  if(!result) {
+    res.status(404).send('No match for that ID.');
+    return;
+  }
+  res.send(result);
+}
+
+
+
+
 
 async function getAnswers(req, res) {
   const result = await q.getAnswerData(req.params.id);
@@ -121,8 +144,10 @@ function asyncWrap(f) {
   router.get('/quizzes/:id', asyncWrap(getQuizzes));
   router.get('/answers/:id', asyncWrap(getAnswers));
   router.get('/quizlist', asyncWrap(getAllQuizzes));
+  router.get('/delete/quiz/:id', asyncWrap(deleteQuiz));
 
   router.post('/submit/:id', express.json(), asyncWrap(submitQuiz));
+  router.post('/create/quiz/', express.json(), asyncWrap(createQuiz));
   router.post('/upload', express.json(), asyncWrap(uploadQuiz));
 
 

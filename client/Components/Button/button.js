@@ -6,6 +6,7 @@ import * as Admin from '../../Containers/Admin/index.js';
 import * as FX from '../../Javascript/fx.js';
 import * as Card from '../../Containers/Quiz/index.js';
 
+import { answers } from '/Components/Input/input.js';
 
 
 function addHandler(el, props) {
@@ -55,9 +56,18 @@ function addHandler(el, props) {
       }
 
       if(props.action === 'createQuiz') {
-        console.log(props.param)
-        Admin.createNewQuiz(props.param);
+        Admin.createNewQuiz({answers}.answers.response[0].value);
       }
+
+      if(props.action === 'copy') {
+        
+        let copyText = Render.$('link');
+        copyText.select();
+        copyText.setSelectionRange(0, 99999);
+        document.execCommand("copy");
+        Render.createToast("Text Copied to Clipboard", FX.toastClear, 'close')
+      }
+
 
     })
 
@@ -72,14 +82,30 @@ export default class Button {
     this.generateStyles(props);
     addHandler(this.el, props)
     this.renderPoint(props);
-    //Render.renderText(this.el, props.name);
-    
   }
   
     createBtn(props) {
       this.el = document.createElement("button");
         this.el.id = props.id;
+        this.el.classList.add("button");
+        if(props.text) {
+          let text = document.createElement("div");
+          Render.renderText(text, props.text);
+            text.classList.add("div")
+          this.el.appendChild(text);
+          
+        }
     }
+
+
+
+
+
+
+
+
+
+
 
     generateStyles(props) {
       if(props.type === 'previous') {
@@ -120,6 +146,11 @@ export default class Button {
             this.el.appendChild(text);
           this.el.classList.add("upload");
         }
+
+        if(props.type === 'else') {
+          //empty code
+        }
+        
     }
 
 

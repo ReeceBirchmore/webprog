@@ -69,7 +69,7 @@ export default class Nav {
 
     eventHandler(props) {
       this.el.addEventListener("click", function() {
-        let modal = new Modal({text: "Click to continue", title:"Example Questionnaire"})
+        let modal = new Modal({type:'info-quiz', title:"Questionnaire Details", text: window.location.href})
       });
     }
 

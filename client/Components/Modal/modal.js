@@ -8,9 +8,8 @@ import * as FX from '../../Javascript/fx.js';
 
 
 
-function hideModal() {
+export function hideModal() {
   if(Render.$('modalbg')) {
-    console.log(event.target)
     Render.$('modal').classList.add('modal-destroy');
     Render.$('modalbg').classList.add('modal-bg-destroy');
     setTimeout(function() {
@@ -26,8 +25,6 @@ export default class Modal {
     this.createModalbg(props);
     Render.render(this.bg, Render.$('root'));
     this.createModal(props);
-    //this.createModalContent(props);
-    //this.renderText(props);
     Render.render(this.el, this.bg);
   }
   
@@ -39,7 +36,7 @@ export default class Modal {
         return this.bg;
     }
 
-    createModal() {
+    createModal(props) {
       this.el = document.createElement("div");
         this.el.id = "modal";
         this.el.classList.add("modal");
@@ -47,26 +44,9 @@ export default class Modal {
         this.el.addEventListener('click',function (event){
           event.stopPropagation();
        });
-       new ModalContent({type: 'upload', title: "Upload a Quiz"});
+       
+       new ModalContent({type: props.type, title: props.title, text: props.text, params: props.param});
     }
-
-    createModalContent() {
-      this.elcontent = document.createElement("div");
-        this.elcontent.id = "modal-content";
-        this.elcontent.classList.add("modal-content");
-        this.el.appendChild(this.elcontent);
-        this.elcontent.addEventListener('click',function (event){
-          event.stopPropagation();
-       });
-    }
-
-    renderText(props) {
-      Render.renderText(this.elcontent, props.title, "h2");
-      Render.renderText(this.elcontent, props.text);
-      
-    }
-
-
 }
 
 

@@ -50,15 +50,18 @@ export default class Router {
 
         init() {
             this.routes.some(route => {
+                console.log(route)
                 let regEx = new RegExp(route.uri.replace(/:[^\s/]+/g, '([\\w-]+)'));
                 //let regEx = new RegExp(route.uri.replace(`^${route.uri}$`));
                 let path = window.location.pathname;
                 if(path.match(regEx)) {
+                    console.log(path, "MATCH")
                     const params = this.getParams(path);
                     let req = { path }
                     //console.log(params)
                     return route.callback.call(this, req, params);
                 }   
+                console.log(this.routes);
             })
         }
 

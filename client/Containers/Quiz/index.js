@@ -142,7 +142,7 @@ function generateQuestionObjects(params) {
 }
 
 async function generateQuestionnaire(params) {
-    const questionnaire = await fetch('/api/quizzes/' + params[0])       
+    const questionnaire = await fetch('/api/quizzes/' + params[0]);       
         if (questionnaire.ok) {
             qData = await questionnaire.json();
             console.log(qData)
@@ -150,7 +150,6 @@ async function generateQuestionnaire(params) {
             qData = [{ msg: 'Failed to load cards' }];
             return;
         }
-        
         qData[0].id;
     const response = await fetch('/api/questions/' + params[0]);
     console.log(response)
@@ -162,17 +161,16 @@ async function generateQuestionnaire(params) {
             questions.forEach(question => {
                 let card = new Card({id: 'card-' + i++, title: question.question });
                     card.classList.add("card");
-                    if(question.options != null) {
-                        for(let x = 0; x < question.options.length; x++) {
-                            let input = new Input({id: 'input-' + x + "question-" + i, type:  question.input, options: question.options[x] });
-                                input.classList.add("input");
-                            (card).appendChild(input);
-                        }
-                    } else {
+                    // if(question.options != null) {
+                    //     for(let x = 0; x < question.options.length; x++) {
+                    //         let input = new Input({id: 'input-' + x + "question-" + i, type:  question.input, options: question.options[x] });
+                    //             input.classList.add("input");
+                    //         (card).appendChild(input);
+                    //     }
+                    // } else {
                         let input2 = new Input({id: 'input-question-' + i, type: question.input, title: question.question });
-                                input2.classList.add("input");
                             (card).appendChild(input2);
-                    }
+                    //}
                 arrOfCards.push(card);
                 return arrOfCards;
             });
@@ -395,59 +393,6 @@ export async function submitQuiz() {
 }
 
 
-
-
-
-/*
-
-export function upDown(val) {
-    
-    ((val > 0) ? j++ : j--); 
-    let num = ((val === + 1 ) ? - 1 : + 1);
-    FX.progressCheck(j, quizObject.questions.length);
-
-
-
-    Render.render(arrOfCards[j], Render.$('root'));
-    Render.render(arrOfInputs[j], arrOfCards[j]);
-        if(Render.$(quizObject.questions[j + num].id) != undefined) {
-            Render.removeRender(Render.$(quizObject.questions[j + num].id));
-        }
-
-
-    console.log(j)
-    if(j == 0 || !j) {
-        Render.$('prevbtn').style.display = "none";
-    } else {
-        Render.$('prevbtn').style.display = "block";
-    }
-    if(j == quizObject.questions.length - 1) {
-        Render.$('nextbtn').style.display = "none";
-        if(!Render.$('submitbtn')) { //Quick check to see if the submit button exists
-            let submit = new Button({id: "submitbtn", name:"Submit", action: "toast", render: "Footer"});
-        } else {
-            Render.$('submitbtn').style.display = "block";
-        }
-    } else {
-        Render.$('nextbtn').style.display = "block";
-        if(Render.$('submitbtn')) { //Quick check to see if the submit button exists
-            Render.$('submitbtn').style.display = "none";
-        }
-    }
-}
-
-// #endregion
-// ////////////////////////////////////////////////////////////// DISPLAY LINEAR
-// #region Display All Elements Linear
-
-function linear() {
-    for(let i = 0; i < arrOfCards.length; i++) {
-        Render.render(arrOfCards[i], Render.$('root'));
-        arrOfCards[i].style.position = "relative";
-    }
-}
-
-*/
 
     
 

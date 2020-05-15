@@ -31,15 +31,17 @@ export default class Toast {
     actionButton(props) {
       let action = props.action;
       this.action = Render.renderText(this.el, props.actionText);
-      this.action.addEventListener("click", action);
+      this.action.addEventListener("click", function() {
+        action(props.param); 
+        dismiss();
+      });
         this.action.classList.add('toastAction');
-      //this.action.setAttribute("style", Render.useStyles(actionStyles));
     }
 
     animate() {
-      setTimeout(function() {
+      
         FX.toastManagement();
-    }, 1000);
+    
     }
 
 

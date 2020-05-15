@@ -21,27 +21,30 @@ import * as Admin from '../Containers/Admin/index.js';
 const router = new Router();
 
 router.get('home', function(req, params) {
-    console.log(req);
-    console.log(params);
+
     Index.index();
     new Nav({id:"test"});
 });
 
 
 router.get('/quiz', function(req, params) {
-    console.log(req);
-    console.log(params);
+
     //new Nav({id:"Quiz"});
 });
 
 router.get('/quiz/:id/:type', function(req, params) {
-    console.log(req);
-    console.log(params);
+
     Quiz.generateQuiz(params);
 });
 
-router.get('admin', function(req, params) {
-    Admin.generatePage(params);
+router.get('/admin/edit/:id', function(req, params) {
+    Admin.editQuiz(params[1]);
+});
+
+router.get('/admin', function(req, params) {
+    if(req.path === '/admin') {
+        Admin.generatePage(params);
+    }
 });
 
 
