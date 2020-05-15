@@ -17,7 +17,6 @@ export default class Toast {
     this.createToast(props);
     if(props.text) Render.renderText(this.el, props.text);
     this.actionButton(props);
-    Render.render(this.el, Render.$('root'));
     this.animate();
     return this.el;
   }
@@ -32,16 +31,19 @@ export default class Toast {
       let action = props.action;
       this.action = Render.renderText(this.el, props.actionText);
       this.action.addEventListener("click", function() {
-        action(props.param); 
-        dismiss();
+        if(action === null) {
+          dismiss();
+        } else {
+          action(props.param); 
+          dismiss();
+        }
+        
       });
         this.action.classList.add('toastAction');
     }
 
     animate() {
-      
         FX.toastManagement();
-    
     }
 
 

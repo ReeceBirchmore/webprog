@@ -6,7 +6,6 @@ import * as Admin from '../../Containers/Admin/index.js';
 import * as Render from '../../Javascript/render.js';
 
 
-
 export default class QuizCard {
   constructor(props) {
     this.createCard(props);
@@ -29,7 +28,6 @@ export default class QuizCard {
     constructTemplate(props) {
 
       //Title Container Generation
-
       let titleContainer = document.createElement('div');
         titleContainer.classList.add('card-quiz-title-container');
         this.el.appendChild(titleContainer);
@@ -39,48 +37,37 @@ export default class QuizCard {
         titleContainer.appendChild(openIcon);
         
       //Divider Generation
-
       let divider = document.createElement("div");
         divider.classList.add("separator");
         Render.renderText(divider, "Details");
-        this.el.appendChild(divider);
+      this.el.appendChild(divider);
 
       //Container Generation
-
-      let overviewContainer = document.createElement('div');
-        overviewContainer.classList.add('card-quiz-overview-container');
-        this.el.appendChild(overviewContainer);
+      this.overviewContainer = document.createElement('div');
+        this.overviewContainer.classList.add('card-quiz-overview-container');
+        this.el.appendChild(this.overviewContainer);
         let detailsContainer = document.createElement('div');
         detailsContainer.classList.add('card-quiz-details-container') 
-        overviewContainer.appendChild(detailsContainer)
+          this.overviewContainer.appendChild(detailsContainer)
       this.buttonsContainer = document.createElement('div');
         this.buttonsContainer.classList.add('card-quiz-buttons-container');
-        overviewContainer.appendChild(this.buttonsContainer);
-
-
+         this.overviewContainer.appendChild(this.buttonsContainer);
 
       //Icon Generation
-
-      this.binIcon = document.createElement("div");
-        this.binIcon.classList.add('icon', 'bin');
-        this.buttonsContainer.appendChild(this.binIcon);
-      this.settingsIcon = document.createElement('div');
-        this.settingsIcon.classList.add('icon', 'settings');
-        this.buttonsContainer.appendChild(this.settingsIcon);
-      this.editIcon = document.createElement('div');
-        this.editIcon.classList.add('icon', 'edit');
-        this.buttonsContainer.appendChild(this.editIcon);
+      this.binIcon = document.createElement("button");
+        this.binIcon.classList.add('icon', 'bin', 'ripple');
+      this.linkIcon = document.createElement('button');
+        this.linkIcon.classList.add('icon', 'link', 'ripple');
+      this.shareIcon = document.createElement('button');
+        this.shareIcon.classList.add('icon', 'share', 'ripple');
+      this.editIcon = document.createElement('button');
+        this.editIcon.classList.add('icon', 'edit', 'ripple');
+      this.buttonsContainer.append(this.binIcon, this.linkIcon, this.shareIcon, this.editIcon);
 
 
       //Quiz Details Generation
-      
       Render.renderText(detailsContainer, "5 Questions");
       Render.renderText(detailsContainer, "5 Responses");
-        
-
-
-    
-
     }
 
 
@@ -102,19 +89,27 @@ export default class QuizCard {
         this.el.addEventListener("click", function() {
           let modal = new Modal({type: 'info', title: props.quizTitle, text: 'http://localhost:8080/quiz/' + props.uid + '/flow/'})
         });
-        this.buttonsContainer.addEventListener("click", function (event) {
+        this.overviewContainer.addEventListener("click", function (event) {
           event.stopPropagation();
         });
-        this.settingsIcon.addEventListener("click", function() {
-          console.log("SETTINGS", props.id);
+
+
+        this.linkIcon.addEventListener("click", function() {
+          navigator.clipboard.writeText("http://localhost:8080/quiz/" + props.id + "/flow/")
+          Render.createToast("Text Copied to Clipboard", null, 'close');
+        });
+        this.shareIcon.addEventListener("click", function() {
+          Admin.buildSharePage(props.id);
         });
         this.binIcon.addEventListener("click", function() {
           let popup = window.confirm("Are you sure you want to delete " + props.quizTitle);
           if (popup === true) Admin.deleteQuiz(props.id, props.quizTitle);
         });
         this.editIcon.addEventListener("click", function() {
-          console.log("EDIT", props.id)
+          window.location = './#/admin/quiz/edit/' + props.id;
         });
+
+
       } 
       if(props.type === 'create') {
         this.el.addEventListener("click", function() {

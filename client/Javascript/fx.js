@@ -47,7 +47,7 @@ export function toastClear() {
 
     setTimeout(function() {
         bool = true;
-        Render.$('root').removeChild(Render.$('toast'));
+        Render.$('body').removeChild(Render.$('toast'));
     }, 100);
 }
 

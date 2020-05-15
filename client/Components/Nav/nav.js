@@ -2,40 +2,23 @@
 
 
 import Modal from '../../Components/Modal/modal.js';
-import Navlinks from '/Components/Navlinks/navlinks.js';
 
-import * as Render from '../../Javascript/render.js';
+import { $, render, renderText } from '../../Javascript/render.js';
 import { j } from '../../Containers/Quiz/index.js';
 
-const navbar = {
-    'position':'fixed',
-    'background-color': 'black',
-    'z-index' :' 10000',
-    'width': '100vw',
-    'height': '10%',
-    'display': 'flex',
-    'flex-direction': 'row',
-    'justify-content':'space-between'
-};
-
-
-
-
-// function handleProfile(props) {
-//   Render.setState('visibility', props);
-// }
-
+import * as Admin from '/Containers/Admin/index.js';
 
 
 
 export default class Nav {
   constructor(props) {
     this.createFrame(props);
+    if(props.return === true) this.displayReturnIcon();
+    if(props.add === true) this.displayUploadIcon();
+    if(props.close === true) this.displayCloseIcon();
     this.displayTitle(props);
-    this.displayQuestions(props);
-    this.eventHandler(props);
-    Render.render(this.el, Render.$('root'));
-    return this.el;
+    this.eventHandler(props);    
+    render(this.el, $('body'));
   }
    
     createFrame(props) {
@@ -44,45 +27,61 @@ export default class Nav {
           this.el.classList.add("nav");
     }
 
-    //Handle profile button
-    displayProfile(props) {
-        this.profile = document.createElement("div");
-          this.profile.id = props.id + "Profile";
-          this.profile.setAttribute("style", Render.useStyles(profile));
-          //handleProfile(props);
-          Render.render(this.profile, this.el);
-    }
-
-    //Handle Title
     displayTitle(props) {
-      Render.renderText(this.el, props.title, "h2");
+      let title = renderText(this.el, props.title, "h2");
+      title.classList.add('center')
     }
 
-
-    displayQuestions(props) {
-      if(props.questions) {
-        Render.renderText(this.el, props.questions + " questions");
-      }
+    displayReturnIcon() {
+      this.returnIcon = document.createElement('button');
+        this.returnIcon.classList.add('icon', 'return', 'ripple');
+        this.el.appendChild(this.returnIcon);
     }
 
+    displayUploadIcon() {
+      this.uploadIcon = document.createElement('button');
+        this.uploadIcon.classList.add('icon', 'add', 'ripple');
+        this.el.appendChild(this.uploadIcon);
+    }
+
+    displayCloseIcon() {
+      this.closeIcon = document.createElement('button');
+        this.closeIcon.classList.add('icon', 'close', 'ripple');
+        this.el.appendChild(this.closeIcon);
+    }
 
 
     eventHandler(props) {
-      this.el.addEventListener("click", function() {
-        let modal = new Modal({type:'info-quiz', title:"Questionnaire Details", text: window.location.href})
-      });
+      if(props.return) {
+        this.returnIcon.addEventListener("click", function() {
+          history.back();
+        });
+      }
+      if(props.add) {
+        this.uploadIcon.addEventListener("click", function() {
+          new Modal({type: 'upload', title: "Upload a Quiz"})
+        });
+      }
+      if(props.close) {
+        this.closeIcon.addEventListener("click", function() {
+          Admin.generatePage();
+        });
+      }
     }
-
-    //Handle Hamburger menu
-    displayMenuButton(props) {
-      
-
-
-    }
-
 
 
 
 
 }
 
+
+
+
+
+    // //Handle profile button
+    // displayProfile(props) {
+    //     this.profile = document.createElement("div");
+    //       this.profile.id = props.id + "Profile";
+    //       this.profile.setAttribute("style", Render.useStyles(profile));
+    //       Render.render(this.profile, this.el);
+    // }

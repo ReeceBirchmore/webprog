@@ -13,7 +13,8 @@ export function hideModal() {
     Render.$('modal').classList.add('modal-destroy');
     Render.$('modalbg').classList.add('modal-bg-destroy');
     setTimeout(function() {
-      Render.removeRender(Render.$('modalbg'));
+      // Render.removeRender(Render.$('modalbg'));
+      Render.$('body').removeChild(Render.$('modalbg'));
     },200);
   }
 }
@@ -23,7 +24,7 @@ export function hideModal() {
 export default class Modal {
   constructor(props) {
     this.createModalbg(props);
-    Render.render(this.bg, Render.$('root'));
+    Render.render(this.bg, Render.$('body'));
     this.createModal(props);
     Render.render(this.el, this.bg);
   }

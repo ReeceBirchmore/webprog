@@ -58,10 +58,6 @@ async function getQuizDetails(id) {
 }
 
 
-
-
-
-
 async function listQuestions(quizid) {
   const q = 'SELECT * FROM questions WHERE quizid = $1;';
   const result = await sql.query(q, [quizid]);
@@ -76,8 +72,6 @@ async function quizSubmission(data, quizid) {
   const result = await sql.query(q, [quizdata, quizid]);
   return result.rows;
 }
-
-
 
 
 async function quizUpload(data) {
@@ -97,12 +91,32 @@ async function quizUpload(data) {
 }
 
 
+async function addAQuestion(quizid) {
+  let uid = JSON.parse(quizid).id;
+  const q = 'INSERT INTO Questions (quizid) VALUES($1) ';
+  const result = await sql.query(q, [uid]);
+  return result.rows;
+}
+
+
 async function deleteAQuiz(uid) {
   console.log(uid, "PRINT");
-  const quiz = 'DELETE from Quizzes Questions where quizid = $1;';
+  const quiz = 'DELETE from Quizzes where quizid = $1;';
+  const result = await sql.query(quiz, [uid]);
+  const question = 'DELETE FROM Questions WHERE quizid = $1;';
+  const questionresult =  await sql.query(question, [uid]);
+  return true;
+}
+
+
+async function deleteAQuestion(uid) {
+  console.log(uid, "DELETED");
+  const quiz = 'DELETE from Questions where id = $1;';
   const result = await sql.query(quiz, [uid]);
   return true;
 }
+
+
 
 async function generateNewQuiz(data) {
   let uid = makeid(5);
@@ -136,5 +150,7 @@ module.exports = {
   listAllQuizzes,
   quizUpload,
   deleteAQuiz,
-  generateNewQuiz
+  generateNewQuiz,
+  deleteAQuestion,
+  addAQuestion
 };

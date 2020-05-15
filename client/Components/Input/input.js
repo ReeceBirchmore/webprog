@@ -27,11 +27,31 @@ export default class Input {
       this.group.classList.add('group');
 
     if(props.type === 'select') {
+      let wrap = document.createElement('div');
+        wrap.classList.add('wrap')
+      let group = document.createElement('div');
+        group.classList.add('select');
+
       let input = document.createElement('select');
-        if(props.placeholder) input.placeholder = props.placeholder;
-        if(props.value) input.value = props.value;
+        input.classList.add('select-text');
         input.id = props.id;
-      this.group.appendChild(input);
+
+      props.types.forEach(option => {
+          let selectOption; selectOption = document.createElement('option');
+          selectOption.text = option;
+          selectOption.classList.add('option')
+          input.add(selectOption);
+      });
+
+      let highlight = document.createElement('span');
+        highlight.classList.add('select-highlight');
+      let selectBar = document.createElement('span');
+        selectBar.classList.add('select-bar');
+      this.group.append(wrap);
+      wrap.append(group);
+      group.append(input, highlight, selectBar)
+
+
     }
 
 
@@ -58,10 +78,10 @@ export default class Input {
 
 
     setType(props) {
-      //if(props.type === 'multi-select') { props.type = 'checkbox'; this.createTextBox(props); return; }
-      //if(props.type === 'single-select') { props.type = 'radio'; this.createTextBox(props); return; }
-      if(props.type === 'dropdown') { props.type = 'select'; console.log("DROPDOWN"); this.createDropDown(props); return;}
-      if(props.type === 'text') {  }
+      if(props.value === 'multi-select') { props.value = 'Checkboxes'; this.createDropDown(props); }
+      if(props.value === 'single-select') { props.value = 'Multiple Choice'; this.createDropDown(props);}
+      if(props.type === 'dropdown') { props.type = 'select'; this.createDropDown(props); return;}
+      if(props.value === 'text') {  }
     } 
 
 

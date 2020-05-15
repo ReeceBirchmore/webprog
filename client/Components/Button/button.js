@@ -59,15 +59,6 @@ function addHandler(el, props) {
         Admin.createNewQuiz({answers}.answers.response[0].value);
       }
 
-      if(props.action === 'copy') {
-        
-        let copyText = Render.$('link');
-        copyText.select();
-        copyText.setSelectionRange(0, 99999);
-        document.execCommand("copy");
-        Render.createToast("Text Copied to Clipboard", FX.toastClear, 'close')
-      }
-
 
     })
 

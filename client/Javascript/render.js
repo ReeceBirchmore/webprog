@@ -36,7 +36,6 @@ const body = $("root");
  ******************************/
 
 function render(el, domNode) {
-
     domNode.appendChild(el);
     return;
 }
@@ -112,7 +111,7 @@ function removeRender(el) {
 
 function createToast(message, action, actionText, params) {
     let toast = new Toast({id:'toast', text: message, action: action, actionText: actionText, param: params})
-    render(toast, $('root'));
+    render(toast, $('body'));
 }
 
 

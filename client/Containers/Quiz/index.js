@@ -12,11 +12,12 @@ import Modal from '/Components/Modal/modal.js';
 import Footer from '/Components/Footer/footer.js';
 import Nav from '/Components/Nav/nav.js';
 import { answers } from '/Components/Input/input.js';
+import Screen from '/Components/Screen/screen.js';
 
 
 
 import * as Quiz from '/Javascript/quiz.js';
-import * as Render from '../../Javascript/render.js';
+import { $, render, renderText, createToast } from '../../Javascript/render.js';
 import * as FX from '../../Javascript/fx.js';
 //import Footer from '../../Components/Footer/footer.js';
 
@@ -29,7 +30,7 @@ import * as FX from '../../Javascript/fx.js';
 
 
 //let screen = new Screen({id: 'quiz'});
-let footer = new Footer({id:'Footer'});
+
 
 
 
@@ -38,13 +39,16 @@ let quizID; //ID of quiz
 export let j = 0; //Counter
 let title;
 
+let qData;
+
+
+
+let uid; //Quiz ID
 
 let arrOfCards = [];
-let quizObject;
 
 let next;
 let prev;
-let toLin;
 
 let params;
 
@@ -60,12 +64,20 @@ let params;
  *************************/
 
 export function generateQuiz(param) {
-    params = param;
-    quizID = params[0];
-    let mode = params[1];  
-    
-    //Render.createToast("Welcome to the admin page", FX.toastClear, "Close")
-    generateQuestionObjects(params);
+
+    new Screen({id: 'quiz', class: 'quizScreen'});
+    uid = param.id;
+    j = 0;
+    quizID = params;
+    if(arrOfCards.length === 0) {
+        generateQuestionnaire(uid);
+        generateQuestionObjects(uid);
+        generateQuestions(uid)
+    } else {
+        generateQuestionnaire(uid);
+        generateQuestionObjects();
+        stackManager();
+    }
 }
 
 
@@ -116,7 +128,6 @@ export function generateQuiz(param) {
 
 
 
-let qData;
 
 
 
@@ -131,32 +142,39 @@ let qData;
 *
 **************************************************************************/
 
-function generateQuestionObjects(params) {
-    if(params[1] === 'flow') {
-        prev = new Button({id: "prevbtn", name:"Previous Question", action: "Quiz.down", param: -1, render: "Footer", type: "previous"});
-        next = new Button({id: "nextbtn", name:"Next Question", action: "Quiz.up", param: +1, render: "Footer", type: "next"}); 
-        //toLin = new Button({id: "toLin", name:"Switch to Linear", action: "toLinear", param: +1, render: "Footer"}); 
-    }
-    generateQuestionnaire(params);
-    new Progress({id: "progressBar"})
+function generateQuestionObjects(uid) {
+    new Footer({id:'Footer'});
+    prev = new Button({id: "prevbtn", name:"Previous Question", action: "Quiz.down", param: -1, render: "Footer", type: "previous"});
+    next = new Button({id: "nextbtn", name:"Next Question", action: "Quiz.up", param: +1, render: "Footer", type: "next"}); 
+    new Progress({id: "progressBar"});    
 }
 
-async function generateQuestionnaire(params) {
-    const questionnaire = await fetch('/api/quizzes/' + params[0]);       
+
+
+
+
+
+
+
+
+
+
+async function generateQuestionnaire(uid) {
+    const questionnaire = await fetch('/api/quizzes/' + uid);       
         if (questionnaire.ok) {
             qData = await questionnaire.json();
-            console.log(qData)
+            new Nav({id:"nav", title: qData[0].title});
         } else {
             qData = [{ msg: 'Failed to load cards' }];
             return;
         }
-        qData[0].id;
-    const response = await fetch('/api/questions/' + params[0]);
-    console.log(response)
+}
+
+async function generateQuestions(uid) {
+    const response = await fetch('/api/questions/' + uid);
         let questions;
         if (response.ok) {
             questions = await response.json();
-            new Nav({id:"Quiz", title: qData[0].title, questions:questions.length});
             let i = 1;
             questions.forEach(question => {
                 let card = new Card({id: 'card-' + i++, title: question.question });
@@ -174,15 +192,11 @@ async function generateQuestionnaire(params) {
                 arrOfCards.push(card);
                 return arrOfCards;
             });
-            if(params[1] === 'flow') {
                 stackManager();
-            } else {
-                linear();
-            }
             return;
         } else {
             questions = [{ msg: 'Failed to load cards' }];
-            Render.createToast(questions[0].msg, FX.toastClear, "Close");
+            createToast(questions[0].msg, FX.toastClear, "Close");
             return;
         }
 }
@@ -200,61 +214,66 @@ function stackManager(val) {
 //This entire section needs reworking
     //Previous button handling! WILL NEED ITS OWN FUNCTION SOON
     if(j === 0) {
-        Render.$('prevbtn').disabled = true;
-        Render.$('prevbtn').classList.add('disabled');
+        $('prevbtn').disabled = true;
+        $('prevbtn').classList.add('disabled');
     }
     else {
-        Render.$('prevbtn').disabled = false;
-        Render.$('prevbtn').classList.remove('disabled');
+        $('prevbtn').disabled = false;
+        $('prevbtn').classList.remove('disabled');
     }
 
     if(j != arrOfCards.length) {
-        if(Render.$('submitbtn')) {
-            Render.$('submitbtn').style.display = "none";
+        if($('submitbtn')) {
+            $('submitbtn').style.display = "none";
         }
-        if(Render.$('card-submit')) {
-            Render.$('card-submit').style.display = "none";
+        if($('card-submit')) {
+            $('card-submit').style.display = "none";
         }
     }
 
     //Display all given answers and give option to submit quiz
     if(j === arrOfCards.length) {
 
-        if(Render.$('submitbtn')) {
-            Render.$('submitbtn').style.display = "block";
+        if($('submitbtn')) {
+            $('submitbtn').style.display = "block";
         } else {
             let submit = new Button({id: 'submitbtn', type: 'submit', action: 'submit', render: 'Footer'});
         }
         
 
-        if(Render.$('card-submit')) {
-            Render.$('card-submit').style.display = "block";
+        if($('card-submit')) {
+            $('card-submit').style.display = "block";
         } else {
             let submissioncard = new Card({id:'card-submit', answers: { answers }});
                 submissioncard.classList.add('card-submit');
-            Render.$('root').appendChild(submissioncard);
+            $('root').appendChild(submissioncard);
         }
     }
+
+
 //End of horrible section
+
+    newArr = [];
     if(!val) {
         for(let i = 0; i < 3; i++) {
             if(arrOfCards[i]) {
+                arrOfCards[i].classList.remove('card-remove')
                 newArr.push(arrOfCards[i]);
-                Render.$('root').appendChild(newArr[i]);
+                $('root').appendChild(newArr[i]);
             }
         }
         sortDeck();
         return;
     }
 
-    newArr = [];
     if(val === 'increase') {
+        
         if(arrOfCards) {
             newArr.push(arrOfCards[j], arrOfCards[j + 1], arrOfCards[j + 2]);
         }
         sortDeck();
         return;
-    } else {
+    } else if (val === 'decrease') {
         if(arrOfCards) {
             newArr.push(arrOfCards[j], arrOfCards[j + 1], arrOfCards[j + 2])
         }
@@ -289,7 +308,7 @@ export function toLinear() {
     let position;
     for(let i of arrOfCards) {
 
-        Render.$('root').appendChild(i);
+        $('root').appendChild(i);
         setTimeout(function() {
             j++
             let position = i.getBoundingClientRect();
@@ -332,36 +351,29 @@ export function toLinear() {
 
 
 export function increase() {
-    //Manage storage of answers given!
     if(j < arrOfCards.length) {
         j++;
-        Render.$('card-' + j).classList.add('card-remove');
+        $('card-' + j).classList.add('card-remove');
         stackManager('increase');
         FX.progressCheck(j, arrOfCards.length + 1);
-        window.localStorage.setItem(quizID, j);
-    }
-    if(j === arrOfCards.length) {
-        console.log("END OF QUIZ");
-        //quizEnd();
     }
 }
 
 function nextCard() {
     if(arrOfCards[j + 2]) {
-        Render.$('root').appendChild(arrOfCards[j + 2]);
+        $('root').appendChild(arrOfCards[j + 2]);
     }
 }
 
 export function decrease() {
     if(j != 0) {
-        Render.$('card-' + j).classList.remove('card-remove');
+        $('card-' + j).classList.remove('card-remove');
         j--;
         if(arrOfCards[j + 3]) {
-            Render.$('root').removeChild(arrOfCards[j + 3]);
+            $('root').removeChild(arrOfCards[j + 3]);
         }
         stackManager('decrease');
         FX.progressCheck(j, arrOfCards.length + 1);
-        window.localStorage.setItem(quizID, j);
     }
 }
 
@@ -374,7 +386,7 @@ export function decrease() {
 
 
 export async function submitQuiz() {
-    await fetch('/api/submit/' + params[0], {
+    await fetch('/api/submit/' + uid, {
         method: 'POST', // or 'PUT'
         body: JSON.stringify(answers),
         headers: {
@@ -384,8 +396,10 @@ export async function submitQuiz() {
     let test;
     const quizAnswersTest = await fetch('/api/answers/' + qData[0].id)
         if (quizAnswersTest.ok) {
+            new Screen({id: 'quiz-complete', class: 'quizScreen'});
+            new Nav({id:"nav", title: "Thank You"});
             test = await quizAnswersTest.json();
-            console.log(test); //Test[0] is because an array is returned, response[0] is response number 0 out of the list of responses given
+
         } else {
             test = [{ msg: 'Failed to load cards' }];
             return;

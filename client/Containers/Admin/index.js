@@ -4,23 +4,25 @@
 import EditCard from '/Components/Card/editcard.js';
 import Button from '/Components/Button/button.js';
 import Input from '/Components/Input/input.js';
+import Toggle from '/Components/Input/Toggle.js';
 import Modal from '/Components/Modal/modal.js';
 import * as ModalFunctions from '/Components/Modal/modal.js';
 import ModalContent from '/Components/Modal/modal-content.js';
-import Footer from '/Components/Footer/footer.js';
 import Nav from '/Components/Nav/nav.js';
 import Fab from '../../Components/Fab/fab.js';
 import QuizCard from '../../Components/QuizCard/quizcard.js';
+import Screen from '/Components/Screen/screen.js';
 
 import { answers } from '/Components/Input/input.js';
 import { filebutton } from '/Components/Modal/modal-content.js';
 
 
 import * as Quiz from '/Javascript/quiz.js';
-import * as Render from '../../Javascript/render.js';
+// import * as Render from '../../Javascript/render.js';
+
+import { $, createToast } from '/Javascript/render.js';
 import * as FX from '../../Javascript/fx.js';
 
-//import Footer from '../../Components/Footer/footer.js';
 
 
 
@@ -30,7 +32,6 @@ import * as FX from '../../Javascript/fx.js';
 
 
 //let screen = new Screen({id: 'quiz'});
-// let footer = new Footer({id:'Footer'});
 
 
 
@@ -47,14 +48,15 @@ import * as FX from '../../Javascript/fx.js';
  * 
  *************************/
 
- let params;
+let params;
+let uid;
+let quizListObject;
+
+
 
 export function generatePage(param) {
-    Render.$('root').classList.add('adminScreen');
-    Render.$('root').classList.remove('screenDefault');
-    console.log(param)
-    params = param;
-    new Nav({id:'nav', title: "Administrator Console", links:['View Responses', 'Link 2', 'Link 3']});
+    new Screen({id: '1', class: 'adminScreen'});
+    new Nav({id:'nav', title: "Administrator Console", add: true});
     displayQuizzes(params);
 }
 
@@ -69,12 +71,12 @@ export function generatePage(param) {
 
 
 
-let quizListObject;
+
 export async function displayQuizzes() {
-    console.log("List all quizzes")
     let check = document.querySelectorAll('.card-quiz-list');
     check.forEach(element => {
-        Render.$('root').removeChild(element);
+        console.log($('root'), "TEST");
+        $('root').removeChild(element);
     });
     check = null;
     if(check === null) {
@@ -89,14 +91,16 @@ export async function displayQuizzes() {
             new QuizCard({id: quiz.quizid, quizTitle: quiz.title, type: 'quiz', uid: quiz.quizid});
         });
     }
-    new Fab({id: "fab", name:"Next Question", action: "Quiz.up", type: 'create'});
-    //new QuizCard({id: 'card-create', option: 'create-quiz', type: 'create'});
+    
 }
 
 
 
 
 
+// #endregion
+// ////////////////////////////////////////////////////////////// DELETE
+// #region Delete Quizzes and Questions
 
 
 
@@ -105,7 +109,7 @@ export async function deleteQuiz(uid, quiztitle) {
     const deleteQuiz = await fetch('/api/delete/quiz/' + uid);
     if (deleteQuiz.ok) {
         displayQuizzes();
-        Render.createToast(title, FX.toastClear, "Close");
+        createToast(title, FX.toastClear, "Close");
     } else {
         //Code if it failed here
         return;
@@ -114,9 +118,36 @@ export async function deleteQuiz(uid, quiztitle) {
 
 
 
+export async function deleteQuestion(qid, question) {
+    let title = (!question) ? "Question Deleted" : question + " Deleted";
+    const deleteQuiz = await fetch('/api/delete/question/' + qid);
+    if (deleteQuiz.ok) {
+        console.log(uid)
+        editQuiz(uid);
+        createToast(title, FX.toastClear, "Close");
+    } else {
+        //Code if it failed here
+        return;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+// #endregion
+// ////////////////////////////////////////////////////////////// CREATE
+// #region Upload or create a new quiz
+
+
+
 export async function createNewQuiz(value) {
     let title = { value }
-    console.log(title)
     if(title != undefined) {
         const upload = await fetch('/api/create/quiz', {
         method: 'POST', // or 'PUT'
@@ -129,10 +160,7 @@ export async function createNewQuiz(value) {
             newQuizCreated(await upload.json());
         }
     }
-
-    
 }
-
 
 export async function uploadJSON() {
     const jsonfile = await {filebutton}.filebutton.files[0].text();
@@ -151,10 +179,7 @@ async function upload(jsonfile) {
     if(upload.ok === true) {
         ModalFunctions.hideModal();
         displayQuizzes();
-        Render.createToast("Quiz Uploaded Succesfully", deleteQuiz, "Undo", uid);
-        setTimeout(function() {
-            new Modal({id:'modal-link', type: 'info', title:'Quiz Link', params: uid, text: 'http://localhost:8080/quiz/' + uid + '/flow/'})
-        },200)
+        createToast("Quiz Uploaded Succesfully", deleteQuiz, "Undo", uid);
         } else {
         //Something went wrong!
     }
@@ -165,7 +190,7 @@ async function upload(jsonfile) {
 function newQuizCreated(uid) {
     ModalFunctions.hideModal();
     displayQuizzes();
-    Render.createToast("Quiz Uploaded Succesfully", deleteQuiz, "Undo", uid);
+    createToast("Quiz Uploaded Succesfully", deleteQuiz, "Undo", uid);
     setTimeout(function() {
         new Modal({id:'modal-link', type: 'info', title:'Quiz Link', params: uid, text: 'http://localhost:8080/quiz/' + uid + '/flow/'})
     },200);
@@ -173,60 +198,73 @@ function newQuizCreated(uid) {
 
 
 
+// #endregion
+// ////////////////////////////////////////////////////////////// SHARE
+// #region Share Quizzes
+
+
+export function buildSharePage(quizid) {
+    uid = quizid;
+    new Screen({id: 'admin-edit-quiz', class: 'adminScreen'});
+    new Nav({id:'nav', title: "Share Quiz", close: true});
+}
 
 
 
 
 
+// #endregion
+// ////////////////////////////////////////////////////////////// EDIT
+// #region Edit Quizzes
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+export function buildEditor(quizid) {
+    uid = quizid;
+    new Screen({id: 'admin-edit-quiz', class: 'adminScreen'});
+    new Nav({id:'nav', title: "Editing Quiz", return: true});
+    editQuiz(quizid);
+}
 
 
 export async function editQuiz(uid) {
-
-    const quizlist = await fetch('/api/questions/' + uid);
-            if (quizlist.ok) {
-                quizListObject = await quizlist.json();
-            } else {
-                quizListObject = [{ msg: 'Failed to load cards' }];
-                return;
-            }
-            // quizListObject.forEach(quiz => {
-            //     new QuizCard({id: quiz.quizid, quizTitle: quiz.title, type: 'quiz', uid: quiz.quizid});
-            // });
-    
-
+    let check = document.querySelectorAll('.card-edit');
+    check.forEach(element => {
+        $('root').removeChild(element);
+    });
+    check = null;
+    if(check === null) {
     const response = await fetch('/api/questions/' + uid);
-    console.log(response)
-        let questions;
         if (response.ok) {
-            questions = await response.json();
-            console.log(questions)
+            let questions = await response.json();
             let i = 1;
             questions.forEach(question => {
-                let card = new EditCard({id: 'card-' + i++, title: question.question, questionNum: i - 1 });
-                Render.$('root').append(card);
-
-
+                console.log(i)
+                let card = new EditCard({id: question.id, title: question.question, questionNum: i++, input: question.input, });
+                $('root').append(card);
             });        
-
-
-
+        }
+    }
+    let card = new EditCard({id: 'add-question', type: 'add'})
+    $('root').append(card);
 }
 
+
+
+export async function addQuestion() {
+    const id = { id: uid }
+    const upload = await fetch('/api/create/question', {
+        method: 'POST', // or 'PUT'
+        body: JSON.stringify(id),
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+    let result = await upload.json();
+    if(upload.ok) {
+        editQuiz(uid);
+        } else {
+        //Something went wrong!
+    }
 }
 
     

@@ -3,7 +3,7 @@
 import * as Render from '../../Javascript/render.js';
 import * as FX from '../../Javascript/fx.js';
 
-
+import {cursorCoords} from '../../Javascript/app.js';
 
 
 
@@ -11,23 +11,47 @@ import * as FX from '../../Javascript/fx.js';
 
 export default class Screen {
   constructor(props) {
-    this.createScreen(props);
-    Render.render(this.el, Render.$('root'));
-    return this.el;
+    this.maths();
+    this.generateStructure(props);
+    this.animateEntry();
   }
 
-  createScreen(props) {
-      this.el = document.createElement("div");
-        this.el.id = props.id;
-        this.el.classList.add('screen-' + props.id);
+    maths() {
+      let mainHeight = window.innerHeight; //Y value
+      let mainWidth = window.innerWidth; //X value
+      let ySum = cursorCoords.y / mainHeight;
+      this.yTotal = ySum * 100;
+      let xSum = cursorCoords.x / mainWidth;
+      this.xTotal = xSum * 100;
     }
 
-    actionButton(props) {
-      let action = props.action;
-      this.action = Render.renderText(this.el, props.actionText);
-      this.action.addEventListener("click", action);
-        this.action.classList.add('toastAction');
-      //this.action.setAttribute("style", Render.useStyles(actionStyles));
+
+    generateStructure(props) {
+      if(Render.$('root')) {
+          Render.$('root').classList.add('screen-hide');
+          Render.$('root').id = 'old-screen';
+          Render.$('body').removeChild(Render.$('nav'));
+      }
+        this.screen = document.createElement('div');
+          this.screen.id = 'root';
+          this.screen.classList.add(props.class);
+          this.screen.style.transformOrigin = this.xTotal + '%' + this.yTotal + '%';
+          Render.$('body').append(this.screen);
+    }
+
+
+
+    animateEntry() {
+      setTimeout(function() {
+      if(Render.$('old-screen')) {
+        Render.$('body').removeChild(Render.$('old-screen'));
+      }
+    }, 100);
+    }
+
+
+    animateExit() {
+
     }
 }
 

@@ -1,10 +1,10 @@
 'use strict'
 
 import Input from '/Components/Input/input.js';
-
+import Toggle from '/Components/Input/Toggle.js';
 
 import * as Render from '../../Javascript/render.js';
-
+import * as Admin from '../../Containers/Admin/index.js';
 
 
 
@@ -12,17 +12,21 @@ import * as Render from '../../Javascript/render.js';
 export default class EditCard {
   constructor(props) {
     this.createEditCard(props);
-    if(props.title) {
-      Render.renderText(this.el, "Question " + props.questionNum);
+      Render.renderText(this.el, "Question " + props.questionNum, "h2");
+    if(props.type === 'add') {
+      this.createAddQuestionTemplate(props);
+    } else {
+      this.createEditCardTemplate(props);
     }
-    this.createEditCardTemplate(props);
+    this.addHandlers(props);
     return this.el;
   }
   
     createEditCard(props) {
+      console.log(props.id)
       this.el = document.createElement("div");
         this.el.id = props.id;
-        this.el.classList.add("card-edit")
+        this.el.classList.add("card-edit");
     }
 
 
@@ -30,26 +34,41 @@ export default class EditCard {
       this.input = new Input({id: 'test-id', placeholder: props.title, value: props.title, type: 'text'});
       this.el.append(this.input);
 
+      let divider = document.createElement("div");
+        divider.classList.add("separator");
+        Render.renderText(divider, "Question Type");
+      this.el.appendChild(divider);
+
+      this.select = new Input({id: "selector", type: "dropdown", types: ['Text', 'Number', 'Multiple Choice', 'Checkboxes'], value: props.input})
+      this.el.append(this.select)
+      
       this.buttonsContainer = document.createElement('div');
         this.buttonsContainer.classList.add('card-edit-button-container');
       this.el.append(this.buttonsContainer);
-
-
-      this.select = new Input({id: "selector", type: "dropdown", value: ['text', 'number', 'multi-select', 'single-select']})
-      //console.log(this.select)
-      this.el.append(this.select)
-
+      let toggle = new Toggle();
       this.binIcon = document.createElement("div");
         this.binIcon.classList.add('icon', 'bin');
-        this.buttonsContainer.appendChild(this.binIcon);
-
-
-
+        this.buttonsContainer.append(this.binIcon, toggle);
     }
 
-    generateStyles() {
-      this.el.setAttribute("style", Render.useStyles(styles));
+
+    createAddQuestionTemplate(props) {
+      //code here
     }
+
+    addHandlers(props) {  
+        if(this.binIcon) {
+          this.binIcon.addEventListener("click", function() {
+            let popup = window.confirm("Are you sure you want to delete " + props.title);
+            if (popup === true) Admin.deleteQuestion(props.id, props.quizTitle);
+          });
+        }
+        if(props.type === 'add') {
+          this.el.addEventListener("click", function() {
+            Admin.addQuestion();
+          }); 
+        }
+      } 
 }
 
 
