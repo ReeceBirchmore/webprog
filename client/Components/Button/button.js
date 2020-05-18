@@ -6,7 +6,6 @@ import * as Admin from '../../Containers/Admin/index.js';
 import * as FX from '../../Javascript/fx.js';
 import * as Card from '../../Containers/Quiz/index.js';
 
-import { answers } from '/Components/Input/input.js';
 
 
 function addHandler(el, props) {
@@ -58,8 +57,6 @@ function addHandler(el, props) {
       if(props.action === 'createQuiz') {
         Admin.createNewQuiz({answers}.answers.response[0].value);
       }
-
-
     })
 
 }
@@ -126,8 +123,7 @@ export default class Button {
           Render.renderText(text, "Submit");
             text.classList.add("div")
             this.el.appendChild(text);
-          this.el.classList.add("button");
-          this.el.classList.add("right");
+          this.el.classList.add("button", 'submit');
         }
 
         if(props.type === 'create') {

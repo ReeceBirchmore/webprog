@@ -95,7 +95,7 @@ export default class QuizCard {
 
 
         this.linkIcon.addEventListener("click", function() {
-          navigator.clipboard.writeText("http://localhost:8080/quiz/" + props.id + "/flow/")
+          navigator.clipboard.writeText("http://localhost:8080/#/quiz/" + props.id + "/flow/")
           Render.createToast("Text Copied to Clipboard", null, 'close');
         });
         this.shareIcon.addEventListener("click", function() {

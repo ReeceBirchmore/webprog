@@ -3,9 +3,9 @@
 
 import Toast from '/Components/Toast/toast.js';
 
-import * as Render from '../../Javascript/render.js';
 import * as Quiz from '/Javascript/quiz.js';
 import * as Card from '../../Containers/Quiz/index.js';
+import { $, renderText } from './render.js';
 
 
 
@@ -24,30 +24,30 @@ let bool = false;
 export function toastManagement() {
     bool = false;
     setTimeout(function() {
-    Render.$('toast').classList.add('appear');
+    $('toast').classList.add('appear');
     }, 100);
 
     linger = setTimeout(function() {
         if(!bool) {
-        Render.$('toast').classList.add('remove'); 
-        Render.$('toast').classList.remove('appear');
+        $('toast').classList.add('remove'); 
+        $('toast').classList.remove('appear');
         }
     }, 3000);
 
     destroy = setTimeout(function() {
         if(!bool) {
-        Render.$('root').removeChild(Render.$('toast'));
+        $('root').removeChild($('toast'));
         }
     }, 3500);
 }
 
 export function toastClear() {
-    Render.$('toast').classList.add('remove'); 
-    Render.$('toast').classList.remove('appear');
+    $('toast').classList.add('remove'); 
+    $('toast').classList.remove('appear');
 
     setTimeout(function() {
         bool = true;
-        Render.$('body').removeChild(Render.$('toast'));
+        $('body').removeChild($('toast'));
     }, 100);
 }
 
@@ -60,11 +60,9 @@ export function toastClear() {
 **************************************************************************/
 
 export function bounceModal() {
-    console.log(Render.$('modal'))
-    Render.$('modal').classList.add('bounce-in')
+    console.log($('modal'))
+    $('modal').classList.add('bounce-in')
 }
-
-
 
 
 /*************************************************************************
@@ -74,92 +72,30 @@ export function bounceModal() {
 **************************************************************************/
 
 export function progressCheck(val, quizLength) {
-    let prog = Render.$('progressSpan');
+    let prog = $('progressSpan');
     prog.style.width = (val / (quizLength - 1)) * 100 + "%";
 }
 
 
 
-
-
-
-
 /*************************************************************************
 *
-* Card Flow Animation Management
+* Submission Animation Management
 *
 **************************************************************************/
-export function moveCard() {
-    Render.$('card').classList.add('completed');
-    setTimeout(function() {
-        Render.$('card').classList.add('nextCard');
-    }, 120);
-}
 
-
-export function returnCard() {
-        Render.$('card').classList.add('completed');
-        setTimeout(function() {
-            Render.$('card').classList.add('nextCard');
-        }, 100);
-}
-
-
-
-
-
-let count;
-
-export function animatecard(operand) {
-    let card;
-    console.log(Card.cardCount)
-    if(count == undefined) {
-        count = Card.cardCount;
-    }
-        if(operand > 1) {
-            console.log(count);
-            count = count - 1;    
-            card = Render.$("card-" + count);
-            console.log(card);
-            card.classList.remove("cardFlip");
-            
-
-    
-        } else {
-            console.log("REMOVE")
-           
-            card = Render.$("card-" + count);
-            card.classList.add("cardFlip");
-            
-            Card.addCard(count);
-            count = count + 1;
-        }   
+export function submitAnimation() {
+    $('envelopearticle').classList.add('letter-sent');
+    $('envelopeside1').classList.add('side-sent');
+    $('envelopefront').classList.add('envelope-sent');
+    $('envelopeback').classList.add('envelope-sent');
+    $('submitbtn').style.display = 'none';
+    $('prevbtn').style.display = 'none';
+    let text = renderText($('root'), "Thanks for completing this questionnaire");
+    text.classList.add('result-message-sent')
 }
 
 
 
-/*
-export function animatecard(operand) {
-    let card;
-    console.log(Card.cardCount)
-    if(count == undefined) {
-        count = Card.cardCount;
-    }
-        if(operand > 1) {
-            console.log(count)
-            card = Render.$("card-" + count);
-            console.log(card);
-            card.classList.remove("cardFlip");
-            count = count + 1;    
 
-    
-        } else {
-            console.log("REMOVE")
-            count = count - 1;
-            card = Render.$("card-" + count);
-            card.classList.add("cardFlip");
-            Card.addCard(count);
-        }   
-}
 
-*/

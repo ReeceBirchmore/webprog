@@ -1,21 +1,31 @@
 'use strict'
 
-import * as Render from '../../Javascript/render.js';
-
+import { renderText, $, createToast, render, removeRender } from '../../Javascript/render.js';
+import { toastClear } from '../../Javascript/fx.js'
+import { j, answers1 } from '../../Containers/Quiz/index.js';
 
 function setState(props) {
   //set text here if exists within the local storage
 }
 
 export let textHolder;
-export let answers = {response: [] };
-export let question = new Object;
+
+
+
+export let options = { qNumber: '', choices: [], title: '' };
+
+
 let selection;
 let inputIndex;
 
+
+
+
+
+
 export default class Input {
   constructor(props) {
-    this.setType(props);
+    //this.setType(props);
     this.createInputType(props);
     return this.group;
   }
@@ -27,22 +37,20 @@ export default class Input {
       this.group.classList.add('group');
 
     if(props.type === 'select') {
+      console.log("DRFFGfd")
       let wrap = document.createElement('div');
         wrap.classList.add('wrap')
       let group = document.createElement('div');
         group.classList.add('select');
-
       let input = document.createElement('select');
         input.classList.add('select-text');
         input.id = props.id;
-
       props.types.forEach(option => {
           let selectOption; selectOption = document.createElement('option');
           selectOption.text = option;
           selectOption.classList.add('option')
           input.add(selectOption);
       });
-
       let highlight = document.createElement('span');
         highlight.classList.add('select-highlight');
       let selectBar = document.createElement('span');
@@ -50,12 +58,9 @@ export default class Input {
       this.group.append(wrap);
       wrap.append(group);
       group.append(input, highlight, selectBar)
-
-
     }
 
-
-    if(props.type === 'text') {  
+    if(props.type === 'text' || props.type === 'number') {  
       let input = document.createElement('input');
         input.type = props.type;
         if(props.placeholder) input.placeholder = props.placeholder;
@@ -70,101 +75,76 @@ export default class Input {
       this.group.appendChild(bar);
       this.keyUpEventListener(input, props);
     }
+
+    if(props.type === 'single-select') { 
+      let input = document.createElement('input');
+        input.type = 'radio';
+        input.name = props.name;
+        input.id = props.id;
+        input.value = props.options;
+        //Need to seperate question choices from answers table to allow 3D quizzing
+        //if(props.linkedQ != null) input.setAttribute('data-link-q', props.linkedQ)
+      let textLabel = document.createElement('label');
+        textLabel.setAttribute('for', props.id);
+        textLabel.classList.add('pure-material-radio');
+      let span = document.createElement('span');
+        span.textContent = props.options; 
+      this.group.append(textLabel);
+      textLabel.appendChild(input);
+      textLabel.appendChild(span);
+      this.radioEventListener(this.group, props);
+    }
+
+    if(props.type === 'multi-select') {
+      let input = document.createElement('input');
+        input.type = 'checkbox';
+        input.name = props.name;
+        input.id = props.id;
+        input.value = props.options;
+      let textLabel = document.createElement('label');
+        textLabel.setAttribute('for', props.id);
+        textLabel.classList.add('pure-material-checkbox');
+       let span = document.createElement('span');
+        span.textContent = props.options; 
+      this.group.append(textLabel);
+      textLabel.appendChild(input);
+      textLabel.appendChild(span);
+      this.checkboxEventListener(this.group, props);
+    }
   }
 
 
 
 
 
+  setRestrictions(props) {
 
-    setType(props) {
-      if(props.value === 'multi-select') { props.value = 'Checkboxes'; this.createDropDown(props); }
-      if(props.value === 'single-select') { props.value = 'Multiple Choice'; this.createDropDown(props);}
-      if(props.type === 'dropdown') { props.type = 'select'; this.createDropDown(props); return;}
-      if(props.value === 'text') {  }
-    } 
+  }
 
 
 
 
-    createDropDown(props) {
-      let input = document.createElement('input');
-        input.type = props.type;
+
+    radioEventListener(el, props) {
+      el.addEventListener('change', function(e) {
+            options.qNumber = j + 1;
+            options.choices = [e.target.value];
+            options.linkedQ = e.target.getAttribute('data-link-q');
+        return;
+    });
+  }
+    checkboxEventListener(el, props) {
+      el.addEventListener('change', function(e) {
+              options.qNumber = j + 1;
+              options.choices.push(e.target.value);
+          return;
+      });
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    createContainer() {
-      this.contain = document.createElement("div");
-        this.contain.id = "test";
-        this.contain.classList.add("container");
-    }
-   
-
-    createInput(props) {
-      this.el = document.createElement("input");
-        this.el.id = props.id;
-        this.el.classList.add("input");
-        return this.el;
-    }
-
-
-
-
-    
-    
-
-
-
-    createLabel(props) {
-      this.label = document.createElement("label");
-        this.label.classList.add("label");
-      this.text = document.createTextNode(props.options);
-        this.label.setAttribute("for", this.el.id);
-      this.label.appendChild(this.text);
-      this.contain.appendChild(this.label);
-    }
-
-
-
-
-
-
-
-
-
-
-
     keyUpEventListener(el, props) {
-      el.onkeyup = function() {
-        selection = el.value;
-        }
       el.onblur = function() {
-        textHolder = el.value;
-        inputIndex = answers.response.findIndex((question => question.id == el.id))
-        if(inputIndex >= 0) {
-          answers.response[inputIndex].value = el.value;
-        } else {
-          question = new Object ({
-            id: el.id,
-            title: props.title,
-            value: el.value
-          });
-          answers.response.push(question);
-        }
-      }
+          options.qNumber = j + 1;
+          options.choices.push(el.value);
+        return;
     }
+  }
 }
-

@@ -11,7 +11,7 @@ import QuestionNumber from '/Components/QuestionNumber/questionnumber.js';
 import Modal from '/Components/Modal/modal.js';
 import Footer from '/Components/Footer/footer.js';
 import Nav from '/Components/Nav/nav.js';
-import { answers } from '/Components/Input/input.js';
+import { options } from '/Components/Input/input.js';
 import Screen from '/Components/Screen/screen.js';
 
 
@@ -28,29 +28,23 @@ import * as FX from '../../Javascript/fx.js';
 // ////////////////////////////////////////////////////////////// Generate Page Template
 // #region  Generate Page Template
 
-
-//let screen = new Screen({id: 'quiz'});
-
-
-
+export const answers1 = { responses: [] } //The answer form built for submission!
+export let j = 0; //Counter
 
 //Variables to sort!
 let quizID; //ID of quiz
-export let j = 0; //Counter
-let title;
-
-let qData;
-
-
-
+let qData; //Questionnaire Data pulled from database
 let uid; //Quiz ID
+let arrOfCards = [];  //All cards generated from the list of questions
+let next, prev; //Buttons
+let params; //URL Parameters
+let newArr = []; //cardStackArr
+let questions; //Used to store database questions
 
-let arrOfCards = [];
 
-let next;
-let prev;
 
-let params;
+
+
 
 
 // #endregion
@@ -64,7 +58,6 @@ let params;
  *************************/
 
 export function generateQuiz(param) {
-
     new Screen({id: 'quiz', class: 'quizScreen'});
     uid = param.id;
     j = 0;
@@ -168,27 +161,33 @@ async function generateQuestionnaire(uid) {
             qData = [{ msg: 'Failed to load cards' }];
             return;
         }
+
+
+
+
+
 }
 
 async function generateQuestions(uid) {
     const response = await fetch('/api/questions/' + uid);
-        let questions;
         if (response.ok) {
             questions = await response.json();
             let i = 1;
             questions.forEach(question => {
-                let card = new Card({id: 'card-' + i++, title: question.question });
+                let card = new Card({id: 'card-' + i++});
                     card.classList.add("card");
-                    // if(question.options != null) {
-                    //     for(let x = 0; x < question.options.length; x++) {
-                    //         let input = new Input({id: 'input-' + x + "question-" + i, type:  question.input, options: question.options[x] });
-                    //             input.classList.add("input");
-                    //         (card).appendChild(input);
-                    //     }
-                    // } else {
+                    let text = renderText(card, question.question, 'label');
+                    text.setAttribute('for', 'input-question-' + i)
+                    if(question.options != null) {
+                        for(let x = 0; x < question.options.length; x++) {
+                            let input = new Input({id: 'input-' + x + '-question-' + i, type:  question.input, options: question.options[x], name: i, title: question.question, linkedQ: 3});
+                                input.classList.add("input");
+                            (card).appendChild(input);
+                        }
+                    } else {
                         let input2 = new Input({id: 'input-question-' + i, type: question.input, title: question.question });
                             (card).appendChild(input2);
-                    //}
+                    }
                 arrOfCards.push(card);
                 return arrOfCards;
             });
@@ -208,11 +207,11 @@ async function generateQuestions(uid) {
 *
 **************************************************************************/
 
-let newArr = [];
+
 
 function stackManager(val) {
 //This entire section needs reworking
-    //Previous button handling! WILL NEED ITS OWN FUNCTION SOON
+//Previous button handling! WILL NEED ITS OWN FUNCTION SOON
     if(j === 0) {
         $('prevbtn').disabled = true;
         $('prevbtn').classList.add('disabled');
@@ -221,37 +220,35 @@ function stackManager(val) {
         $('prevbtn').disabled = false;
         $('prevbtn').classList.remove('disabled');
     }
-
     if(j != arrOfCards.length) {
         if($('submitbtn')) {
+            $('nextbtn').style.display = 'flex';
             $('submitbtn').style.display = "none";
-        }
+        } 
         if($('card-submit')) {
-            $('card-submit').style.display = "none";
+            $('root').removeChild($('card-submit'));
         }
     }
-
     //Display all given answers and give option to submit quiz
     if(j === arrOfCards.length) {
-
         if($('submitbtn')) {
-            $('submitbtn').style.display = "block";
+            $('submitbtn').style.display = 'block';
+            $('nextbtn').style.display = 'none';
         } else {
-            let submit = new Button({id: 'submitbtn', type: 'submit', action: 'submit', render: 'Footer'});
-        }
-        
-
+            let submit = new Button({id: 'submitbtn', type: 'submit', action: 'submit'});
+            $('nextbtn').style.display = 'none';
+        }            
         if($('card-submit')) {
             $('card-submit').style.display = "block";
         } else {
-            let submissioncard = new Card({id:'card-submit', answers: { answers }});
-                submissioncard.classList.add('card-submit');
-            $('root').appendChild(submissioncard);
+            let submissioncard = new Card({id:'card-submit', answers: answers1.responses });
+                //submissioncard.classList.add('card-submit');
+            //$('root').appendChild(submissioncard);
         }
     }
-
-
 //End of horrible section
+
+
 
     newArr = [];
     if(!val) {
@@ -265,9 +262,7 @@ function stackManager(val) {
         sortDeck();
         return;
     }
-
     if(val === 'increase') {
-        
         if(arrOfCards) {
             newArr.push(arrOfCards[j], arrOfCards[j + 1], arrOfCards[j + 2]);
         }
@@ -343,6 +338,30 @@ export function toLinear() {
 
 
 
+function handleAnswers() {
+    let response = new Object({
+        qid: j + 1,
+        choices: (options.choices.length === 0) ? 'No Answer' : [options.choices],
+        title: questions[j].question
+    });
+    let inputIndex = answers1.responses.findIndex((question => question.qid == j + 1))
+    if(inputIndex === -1 ) {   
+        answers1.responses.push(response);
+    } else {
+        console.log(answers1.responses[inputIndex].choices)
+        if(options.choices.length != 0) {
+            answers1.responses[inputIndex].choices = [options.choices];
+        }
+    }
+    if(options.linkedQ) j = options.linkedQ;
+    console.log(j)
+    options.choices = []; //Clear the options array again
+}
+
+
+
+
+
 /*************************************************************************
 *
 * Up Down functions to control the flow of cards
@@ -351,12 +370,14 @@ export function toLinear() {
 
 
 export function increase() {
+    handleAnswers();
     if(j < arrOfCards.length) {
         j++;
         $('card-' + j).classList.add('card-remove');
         stackManager('increase');
         FX.progressCheck(j, arrOfCards.length + 1);
     }
+
 }
 
 function nextCard() {
@@ -385,10 +406,18 @@ export function decrease() {
 
 
 
+
+
+
+
+
+
+
 export async function submitQuiz() {
+    FX.submitAnimation();
     await fetch('/api/submit/' + uid, {
         method: 'POST', // or 'PUT'
-        body: JSON.stringify(answers),
+        body: JSON.stringify(answers1),
         headers: {
             'Content-Type': 'application/json',
         },
@@ -396,8 +425,9 @@ export async function submitQuiz() {
     let test;
     const quizAnswersTest = await fetch('/api/answers/' + qData[0].id)
         if (quizAnswersTest.ok) {
-            new Screen({id: 'quiz-complete', class: 'quizScreen'});
-            new Nav({id:"nav", title: "Thank You"});
+                //FX.submitAnimation();
+            // new Screen({id: 'quiz-complete', class: 'quizScreen'});
+            // new Nav({id:"nav", title: "Thank You"});
             test = await quizAnswersTest.json();
 
         } else {
@@ -406,8 +436,5 @@ export async function submitQuiz() {
         }
 }
 
-
-
-    
 
 

@@ -67,6 +67,7 @@ async function listQuestions(quizid) {
 
 
 async function quizSubmission(data, quizid) {
+  console.log(data)
   let quizdata = JSON.stringify(data);
   const q = 'INSERT INTO answers (answers, quizid) VALUES( $1, $2) ';
   const result = await sql.query(q, [quizdata, quizid]);
@@ -90,7 +91,7 @@ async function quizUpload(data) {
   return uid;
 }
 
-
+c
 async function addAQuestion(quizid) {
   let uid = JSON.parse(quizid).id;
   const q = 'INSERT INTO Questions (quizid) VALUES($1) ';

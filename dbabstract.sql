@@ -62,3 +62,13 @@ INSERT INTO Questions (question, quizid, input) VALUES('What would you rate Lybi
 INSERT INTO Questions (question, quizid, input) VALUES('How do you personally feel Lybin has shaped your world?', 26JBU, 'text');
 INSERT INTO Questions (question, quizid, options, input) VALUES('What do you love the most about our lord Lybin?', 26JBU, '{That damned smile, his amazing body, his voice}', 'text');
 INSERT INTO Questions (question, quizid, input) VALUES('How do you personally feel Lybin has shaped your world?', , 'range');
+
+
+INSERT INTO Questions (question, quizid, options, input) VALUES('What do you love the most about our lord Lybin?', 'IAjDg', '{That damned smile, his amazing body, his voice}', 'text');
+INSERT INTO Questions (question, quizid, options, input) VALUES('What do you love the most about our lord Lybin?', 'IAjDg', '{That damned, his amazing, his voice}', 'multi-select');
+INSERT INTO Questions (question, quizid, options, input) VALUES('What do you love the most about our lord Lybin?', 'IAjDg', '{That , his, his}', 'multi-select');
+
+INSERT INTO Questions (question, quizid, options, input, linkedQ) VALUES('What do you love the most about our lord Lybin?', 'IAjDg', '{That damned smile, his amazing body, his voice}', 'text', '7');
+INSERT INTO Questions (question, quizid, options, input, linkedQ) VALUES('What do you love the most about our lord Lybin?', 'IAjDg', '{That damned smile, his amazing body, his voice}', 'text' '2');
+INSERT INTO Questions (question, quizid, options, input, linkedQ) VALUES('What do you love the most about our lord Lybin?', 'IAjDg', '{That damned smile, his amazing body, his voice}', 'text', '1');
+

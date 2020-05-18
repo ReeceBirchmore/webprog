@@ -13,7 +13,7 @@ import Fab from '../../Components/Fab/fab.js';
 import QuizCard from '../../Components/QuizCard/quizcard.js';
 import Screen from '/Components/Screen/screen.js';
 
-import { answers } from '/Components/Input/input.js';
+
 import { filebutton } from '/Components/Modal/modal-content.js';
 
 
@@ -55,7 +55,7 @@ let quizListObject;
 
 
 export function generatePage(param) {
-    new Screen({id: '1', class: 'adminScreen'});
+    new Screen({id: 'admin-console', class: 'adminScreen'});
     new Nav({id:'nav', title: "Administrator Console", add: true});
     displayQuizzes(params);
 }
@@ -238,7 +238,6 @@ export async function editQuiz(uid) {
             let questions = await response.json();
             let i = 1;
             questions.forEach(question => {
-                console.log(i)
                 let card = new EditCard({id: question.id, title: question.question, questionNum: i++, input: question.input, });
                 $('root').append(card);
             });        

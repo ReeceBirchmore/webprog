@@ -6,13 +6,14 @@ import * as FX from '../../Javascript/fx.js';
 import {cursorCoords} from '../../Javascript/app.js';
 
 
-
+const historyArray = [];
 
 
 export default class Screen {
   constructor(props) {
     this.maths();
     this.generateStructure(props);
+    this.history(props);
     this.animateEntry();
   }
 
@@ -39,6 +40,23 @@ export default class Screen {
           Render.$('body').append(this.screen);
     }
 
+    history(props) {
+      historyArray.push(props.id);
+      console.log(historyArray.findIndex(screen => screen == props.id));
+      console.log(historyArray);
+      /* Using this, if the index array is -1, apply no style, page does not exist
+      If the index is 0, apply now style, as it is the current page
+      if the Index is 1, apply the return style, determine between retrun (slide right) or slide down
+      */
+    }
+
+    
+
+
+
+    determineDirection(props) {
+      //Determine the direction the page will travel here (reverse, forward, up, down)
+    }
 
 
     animateEntry() {

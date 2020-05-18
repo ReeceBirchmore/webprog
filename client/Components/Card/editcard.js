@@ -39,7 +39,7 @@ export default class EditCard {
         Render.renderText(divider, "Question Type");
       this.el.appendChild(divider);
 
-      this.select = new Input({id: "selector", type: "dropdown", types: ['Text', 'Number', 'Multiple Choice', 'Checkboxes'], value: props.input})
+      this.select = new Input({id: "selector", type: "select", types: ['Text', 'Number', 'Multiple Choice', 'Checkboxes'], value: props.input})
       this.el.append(this.select)
       
       this.buttonsContainer = document.createElement('div');
