@@ -16,7 +16,13 @@ export default class Nav {
     if(props.return === true) this.displayReturnIcon();
     if(props.add === true) this.displayUploadIcon();
     if(props.close === true) this.displayCloseIcon();
-    this.displayTitle(props);
+    if(props.clear === true) this.displayClearButton();
+    if(props.title) { 
+      this.displayTitle(props);
+      this.el.style.boxShadow = "0 0 0 rgba(0,0,0,0.01), 0 2px 5px rgba(0,0,0,0.22)";
+    } else {
+      this.displayQuestionNumber(props);
+    }
     this.eventHandler(props);    
     render(this.el, $('body'));
   }
@@ -29,7 +35,24 @@ export default class Nav {
 
     displayTitle(props) {
       let title = renderText(this.el, props.title, "h2");
-      title.classList.add('center')
+
+    }
+
+
+    displayQuestionNumber(props) {
+      let currentNumber = renderText(this.el, '1 ', 'p');
+        currentNumber.id = 'questionNumber';
+        currentNumber.style.paddingRight = "0.2rem";
+      let questionnaireProgress = renderText(this.el, " of " + props.length);
+      questionnaireProgress.classList.add('questionNum')
+    }
+
+
+    displayClearButton() {
+      this.clearIcon = document.createElement('button');
+        this.clearIcon.classList.add('icon', 'clear', 'ripple');
+        this.el.appendChild(this.clearIcon);
+        this.addHandlers();
     }
 
     displayReturnIcon() {
@@ -70,18 +93,13 @@ export default class Nav {
     }
 
 
-
-
+    addHandlers() {
+        if(this.clearIcon) {
+          this.clearIcon.addEventListener("click", function() {
+            sessionStorage.clear();
+            location.reload();
+          });
+      }
+    }
 }
 
-
-
-
-
-    // //Handle profile button
-    // displayProfile(props) {
-    //     this.profile = document.createElement("div");
-    //       this.profile.id = props.id + "Profile";
-    //       this.profile.setAttribute("style", Render.useStyles(profile));
-    //       Render.render(this.profile, this.el);
-    // }

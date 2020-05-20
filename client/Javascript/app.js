@@ -68,6 +68,10 @@ const router = new Router({
     Admin.buildEditor(id);
   })
 
+  .add(/admin\/quiz\/response\/(.*)/, (id) => {
+    Admin.viewResponses(id);
+  })
+
   .add(/admin/, () => {
     Admin.generatePage();
   })

@@ -9,17 +9,16 @@ import * as Render from '../../Javascript/render.js';
 
 export default class Card {
   constructor(props) {
-    this.createCard(props);
-    if(props.title) Render.renderText(this.el, props.title);
-    
+    this.createCard(props);  
     if(props.answers) this.showAnswers(props);
     return this.el;
   }
   
     createCard(props) {
       this.el = document.createElement("div");
-        this.el.id = props.id;
-        this.el.classList.add("card")
+        if(props.id) this.el.id = props.id;
+        this.el.classList.add("card");
+        if(props.required) this.el.setAttribute('data-required', props.required);
     }
 
 
@@ -46,8 +45,6 @@ export default class Card {
     }
 
 
-
-
     generateEnvelope(props) {
       let article = document.createElement('article');
         article.id = 'envelopearticle'
@@ -58,7 +55,8 @@ export default class Card {
       Render.renderText(this.el, "Your answers:", "h2");
       let scrollContainer = document.createElement('div');
         scrollContainer.classList.add('scroll-container');
-      side1.append(scrollContainer)
+        scrollContainer.id = 'scroll-container';
+      side1.append(scrollContainer);
       for(let i = 0; i < props.answers.length; i++) {
         let container = document.createElement('div');
           container.classList.add('previewContainer');
@@ -80,8 +78,6 @@ export default class Card {
       Render.$('root').append(article);
       article.append(side1, side2);
       Render.$('root').append(divFront, divBack)
-
-
     }
 }
 

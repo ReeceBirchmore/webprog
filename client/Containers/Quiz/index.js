@@ -7,53 +7,50 @@ import Button from '/Components/Button/button.js';
 import Input from '/Components/Input/input.js';
 import Toast from '/Components/Toast/toast.js';
 import Progress from '/Components/Progress/progress.js';
-import QuestionNumber from '/Components/QuestionNumber/questionnumber.js';
-import Modal from '/Components/Modal/modal.js';
 import Footer from '/Components/Footer/footer.js';
 import Nav from '/Components/Nav/nav.js';
 import { options } from '/Components/Input/input.js';
 import Screen from '/Components/Screen/screen.js';
-
-
-
-import * as Quiz from '/Javascript/quiz.js';
 import { $, render, renderText, createToast } from '../../Javascript/render.js';
 import * as FX from '../../Javascript/fx.js';
-//import Footer from '../../Components/Footer/footer.js';
 
 
 
-
-// #endregion
+// #endregion Imports
 // ////////////////////////////////////////////////////////////// Generate Page Template
 // #region  Generate Page Template
 
-export const answers1 = { responses: [] } //The answer form built for submission!
-export let j = 0; //Counter
+export const answers1 = { responses: [], time: '' } //The answer form built for submission!
+export let j = 0; //Counter RENAME
 
 //Variables to sort!
-let quizID; //ID of quiz
 let qData; //Questionnaire Data pulled from database
 let uid; //Quiz ID
 let arrOfCards = [];  //All cards generated from the list of questions
-let next, prev; //Buttons
-let params; //URL Parameters
+
 let newArr = []; //cardStackArr
-let questions; //Used to store database questions
+let questions; //Used to store questions array pulled from database
+
+let startTime;
+let endTime;
 
 
 
 
-
-
-
-// #endregion
-// ////////////////////////////////////////////////////////////// Generate Quiz
+// #endregion Variables
+// ////////////////////////////////////////////////////////////// GENERATE PAGE
 // #region  Generate Quiz Setup
+
+/****************************************************************
+ * 
+ *  This function will start the process of creating the screen,
+ *  generating questions and sorting the card stack 
+ * 
+ ***************************************************************/
 
  /*************************
  * 
- * @param { Array } params 
+ * @param { Array } params
  * 
  *************************/
 
@@ -61,28 +58,29 @@ export function generateQuiz(param) {
     new Screen({id: 'quiz', class: 'quizScreen'});
     uid = param.id;
     j = 0;
-    quizID = params;
     if(arrOfCards.length === 0) {
         generateQuestionnaire(uid);
-        generateQuestionObjects(uid);
         generateQuestions(uid)
     } else {
         generateQuestionnaire(uid);
-        generateQuestionObjects();
         stackManager();
     }
+    //Start the clock if timed!
+    startTime = new Date();
 }
-
-
-
-
-
-
-
 
 // #endregion
 // ////////////////////////////////////////////////////////////// GENERATE CARDS AND INPUTS
-// #region Generate Cards
+// #region Generate Cards and Inputs
+
+/****************************************************************
+ * 
+ *  This function will start the process of pulling data from 
+ *  the database in order for the quiz to display. 
+ *  It also handles the generation of input, card and text 
+ *  components
+ * 
+ ***************************************************************/
 
  /**************************
  * 
@@ -95,103 +93,81 @@ export function generateQuiz(param) {
 
 //let toast = new Toast({id:'toast', text:"Quiz Submitted Succesfully", action: FX.toastClear , actionText: "Close"})
 //Render.render(toast, Render.$('root'));
-
-
-
 //let quizCard = new QuizCard({id: 1, quizTitle: "Test Title", questions: "7", expire: "Test Date", author: "Test Author"});
 //let progress = new Progress({id: "progressBar"})
 //let qNum = new QuestionNumber({id: '1'});
-//let card = new Card({id: Quiz.quiz[1].questions[1].id, title: Quiz.quiz[1].questions[1].text});
-        
+//let card = new Card({id: Quiz.quiz[1].questions[1].id, title: Quiz.quiz[1].questions[1].text});      
 //let modal = new Modal({text: "Click to continue", title:"Example Questionnaire"})
-    /*
-           let btn = new Button({id: "test up progress", name:"Next Question 1", action: "progress", param: 1});
-        let btn2 = new Button({id: "test down progress", name:"Previous Question 1", action: "progress", param: 0});
-*/
-    //let btn3 = new Button({id: "TEST2", name:"Previous Question", action: "toast"});
+//let btn = new Button({id: "test up progress", name:"Next Question 1", action: "progress", param: 1});
+//let btn2 = new Button({id: "test down progress", name:"Previous Question 1", action: "progress", param: 0});
+//let btn3 = new Button({id: "TEST2", name:"Previous Question", action: "toast"});
 
 
+/****************************************************************
+ * 
+ *  This function will start the process of pulling the data 
+ *  from the database, dragging out quiz data (settings)
+ * 
+ ***************************************************************/
 
-/*************************************************************************
-*
-* Generate the splash screen
-*
-**************************************************************************/
-
-
-
-
-
-
-
-
-
-
-
-
-/*************************************************************************
-*
-* Get all questions from the server, attach to a card and build
-*
-**************************************************************************/
-
-function generateQuestionObjects(uid) {
-    new Footer({id:'Footer'});
-    prev = new Button({id: "prevbtn", name:"Previous Question", action: "Quiz.down", param: -1, render: "Footer", type: "previous"});
-    next = new Button({id: "nextbtn", name:"Next Question", action: "Quiz.up", param: +1, render: "Footer", type: "next"}); 
-    new Progress({id: "progressBar"});    
-}
-
-
-
-
-
-
-
-
-
-
-
-async function generateQuestionnaire(uid) {
+export async function generateQuestionnaire(uid) {
     const questionnaire = await fetch('/api/quizzes/' + uid);       
         if (questionnaire.ok) {
             qData = await questionnaire.json();
-            new Nav({id:"nav", title: qData[0].title});
         } else {
             qData = [{ msg: 'Failed to load cards' }];
             return;
         }
 
-
-
-
-
+        new Footer({id:'Footer'});
+        if(qData[0].allowback != false ) { 
+            new Button({id: "prevbtn", name:"Previous Question", action: "Quiz.down", param: -1, render: "Footer", type: "previous"});
+        }
+        new Button({id: "nextbtn", name:"Next Question", action: "Quiz.up", param: +1, render: "Footer", type: "next"}); 
+        new Progress({id: "progressBar"});    
 }
+
+
+
+
+/****************************************************************
+ * 
+ *  This function will start the process of pulling data from 
+ *  the database in order for the questionnaire to display. 
+ *  It also handles the generation of input, card and text 
+ *  components
+ * 
+ ***************************************************************/
 
 async function generateQuestions(uid) {
     const response = await fetch('/api/questions/' + uid);
         if (response.ok) {
             questions = await response.json();
+            new Nav({id:"nav", length: questions.length, clear: true});
             let i = 1;
             questions.forEach(question => {
-                let card = new Card({id: 'card-' + i++});
+                let card = new Card({id: 'card-' + i++, required: true});
                     card.classList.add("card");
-                    let text = renderText(card, question.question, 'label');
-                    text.setAttribute('for', 'input-question-' + i)
-                    if(question.options != null) {
-                        for(let x = 0; x < question.options.length; x++) {
-                            let input = new Input({id: 'input-' + x + '-question-' + i, type:  question.input, options: question.options[x], name: i, title: question.question, linkedQ: 3});
-                                input.classList.add("input");
-                            (card).appendChild(input);
-                        }
-                    } else {
-                        let input2 = new Input({id: 'input-question-' + i, type: question.input, title: question.question });
-                            (card).appendChild(input2);
+                let text = renderText(card, question.question, 'label');
+                    text.classList.add('label');
+                    text.setAttribute('for', 'input-question-' + i);
+                let quesContainer = document.createElement('div');
+                    quesContainer.classList.add('scroll-container');
+                    card.append(quesContainer);
+                if(question.options != null) {
+                    for(let x = 0; x < question.options.length; x++) {
+                        let input = new Input({id: 'input-' + x + '-question-' + i, type:  question.input, options: question.options[x], name: i, title: question.question, linkedQ: 3});
+                            input.classList.add("input");
+                        (quesContainer).appendChild(input);
                     }
+                } else {
+                    let input2 = new Input({id: 'input-question-' + i, type: question.input, title: question.question });
+                        (quesContainer).appendChild(input2);
+                }
                 arrOfCards.push(card);
                 return arrOfCards;
             });
-                stackManager();
+            stackManager();
             return;
         } else {
             questions = [{ msg: 'Failed to load cards' }];
@@ -207,26 +183,24 @@ async function generateQuestions(uid) {
 *
 **************************************************************************/
 
-
-
 function stackManager(val) {
 //This entire section needs reworking
 //Previous button handling! WILL NEED ITS OWN FUNCTION SOON
-    if(j === 0) {
+    if(j === 0 && $('prevbtn')) {
         $('prevbtn').disabled = true;
         $('prevbtn').classList.add('disabled');
     }
-    else {
+    else if($('prevbtn')) {
         $('prevbtn').disabled = false;
         $('prevbtn').classList.remove('disabled');
     }
     if(j != arrOfCards.length) {
         if($('submitbtn')) {
-            $('nextbtn').style.display = 'flex';
+            $('nextbtn').style.display = 'block';
             $('submitbtn').style.display = "none";
         } 
-        if($('card-submit')) {
-            $('root').removeChild($('card-submit'));
+        if($('envelopearticle')) {
+            $('root').removeChild($('envelopearticle'));
         }
     }
     //Display all given answers and give option to submit quiz
@@ -242,13 +216,9 @@ function stackManager(val) {
             $('card-submit').style.display = "block";
         } else {
             let submissioncard = new Card({id:'card-submit', answers: answers1.responses });
-                //submissioncard.classList.add('card-submit');
-            //$('root').appendChild(submissioncard);
         }
     }
 //End of horrible section
-
-
 
     newArr = [];
     if(!val) {
@@ -262,15 +232,9 @@ function stackManager(val) {
         sortDeck();
         return;
     }
-    if(val === 'increase') {
+    if(val === 'shuffle') {
         if(arrOfCards) {
             newArr.push(arrOfCards[j], arrOfCards[j + 1], arrOfCards[j + 2]);
-        }
-        sortDeck();
-        return;
-    } else if (val === 'decrease') {
-        if(arrOfCards) {
-            newArr.push(arrOfCards[j], arrOfCards[j + 1], arrOfCards[j + 2])
         }
         sortDeck();
         return;
@@ -278,6 +242,15 @@ function stackManager(val) {
 }
 
 
+
+
+
+/****************************************************************
+ * 
+ *  These function will sort the card deck, styling each card as
+ *  appropriate as well as appending new cards when required
+ * 
+ ***************************************************************/
 
 function sortDeck() {
     for(let i = 0; i < newArr.length; i++) {
@@ -288,96 +261,8 @@ function sortDeck() {
             newArr[i].style.transitionDelay = 0.3 * i + "s";
         }
     }
+    //Place the next card to be loaded in at the bottom of the deck
     nextCard();  
-}
-
-
-/*************************************************************************
-*
-* Discard Stack, turn into linear mode
-*
-**************************************************************************/
-
-export function toLinear() {
-    let j = 0;
-    let position;
-    for(let i of arrOfCards) {
-
-        $('root').appendChild(i);
-        setTimeout(function() {
-            j++
-            let position = i.getBoundingClientRect();
-
-            i.style.transform = "translateY(" + (position.height * j) + "px)";
-        }, 100);
-    }
-    // for(let i = 0; i < arrOfCards.length; i++) {
-    //     Render.$('root').appendChild(arrOfCards[i]);
-    //     if(arrOfCards[i - 1]) {
-    //         position = arrOfCards[i - 1].getBoundingClientRect();
-    //     } else {
-    //         console.log("First card")
-    //         position = arrOfCards[i].getBoundingClientRect();
-    //     }
-    //      console.log(position.bottom);
-    //         arrOfCards[i].style.transform = "translateY(" + (position.bottom + 100) + "px)";
-    //         console.log(arrOfCards[i].style.transform)
-    // }
-    // arrOfCards.forEach(card => {
-    //     i++;
-    //     Render.$('root').appendChild(card);
-    //     setTimeout(function() {
-
-    //         card.style.transform = "translateY(" + j * 10 + "%)";
-    //     }, 100);
-    // })
-
-}
-
-
-
-
-
-function handleAnswers() {
-    let response = new Object({
-        qid: j + 1,
-        choices: (options.choices.length === 0) ? 'No Answer' : [options.choices],
-        title: questions[j].question
-    });
-    let inputIndex = answers1.responses.findIndex((question => question.qid == j + 1))
-    if(inputIndex === -1 ) {   
-        answers1.responses.push(response);
-    } else {
-        console.log(answers1.responses[inputIndex].choices)
-        if(options.choices.length != 0) {
-            answers1.responses[inputIndex].choices = [options.choices];
-        }
-    }
-    if(options.linkedQ) j = options.linkedQ;
-    console.log(j)
-    options.choices = []; //Clear the options array again
-}
-
-
-
-
-
-/*************************************************************************
-*
-* Up Down functions to control the flow of cards
-*
-**************************************************************************/
-
-
-export function increase() {
-    handleAnswers();
-    if(j < arrOfCards.length) {
-        j++;
-        $('card-' + j).classList.add('card-remove');
-        stackManager('increase');
-        FX.progressCheck(j, arrOfCards.length + 1);
-    }
-
 }
 
 function nextCard() {
@@ -386,35 +271,150 @@ function nextCard() {
     }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+/****************************************************************
+ * 
+ *  This function will handle the answers, when the next button
+ *  is pressed it calls upon this function to do the following:
+ * 
+ *  - Create a new object
+ *  - Use exported data from input.js to fill in the object
+ *  - Push the object into an array named Answers
+ * 
+ ***************************************************************/
+
+function handleAnswers() {
+    //Answer object to be created to store user data
+    let response = new Object({
+        qid: j + 1,
+        choices: (options.choices.length === 0) ? ['No Answer'] : [options.choices],
+        title: questions[j].question,
+        type: options.type
+    });
+
+    //Find if the object already exists in the array (User returning to edit question)
+    let inputIndex = answers1.responses.findIndex((question => question.qid == j + 1))
+    if(inputIndex === -1 ) {   
+        answers1.responses.push(response);
+    } else {
+        if(options.choices.length != 0) {
+            answers1.responses[inputIndex].choices = [options.choices];
+        }
+    }
+
+    //Directional Quizzing, place counter to directional quiz question number
+    if(options.linkedQ) j = options.linkedQ;
+
+    //Clear the choices array again ready for the next question
+    options.choices = [];
+    options.type = '';
+}
+
+
+/****************************************************************
+ * 
+ *  These functions will handle the direction of the stack, by
+ *  increase a counter 'J' the application is able to keep track
+ *  of what question the user should be on.
+ * 
+ ***************************************************************/
+
+export function increase() {
+    //Detect if the question is required and filled in as appropriate
+    //Once data is fully validated, store answers
+    // if(arrOfCards[j].dataset.required === 'true' && options.choices.length === 0) {
+    //     console.log("REQUIRED QUESTION");
+    // } else {
+        //Answer handling function
+        handleAnswers();
+        //Increase the card stack pointer count
+        //Add the remove class to the topmost card, 
+        //Call upon the stackManager function to increase the deck
+        //Increase Progress
+        if(j < arrOfCards.length) {
+            j++;
+            $('card-' + j).classList.add('card-remove');
+            stackManager('shuffle');
+            FX.progressCheck(j, arrOfCards.length + 1);
+        }
+}
+
 export function decrease() {
+    //Remove the remove class to the topmost card, bring it back up
+    //Decrease the card stack pointer count
+    //Remove the bottommost card from the deck
+    //Call upon the stackManager function to decrease the deck
+    //Decrease Progress
     if(j != 0) {
         $('card-' + j).classList.remove('card-remove');
         j--;
         if(arrOfCards[j + 3]) {
             $('root').removeChild(arrOfCards[j + 3]);
         }
-        stackManager('decrease');
+        stackManager('shuffle');
         FX.progressCheck(j, arrOfCards.length + 1);
     }
 }
 
 
+/****************************************************************
+ * 
+ *  This function will allow the user to submit the questionnaire
+ *  It will take the data from the answers array, stringify it 
+ *  and send it to the backend to be processed and posted onto
+ *  the database.
+ * 
+ ***************************************************************/
 
 
+function downloadCSV(args) {
+    var data, filename, link;
+
+    var csv = convertArrayOfObjectsToCSV({
+        data: answers1.responses
+    });
+    if (csv == null) return;
+
+    filename = args.filename || 'export.csv';
+
+    if (!csv.match(/^data:text\/csv/i)) {
+        csv = 'data:text/csv;charset=utf-8,' + csv;
+    }
+    data = encodeURI(csv);
+
+    link = document.createElement('a');
+    link.setAttribute('href', data);
+    link.setAttribute('download', filename);
+    link.click();
+}
 
 
-
-
-
-
-
-
+//SORT OUT
+function timeDifference() {
+    let endTime = new Date();
+    answers1.time = -diff_minutes(startTime, endTime);
+}
+function diff_minutes(dt2, dt1) {
+  var diff =(dt2 - dt1) / 1000;
+  return (diff);  
+}
 
 
 
 
 export async function submitQuiz() {
     FX.submitAnimation();
+    timeDifference();
     await fetch('/api/submit/' + uid, {
         method: 'POST', // or 'PUT'
         body: JSON.stringify(answers1),
@@ -422,19 +422,87 @@ export async function submitQuiz() {
             'Content-Type': 'application/json',
         },
     });
-    let test;
-    const quizAnswersTest = await fetch('/api/answers/' + qData[0].id)
-        if (quizAnswersTest.ok) {
-                //FX.submitAnimation();
-            // new Screen({id: 'quiz-complete', class: 'quizScreen'});
-            // new Nav({id:"nav", title: "Thank You"});
-            test = await quizAnswersTest.json();
-
-        } else {
-            test = [{ msg: 'Failed to load cards' }];
-            return;
-        }
+        //CHANGE THIS
+        let link = document.createElement('p');
+        link.addEventListener('click', function() {
+            downloadCSV({ filename: qData[0].title + ".csv" });
+        });
+        link.classList.add('result-message-sent');        
+        link.textContent = "Tap here to download your answers";
+        $('root').appendChild(link)
 }
 
 
 
+function convertArrayOfObjectsToCSV(args) {
+    var result, ctr, keys, columnDelimiter, lineDelimiter, data;
+
+    data = args.data || null;
+    if (data == null || !data.length) {
+        return null;
+    }
+
+    columnDelimiter = args.columnDelimiter || ',';
+    lineDelimiter = args.lineDelimiter || '\n';
+
+    keys = Object.keys(data[0]);
+
+    result = '';
+    result += keys.join(columnDelimiter);
+    result += lineDelimiter;
+
+    data.forEach(function(item) {
+        ctr = 0;
+        keys.forEach(function(key) {
+            if (ctr > 0) result += columnDelimiter;
+
+            result += item[key];
+            ctr++;
+        });
+        result += lineDelimiter;
+    });
+    return result;
+}
+
+
+
+
+
+
+    /**
+ * Take an array of objects of similar structure and convert it to a CSV.
+ * @source     https://halistechnology.com/2015/05/28/use-javascript-to-export-your-data-as-csv/
+ * @modifiedBy sators
+ * @param      {Array}  options.data            Array of data
+ * @param      {String} options.columnDelimiter Column separator, defaults to ","
+ * @param      {String} options.lineDelimiter   Line break, defaults to "\n"
+ * @return     {String}                         CSV
+ */
+export default ({data = null, columnDelimiter = ",", lineDelimiter = "\n"}) => {
+	let result, ctr, keys
+
+	if (data === null || !data.length) {
+		return null
+	}
+
+	keys = Object.keys(data[0])
+
+	result = ""
+	result += keys.join(columnDelimiter)
+	result += lineDelimiter
+
+	data.forEach(item => {
+		ctr = 0
+		keys.forEach(key => {
+			if (ctr > 0) {
+				result += columnDelimiter
+			}
+
+			result += typeof item[key] === "string" && item[key].includes(columnDelimiter) ? `"${item[key]}"` : item[key]
+			ctr++
+		})
+		result += lineDelimiter
+	})
+
+	return result
+}

@@ -91,7 +91,7 @@ async function quizUpload(data) {
   return uid;
 }
 
-c
+
 async function addAQuestion(quizid) {
   let uid = JSON.parse(quizid).id;
   const q = 'INSERT INTO Questions (quizid) VALUES($1) ';

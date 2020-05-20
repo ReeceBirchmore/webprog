@@ -58,11 +58,11 @@ export default class QuizCard {
         this.binIcon.classList.add('icon', 'bin', 'ripple');
       this.linkIcon = document.createElement('button');
         this.linkIcon.classList.add('icon', 'link', 'ripple');
-      this.shareIcon = document.createElement('button');
-        this.shareIcon.classList.add('icon', 'share', 'ripple');
+      this.barchartIcon = document.createElement('button');
+        this.barchartIcon.classList.add('icon', 'barchart', 'ripple');
       this.editIcon = document.createElement('button');
         this.editIcon.classList.add('icon', 'edit', 'ripple');
-      this.buttonsContainer.append(this.binIcon, this.linkIcon, this.shareIcon, this.editIcon);
+      this.buttonsContainer.append(this.binIcon, this.linkIcon, this.barchartIcon, this.editIcon);
 
 
       //Quiz Details Generation
@@ -95,11 +95,12 @@ export default class QuizCard {
 
 
         this.linkIcon.addEventListener("click", function() {
-          navigator.clipboard.writeText("http://localhost:8080/#/quiz/" + props.id + "/flow/")
+          navigator.clipboard.writeText("http://localhost:8080/#/quiz/" + props.id + "/flow/");
           Render.createToast("Text Copied to Clipboard", null, 'close');
+          window.open("http://localhost:8080/#/quiz/" + props.id + "/flow/", '_blank');
         });
-        this.shareIcon.addEventListener("click", function() {
-          Admin.buildSharePage(props.id);
+        this.barchartIcon.addEventListener("click", function() {
+          window.location = './#/admin/quiz/response/' + props.id;
         });
         this.binIcon.addEventListener("click", function() {
           let popup = window.confirm("Are you sure you want to delete " + props.quizTitle);

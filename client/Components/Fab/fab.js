@@ -18,9 +18,8 @@ export default class Fab {
   
     createBtn(props) {
       this.el = document.createElement("div");
-        this.el.id = props.id;
+
         this.el.classList.add('fab');
-      if(props.type === 'create') {
         this.el.addEventListener("click", function(el) {
           console.log(el)
           if (!el.target.classList.contains('fab-expand')) {
@@ -28,10 +27,7 @@ export default class Fab {
           } else {
             el.target.classList.remove('fab-expand');
           }
-          
-        let modal = new Modal({type: 'upload', title: "Upload a Quiz"})
         });
-      }
     }  
   }
 

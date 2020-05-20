@@ -72,6 +72,10 @@ export function bounceModal() {
 **************************************************************************/
 
 export function progressCheck(val, quizLength) {
+    console.log(val, quizLength)
+    if($('questionNumber')) {
+        if(val < quizLength - 1) { $('questionNumber').textContent = val + 1 };
+    }
     let prog = $('progressSpan');
     prog.style.width = (val / (quizLength - 1)) * 100 + "%";
 }
@@ -90,9 +94,9 @@ export function submitAnimation() {
     $('envelopefront').classList.add('envelope-sent');
     $('envelopeback').classList.add('envelope-sent');
     $('submitbtn').style.display = 'none';
-    $('prevbtn').style.display = 'none';
+    if($('prevbtn')) $('prevbtn').style.display = 'none';
     let text = renderText($('root'), "Thanks for completing this questionnaire");
-    text.classList.add('result-message-sent')
+        text.classList.add('result-message-sent')
 }
 
 

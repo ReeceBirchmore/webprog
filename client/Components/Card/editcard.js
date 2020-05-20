@@ -3,7 +3,7 @@
 import Input from '/Components/Input/input.js';
 import Toggle from '/Components/Input/Toggle.js';
 
-import * as Render from '../../Javascript/render.js';
+import { $, renderText, createToast} from '../../Javascript/render.js';
 import * as Admin from '../../Containers/Admin/index.js';
 
 
@@ -12,7 +12,7 @@ import * as Admin from '../../Containers/Admin/index.js';
 export default class EditCard {
   constructor(props) {
     this.createEditCard(props);
-      Render.renderText(this.el, "Question " + props.questionNum, "h2");
+      renderText(this.el, "Question " + props.questionNum, "h2");
     if(props.type === 'add') {
       this.createAddQuestionTemplate(props);
     } else {
@@ -23,7 +23,6 @@ export default class EditCard {
   }
   
     createEditCard(props) {
-      console.log(props.id)
       this.el = document.createElement("div");
         this.el.id = props.id;
         this.el.classList.add("card-edit");
@@ -31,15 +30,15 @@ export default class EditCard {
 
 
     createEditCardTemplate(props) {
-      this.input = new Input({id: 'test-id', placeholder: props.title, value: props.title, type: 'text'});
+      this.input = new Input({id: "input-" + props.id, placeholder: props.title, value: props.title, type: 'text', datanumber: props.id, mode: 'edit'});
       this.el.append(this.input);
 
       let divider = document.createElement("div");
         divider.classList.add("separator");
-        Render.renderText(divider, "Question Type");
+        renderText(divider, "Question Type");
       this.el.appendChild(divider);
 
-      this.select = new Input({id: "selector", type: "select", types: ['Text', 'Number', 'Multiple Choice', 'Checkboxes'], value: props.input})
+      this.select = new Input({id: "selector-" + props.id, type: "select", types: ['Text', 'Number', 'Multiple Choice', 'Checkboxes'], value: props.input, data: props.id})
       this.el.append(this.select)
       
       this.buttonsContainer = document.createElement('div');

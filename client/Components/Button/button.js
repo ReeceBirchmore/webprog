@@ -96,31 +96,28 @@ export default class Button {
 
 
     generateStyles(props) {
+
       if(props.type === 'previous') {
-        let icon = document.createElement("div");
-          icon.classList.add("prev")
-          this.el.appendChild(icon);
         let text = document.createElement("div");
           Render.renderText(text, "Previous");
-            text.classList.add("div")
+          text.classList.add("div")
           this.el.appendChild(text);
         this.el.classList.add("button");
         this.el.classList.add("left")
         }
+
       if(props.type === 'next') {
         let text = document.createElement("div");
-          Render.renderText(text, "Next");
+            Render.renderText(text, "Next");
             text.classList.add("div")
             this.el.appendChild(text);
-          let icon = document.createElement("div");
-            icon.classList.add("next")
-            this.el.appendChild(icon);
           this.el.classList.add("button");
           this.el.classList.add("right");
         }
+
         if(props.type === 'submit') {
           let text = document.createElement("div");
-          Render.renderText(text, "Submit");
+            Render.renderText(text, "Submit");
             text.classList.add("div")
             this.el.appendChild(text);
           this.el.classList.add("button", 'submit');
