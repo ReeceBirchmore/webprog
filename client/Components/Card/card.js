@@ -1,6 +1,6 @@
 'use strict';
 
-import { html } from '../../Javascript/render.js';
+import { html } from '/Javascript/render.js';
 
 
 export default class Card {

@@ -1,15 +1,12 @@
 'use strict';
 
 import EditCard from '/Components/Card/editcard.js';
-import Modal from '/Components/Modal/modal.js';
-import * as ModalFunctions from '/Components/Modal/modal.js';
 import Nav from '/Components/Nav/nav.js';
-import QuizCard from '../../Components/QuizCard/quizcard.js';
 import Screen from '/Components/Screen/screen.js';
 
 import * as Admin from '/Containers/Admin/index.js';
 import { $, createToast, renderText, html } from '/Javascript/render.js';
-import * as FX from '../../Javascript/fx.js';
+import * as FX from '/Javascript/fx.js';
 
 // #endregion
 // ////////////////////////////////////////////////////////////// EDIT

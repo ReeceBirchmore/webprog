@@ -1,9 +1,9 @@
 'use strict';
 
-import Modal from '../../Components/Modal/modal.js';
-import * as Admin from '../../Containers/Admin/index.js';
+import Modal from '/Components/Modal/modal.js';
+import * as Admin from '/Containers/Admin/index.js';
 
-import * as Render from '../../Javascript/render.js';
+import * as Render from '/Javascript/render.js';
 
 
 export default class QuizCard {

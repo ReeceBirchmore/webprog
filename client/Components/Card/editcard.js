@@ -1,10 +1,9 @@
 'use strict'
 
 import Input from '/Components/Input/input.js';
-import Toggle from '/Components/Input/Toggle.js';
 
-import { $, renderText, createToast} from '../../Javascript/render.js';
-import * as Admin from '../../Containers/Admin/index.js';
+import { $, renderText, createToast} from '/Javascript/render.js';
+import * as Admin from '/Containers/Admin/index.js';
 
 
 
@@ -51,10 +50,9 @@ export default class EditCard {
       this.buttonsContainer = document.createElement('div');
         this.buttonsContainer.classList.add('card-edit-button-container');
       this.el.append(this.buttonsContainer);
-      let toggle = new Toggle();
       this.binIcon = document.createElement("div");
         this.binIcon.classList.add('icon', 'bin');
-        this.buttonsContainer.append(this.binIcon, toggle);
+        this.buttonsContainer.append(this.binIcon);
     }
 
 

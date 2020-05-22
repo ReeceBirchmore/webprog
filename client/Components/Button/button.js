@@ -1,10 +1,10 @@
 'use strict';
 
 
-import { $, render, renderText, html } from '../../Javascript/render.js';
-import * as Quiz from '../../Containers/Quiz/index.js';
-import * as Admin from '../../Containers/Admin/index.js';
-import * as FX from '../../Javascript/fx.js';
+import { $, render, renderText, html } from '/Javascript/render.js';
+import * as Quiz from '/Containers/Quiz/index.js';
+import * as Admin from '/Containers/Admin/index.js';
+import * as FX from '/Javascript/fx.js';
 
 
 function addHandler(el, props) {
