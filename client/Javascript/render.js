@@ -1,14 +1,14 @@
-'use strict'
+'use strict';
 
 import Toast from '/Components/Toast/toast.js';
 
 
-//Shorthand display function, to be moved!
+// Shorthand display function, to be moved!
 function $(id) {
-    return document.querySelector("#" + id);
+  return document.querySelector('#' + id);
 }
 
-const body = $("root");
+const body = $('root');
 
 
 // #endregion
@@ -19,89 +19,82 @@ const body = $("root");
 //     console.log(type, props);
 
 
-// } 
-
-
+// }
 
 
 // #endregion
 // ////////////////////////////////////////////////////////////// RENDER ELEMENTS
 // #region Element Rendering
 
- /******************************
- * 
- * @param {HTMLElement} el 
- * @param {HTMLElement} domNode 
- * 
+/******************************
+ *
+ * @param {HTMLElement} el
+ * @param {HTMLElement} domNode
+ *
  ******************************/
 
 function render(el, domNode) {
-    domNode.appendChild(el);
-    return;
+  ((domNode === undefined) ? $('root') : domNode).appendChild(el);
 }
-
 
 
 // #endregion
 // ////////////////////////////////////////////////////////////// STYLE ELEMENTS
 // #region Use Styling
 
- /************************
- * 
- * @param {Object} object 
- * 
+/************************
+ *
+ * @param {Object} object
+ *
  ************************/
 
 function useStyles(object) {
-    const styleString = (
-        Object.entries(object).reduce((styleString, [propName, propValue]) => {
-            //console.log(`${styleString}${propName}:${propValue};`);
-            return `${styleString}${propName}:${propValue};`;
-        }, '')
+  const styleString = (
+    Object.entries(object).reduce((styleString, [propName, propValue]) => {
+      // console.log(`${styleString}${propName}:${propValue};`);
+      return `${styleString}${propName}:${propValue};`;
+    }, '')
   );
   return styleString;
 }
-
-
 
 
 // #endregion
 // ////////////////////////////////////////////////////////////// TEXT ELEMENTS
 // #region Text Rendering
 
- /**************************
- * 
- * @param {HTMLElement} el 
- * @param {String} propText 
- * 
+/**************************
+ *
+ * @param {HTMLElement} el
+ * @param {String} propText
+ *
  **************************/
 
-function renderText(el, propText, tag) {
-    let textTag = tag ? tag : "p"; 
-    const text = document.createElement(textTag);
-    const textContent = document.createTextNode(propText);
-        text.appendChild(textContent);
-        el.appendChild(text);
-    return text;
+function renderText(el, propText, tag, id, css) {
+  const textTag = tag || 'p';
+  const text = document.createElement(textTag);
+  text.id = id;
+  const textContent = document.createTextNode(propText);
+  text.appendChild(textContent);
+  text.classList.add(css);
+  el.appendChild(text);
+  return text;
 }
-
 
 
 // #endregion
 // ////////////////////////////////////////////////////////////// REMOVE RENDERED ELEMENT
 // #region Remove Rendered Element
 
- /*************************
- * 
+/*************************
+ *
  * @param {HTMLElement} el
- *  
+ *
  *************************/
 
 function removeRender(el) {
-    $('root').removeChild(el);
-    return;
+  $('root').removeChild(el);
 }
-
 
 
 // #endregion
@@ -110,29 +103,23 @@ function removeRender(el) {
 
 
 function createToast(message, action, actionText, params) {
-    let toast = new Toast({id:'toast', text: message, action: action, actionText: actionText, param: params})
-    render(toast, $('body'));
+  const toast = new Toast({ id: 'toast', text: message, action: action, actionText: actionText, param: params });
+  render(toast, $('body'));
 }
-
 
 
 // #endregion
-// ////////////////////////////////////////////////////////////// STATE TOGGLING
-// #region Toggle States
+// ////////////////////////////////////////////////////////////// ELEMENT CREATION
+// #region Create Element
 
 
-//Toggle Visibility
-function toggleState(element) {
-    
+function html(tag, id, renderPoint, css) {
+  const el = document.createElement(tag);
+  if (id != '') el.id = id;
+  if (css != '') el.classList.add(css);
+  if (renderPoint != '') renderPoint.append(el);
+  return el;
 }
-
-//Toggle Expansion
-
-function toggleExpand(element) {
-
-}
-
-
 
 
 // #endregion
@@ -140,6 +127,4 @@ function toggleExpand(element) {
 // #region Exports
 
 
-
-
-export { render, $, useStyles, renderText, removeRender, createToast,  }
+export { render, $, useStyles, renderText, removeRender, createToast, html };

@@ -53,7 +53,7 @@ max
 optional extras
 
 
-INSERT INTO Quizzes (title, quizid) VALUES('Directional Quiz Example', '27JBU');
+INSERT INTO Quizzes (title, quizid, allowback) VALUES('Directional Quiz Example', '27JBU', false);
 
 
 INSERT INTO Questions (question, quizid, input) VALUES('Is lybin fit?', '27JBU', 'text');

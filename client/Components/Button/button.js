@@ -1,64 +1,61 @@
-'use strict'
+'use strict';
 
-import * as Render from '../../Javascript/render.js';
+
+import { $, render, renderText, html } from '../../Javascript/render.js';
 import * as Quiz from '../../Containers/Quiz/index.js';
 import * as Admin from '../../Containers/Admin/index.js';
 import * as FX from '../../Javascript/fx.js';
-import * as Card from '../../Containers/Quiz/index.js';
-
 
 
 function addHandler(el, props) {
-    el.addEventListener("click", function() {
-      if(props.action === 'Quiz.up') {
-        Quiz.increase(0);
-      }
+  el.addEventListener('click', function () {
+    if (props.action === 'Quiz.up') {
+      Quiz.increase(0);
+    }
 
-      if(props.action === 'Quiz.down') {
-        Quiz.decrease(0);
-      }
-
-
-      if(props.action === 'routerNav') {
-        Router.get(props.action)
-      }
+    if (props.action === 'Quiz.down') {
+      Quiz.decrease(0);
+    }
 
 
-
-      if(props.action === 'toast') {
-        FX.toastManagement();
-      }
-
-
-      if(props.action === 'progress') {
-        FX.progressCheck(props.param)
-      }
+    if (props.action === 'routerNav') {
+      Router.get(props.action);
+    }
 
 
-      if(props.action === 'openQuiz') {
-        Quiz.openQuiz(props.param);
-      }
+    if (props.action === 'toast') {
+      FX.toastManagement();
+    }
 
 
-      if(props.action === 'toLinear') {
-        Quiz.toLinear(props.param);
-      }
+    if (props.action === 'progress') {
+      FX.progressCheck(props.param);
+    }
 
 
-      if(props.action === 'submit') {
-        Quiz.submitQuiz();
-      }
+    if (props.action === 'openQuiz') {
+      Quiz.openQuiz(props.param);
+    }
 
 
-      if(props.action === 'upload') {
-        Admin.uploadJSON();
-      }
+    if (props.action === 'toLinear') {
+      Quiz.toLinear(props.param);
+    }
 
-      if(props.action === 'createQuiz') {
-        Admin.createNewQuiz({answers}.answers.response[0].value);
-      }
-    })
 
+    if (props.action === 'submit') {
+      Quiz.submitQuiz();
+    }
+
+
+    if (props.action === 'upload') {
+      Admin.uploadJSON();
+    }
+
+    if (props.action === 'createQuiz') {
+      Admin.createNewQuiz({ answers }.answers.response[0].value);
+    }
+  });
 }
 
 export let input1;
@@ -68,85 +65,50 @@ export default class Button {
   constructor(props) {
     this.createBtn(props);
     this.generateStyles(props);
-    addHandler(this.el, props)
+    addHandler(this.el, props);
     this.renderPoint(props);
   }
-  
-    createBtn(props) {
-      this.el = document.createElement("button");
-        this.el.id = props.id;
-        this.el.classList.add("button");
-        if(props.text) {
-          let text = document.createElement("div");
-          Render.renderText(text, props.text);
-            text.classList.add("div")
-          this.el.appendChild(text);
-          
-        }
-    }
 
-
-
-
-
-
-
-
-
-
-
-    generateStyles(props) {
-
-      if(props.type === 'previous') {
-        let text = document.createElement("div");
-          Render.renderText(text, "Previous");
-          text.classList.add("div")
-          this.el.appendChild(text);
-        this.el.classList.add("button");
-        this.el.classList.add("left")
-        }
-
-      if(props.type === 'next') {
-        let text = document.createElement("div");
-            Render.renderText(text, "Next");
-            text.classList.add("div")
-            this.el.appendChild(text);
-          this.el.classList.add("button");
-          this.el.classList.add("right");
-        }
-
-        if(props.type === 'submit') {
-          let text = document.createElement("div");
-            Render.renderText(text, "Submit");
-            text.classList.add("div")
-            this.el.appendChild(text);
-          this.el.classList.add("button", 'submit');
-        }
-
-        if(props.type === 'create') {
-          let text = document.createElement("div");
-          Render.renderText(text, "Create Quiz");
-            text.classList.add("div")
-            this.el.appendChild(text);
-          this.el.classList.add("upload");
-        }
-
-        if(props.type === 'else') {
-          //empty code
-        }
-        
-    }
-
-
-    renderPoint(props) {
-      if(!props.render) {
-        Render.render(this.el, Render.$('root'));
-      } else {
-        Render.render(this.el, Render.$(props.render))
-      }
-    }
-    
-    
-
+  createBtn(props) {
+    this.el = html('button', props.id, '', 'button');
+    const text = renderText(this.el, props.text);
+    text.classList.add('button-text');
   }
 
+  generateStyles(props) {
+    switch (props.type) {
+      case 'previous':
+        this.el.classList.add('left');
+        break;
+
+      case 'next':
+        this.el.classList.add('right');
+        break;
+
+      case 'submit':
+        this.el.classList.add('submit');
+        break;
+    }
+
+    if (props.type === 'create') {
+      const text = document.createElement('div');
+      renderText(text, 'Create Quiz');
+      text.classList.add('div');
+      this.el.appendChild(text);
+      this.el.classList.add('upload');
+    }
+
+    if (props.type === 'else') {
+      // empty code
+    }
+  }
+
+
+  renderPoint(props) {
+    if (!props.render) {
+      render(this.el, $('root'));
+    } else {
+      render(this.el, $(props.render));
+    }
+  }
+}

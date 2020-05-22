@@ -1,105 +1,72 @@
-'use strict'
+'use strict';
 
 
-import Modal from '../../Components/Modal/modal.js';
+import Icon from '/Components/Icon/icon.js';
+import { $, render, renderText, html } from '../../Javascript/render.js';
 
-import { $, render, renderText } from '../../Javascript/render.js';
-import { j } from '../../Containers/Quiz/index.js';
-
-import * as Admin from '/Containers/Admin/index.js';
-
+/*********************************************************************
+ *
+ *  @typedef  {Object}  Props
+ *  @property {String}  props.id ID to assign the element, optional but recommended
+ *  @property {Array}   props.icons Icons to attach to the Navbar, icon name must have matching class in CSS
+ *  @property {Array}   props.actions Actions for the respective icons, the number of actions should match the number of icons
+ *  @property {String}  props.title The title to be used on the nav, optional but recommended
+ *
+ */
 
 
 export default class Nav {
   constructor(props) {
-    this.createFrame(props);
-    if(props.return === true) this.displayReturnIcon();
-    if(props.add === true) this.displayUploadIcon();
-    if(props.close === true) this.displayCloseIcon();
-    if(props.clear === true) this.displayClearButton();
-    if(props.title) { 
-      this.displayTitle(props);
-      this.el.style.boxShadow = "0 0 0 rgba(0,0,0,0.01), 0 2px 5px rgba(0,0,0,0.22)";
-    } else {
-      this.displayQuestionNumber(props);
-    }
-    this.eventHandler(props);    
+    this.createNav(props);
+    this.displayTitle(props);
+    this.iconGeneration(props);
     render(this.el, $('body'));
   }
-   
-    createFrame(props) {
-        this.el = document.createElement("div");
-          this.el.id = props.id;
-          this.el.classList.add("nav");
-    }
 
-    displayTitle(props) {
-      let title = renderText(this.el, props.title, "h2");
+  createNav(props) {
+    this.el = html('div', props.id, '', 'nav');
+  }
 
-    }
+  displayTitle(props) {
+    if (props.title) renderText(this.el, props.title, 'p', 'nav-title');
+  }
 
-
-    displayQuestionNumber(props) {
-      let currentNumber = renderText(this.el, '1 ', 'p');
-        currentNumber.id = 'questionNumber';
-        currentNumber.style.paddingRight = "0.2rem";
-      let questionnaireProgress = renderText(this.el, " of " + props.length);
-      questionnaireProgress.classList.add('questionNum')
-    }
-
-
-    displayClearButton() {
-      this.clearIcon = document.createElement('button');
-        this.clearIcon.classList.add('icon', 'clear', 'ripple');
-        this.el.appendChild(this.clearIcon);
-        this.addHandlers();
-    }
-
-    displayReturnIcon() {
-      this.returnIcon = document.createElement('button');
-        this.returnIcon.classList.add('icon', 'return', 'ripple');
-        this.el.appendChild(this.returnIcon);
-    }
-
-    displayUploadIcon() {
-      this.uploadIcon = document.createElement('button');
-        this.uploadIcon.classList.add('icon', 'add', 'ripple');
-        this.el.appendChild(this.uploadIcon);
-    }
-
-    displayCloseIcon() {
-      this.closeIcon = document.createElement('button');
-        this.closeIcon.classList.add('icon', 'close', 'ripple');
-        this.el.appendChild(this.closeIcon);
-    }
-
-
-    eventHandler(props) {
-      if(props.return) {
-        this.returnIcon.addEventListener("click", function() {
-          history.back();
-        });
-      }
-      if(props.add) {
-        this.uploadIcon.addEventListener("click", function() {
-          new Modal({type: 'upload', title: "Upload a Quiz"})
-        });
-      }
-      if(props.close) {
-        this.closeIcon.addEventListener("click", function() {
-          Admin.generatePage();
+  iconGeneration(props) {
+    if (props.icons) {
+      for (let i = 0; i < props.icons.length; i++) {
+        const icon = new Icon({
+          id: props.icons[i],
+          renderPoint: this.el,
+          actions: props.actions[i],
         });
       }
     }
+  }
 
 
-    addHandlers() {
-        if(this.clearIcon) {
-          this.clearIcon.addEventListener("click", function() {
-            sessionStorage.clear();
-            location.reload();
-          });
-      }
-    }
+  // eventHandler(props) {
+  //   if (props.return) {
+  //     this.returnIcon.addEventListener('click', function () {
+  //       history.back();
+  //     });
+  //   }
+  // if (props.add) {
+
+  // }
+  //   if (props.close) {
+  //     this.closeIcon.addEventListener('click', function () {
+  //       Admin.generatePage();
+  //     });
+  //   }
+  // }
+
+
+  // addHandlers() {
+  //   if (this.clearIcon) {
+  //     this.clearIcon.addEventListener('click', function () {
+  //       sessionStorage.clear();
+  //       location.reload();
+  //     });
+  //   }
+  // }
 }
-

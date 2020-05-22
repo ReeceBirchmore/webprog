@@ -7,26 +7,13 @@
 
 body, html {
     width:100vw;
-    height:100vh;
+    height: 100vh;
     margin:0;
     padding:0;
-    overflow:hidden;
+    overflow-y:hidden;
 }
 
-/* Put into screens folder when made */
-.screenDefault {
-    position: relative;
-    width:100vw;
-    height:100vh;
-    margin:0;
-    padding:0;
-    display:flex;
-    align-items: center;
-    flex-direction: column;
-    overflow-y: hidden;
-    z-index: 1;
-    background-color: white;
-}
+
 
 .quizScreen {
   position: absolute;
@@ -55,29 +42,11 @@ body, html {
   padding:0;
   flex-direction: column;
   overflow-y: scroll;
-  overflow-x: hidden;
   z-index: 1;
   background-color: white;
   will-change: transform;
   -webkit-animation: scale-up 0.2s ease-out both;
   animation: scale-up 0.2s ease-out both;
-}
-
-.editScreen {
-  position: absolute;
-  bottom:0;
-  width:100%;
-  height:93vh;
-  margin:0;
-  padding:0;
-  flex-direction: column;
-  overflow-y: scroll;
-  overflow-x: hidden;
-  z-index: 1;
-  background-color: white;
-  will-change: transform;
-  -webkit-animation: slide-in-right 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
-	        animation: slide-in-right 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
 }
 
 .screen-hide {
@@ -91,10 +60,6 @@ body, html {
 }
 
 
-
-.hr.divider {
-    border-top: 3px solid #bbb;
-}
 
 
 
@@ -117,7 +82,7 @@ body, html {
   align-items: center;
   text-align: center;
   justify-content: center;
-  z-index: 10000!important;
+  z-index:10000;
 }
 
 
@@ -136,10 +101,7 @@ body, html {
 
 .center {
   color: black!important;
-  opacity:0;
-  
-  -webkit-animation: slide-in-right 0.3s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
-	        animation: slide-in-right 0.3s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+  z-index: 10000000000!important;
 }
 
 @-webkit-keyframes slide-in-right {
@@ -333,6 +295,14 @@ h2 {
 
 
 
+  .elevated {
+    box-shadow: 0 0 0 rgba(0,0,0,0.01), 0 2px 5px rgba(0,0,0,1.22);
+  }
+
+
+
+
+
 
 
 /*************************************************************************
@@ -357,7 +327,6 @@ h2 {
     align-items: left;
     padding: 1rem;
     text-align: left;
-    box-shadow: 0 0 0 rgba(0,0,0,0.01), 0 2px 5px rgba(0,0,0,1.22);
     transition: transform 0.5s cubic-bezier(.32,.5,.82,.86);
     will-change:transform;
     transform: translateX(0) rotate(0);
@@ -390,12 +359,30 @@ h2 {
 }
 
 .card-remove {
-  transition: transform 0.5s cubic-bezier(.32,.5,.82,.86);
-  will-change: transform;
-  transform-origin: top;
+  will-change:transform;
   transform: translateY(200%)!important;
-  z-index:10!important;
+  transition: transform 0.5s cubic-bezier(.32,.5,.82,.86);
+  z-index: 10!important;
 }
+
+
+@keyframes remove-card {
+  46% {transform: translateY(100%) }
+  75% {transform: translateY(130%)}
+  90% {transform: translateY(155%)}
+  97% {transform: translateY(180%)}
+  100%{transform: translateY(200%)}
+}
+
+@-webkit-keyframes fade-in {
+  0% {opacity: 0;}
+  100% {opacity: 1;}
+}
+@keyframes fade-in {
+  0% {opacity: 0;}
+  100% {opacity: 1;}
+}
+
 
 
 .card-submit {
@@ -517,7 +504,7 @@ h2 {
     transform-origin: 0 100%;
     animation: closeLetter 0.66s forwards ease-in;
   }
-.side-sent:nth-of-type(1) p, .side-sent:nth-of-type(1) textarea {
+.side-sent:nth-of-type(1) p, .side-sent:nth-of-type(1) h2 {
     animation: fadeOutText 0.66s forwards linear;
   }
 .button-sent {
@@ -555,10 +542,11 @@ h2 {
 @keyframes scaleLetter {
   46% {transform: translateY(-7rem) scale(0.5, 0.5);}
   75% {transform: translateY(-11rem) scale(0.5, 0.5);}
-  90% {transform: translateY(-10rem) scale(0.3, 0.5);}
-  97% {transform: translateY(-9rem) scale(0.33, 0.5);}
-  100%{transform: translateY(-8.5em) scale(0.3, 0.4);}
+  90% {transform: translateY(-10.5rem) scale(0.3, 0.5);}
+  97% {transform: translateY(-10.3rem) scale(0.33, 0.5);}
+  100%{transform: translateY(-10rem) scale(0.3, 0.4);}
 }
+
 
 
 
@@ -580,7 +568,6 @@ h2 {
   align-items: left;
   padding: 1rem;
   text-align: left;
-  box-shadow: 0 0 0 rgba(0,0,0,0.01), 0 2px 5px rgba(0,0,0,1.22);
   
 }
 
@@ -617,10 +604,9 @@ h2 {
   align-items: center;
   justify-content: space-between;
   padding: 1rem;
-  box-shadow: 0 0 0 rgba(0,0,0,0.01), 0 2px 5px rgba(0,0,0,1.22);
 }
 
-.card-quiz-title-container {
+.card-title-container {
   display: flex;
   width:100%;
   height:auto;
@@ -633,7 +619,7 @@ h2 {
 }
 
 
-.card-quiz-overview-container {
+.card-overview-container {
   width:100%;
   display: flex;
   align-items: flex-end;
@@ -641,7 +627,7 @@ h2 {
   flex-direction: row;
 }
 
-.card-quiz-buttons-container {
+.card-buttons-container {
   display: flex;
   justify-content: left;
   flex-direction: row;
@@ -650,7 +636,7 @@ h2 {
 }
 
 
-.card-quiz-details-container {
+.card-details-container {
   display: flex;
   width:50%;
   line-height: 0em;
@@ -678,7 +664,7 @@ h2 {
 .metre {
     height: 5px; 
     width:90vw;
-    position: absolute;
+  
     top: 0rem;
     background: white;
     text-align: center;
@@ -742,38 +728,7 @@ h2 {
 
 }
 
-@-webkit-keyframes bounce-in-bottom {
-  0% {
-    -webkit-transform: translateY(50px);
-            transform: translateY(50px);
-    -webkit-animation-timing-function: ease-in;
-            animation-timing-function: ease-in;
-    opacity: 0;
-  }
 
-  100% {
-    -webkit-transform: translateY(0);
-            transform: translateY(0);
-    -webkit-animation-timing-function: ease-out;
-            animation-timing-function: ease-out;
-  }
-}
-@keyframes bounce-in-bottom {
-  0% {
-    -webkit-transform: translateY(50px);
-            transform: translateY(50px);
-    -webkit-animation-timing-function: ease-in;
-            animation-timing-function: ease-in;
-    opacity: 0;
-  }
-
-  100% {
-    -webkit-transform: translateY(0);
-            transform: translateY(0);
-    -webkit-animation-timing-function: ease-out;
-            animation-timing-function: ease-out;
-  }
-}
 
 @-webkit-keyframes scale-up {
   0% {
@@ -859,7 +814,7 @@ h2 {
 **************************************************************************/
 
 
-.group 			  { 
+.group { 
   margin-top: 0.3rem;
   position:relative; 
   margin-bottom:1rem; 
@@ -924,8 +879,12 @@ input:focus ~ .highlight {
   to 	{ width:0; background:transparent; }
 }
 
+
+
+
+
 .wrap {
-  position: absolute;
+  
   width:100%;
 }
 
@@ -1273,17 +1232,24 @@ input.switch:empty ~ label:after {
   left:5vw;
 }
 
+.info {
+  background-image: url('./Assets/Images/info.png');
+  position: absolute!important;
+  right:5vw;
+}
+
 .barchart {
   background-image: url('./Assets/Images/barchart.png');
   padding:1rem;
 }
 
 .close {
-  background-image: url('./Assets/Images/close.png');
-  position: absolute!important;
+  background-image: url('./Assets/Images/closeblack.png');
+  padding:0.8rem!important;
+  /* position: absolute!important;
   right:0.3rem;
-  top:21%;
-  background-color: black!important;
+  top:21%; */
+  /* background-color: black!important; */
 }
 
 .ripple {
@@ -1328,7 +1294,6 @@ input.switch:empty ~ label:after {
   background-color: #375abe;
   box-shadow: 0 2px 10px;
   border: none;
-  outline: none;
   transition: all 0.1s ease-in-out;
   display: flex;
   align-items: center;
@@ -1337,6 +1302,13 @@ input.switch:empty ~ label:after {
   margin-left: auto;
   margin-right: auto;
   z-index:1000;
+}
+
+.button-text {
+  padding-left:12px;
+  padding-right: 12px;
+  font-size: 1rem;
+  color: white!important;
 }
 
 .submit {
@@ -1349,6 +1321,7 @@ input.switch:empty ~ label:after {
   position: absolute;
   bottom:0.5rem;
   right:1rem;
+  width:90%;
   margin-bottom: 1rem;
 }
 
@@ -1358,13 +1331,6 @@ input.switch:empty ~ label:after {
   bottom:0.5rem;
   left: 1rem;
   margin-bottom: 1rem;
-}
-
-.div {
-  padding-left:12px;
-  padding-right: 12px;
-  font-size: 1rem;
-  color: white!important;
 }
 
 
@@ -1432,22 +1398,7 @@ input[type="file"] {
 
 
 
-@-webkit-keyframes fade-in {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-@keyframes fade-in {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
+
 
 
 
@@ -1455,7 +1406,7 @@ input[type="file"] {
 
 /******************************
 *
-* Response View CSS
+* Response View CSS, merge with metre above
 *
 ******************************/
 
@@ -1481,7 +1432,7 @@ input[type="file"] {
   left:0;
   display: block;
   z-index:10000000;
-  border-radius: 1rem;
+  border-radius: 0.5rem;
   height: 100%;
   background-color: #48b6e3;
   opacity:0.6;
@@ -1489,4 +1440,59 @@ input[type="file"] {
 
 .option-bar > p {
   float: left;
+}
+
+
+
+
+
+/**************************
+
+Things to move eventually */
+
+
+/* For the options on the edit page */
+.option-group {
+  position: relative;
+  width:100%;
+  display:flex;
+  flex-direction: column;
+}
+
+.optionbox {
+  width:100%;
+  height:auto;
+  display:flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+
+
+
+
+/*****************************
+
+Accesibility
+
+
+*/
+
+
+
+@media screen and (prefers-reduced-motion: reduce){
+  .card {transition: 0s;}
+  .card-remove {transition: 0s;}
+  .card {animation:none;}
+  .metre > span {transition: 0s;}
+  .screen-hide {animation: none;}
+  .adminScreen {animation: none;}
+  .quizScreen {animation: none;}
+  .letter-sent { animation: none; display: none;}
+  .side-sent:nth-of-type(1) { animation: none;}
+  .side-sent:nth-of-type(1) p, .side-sent:nth-of-type(1) textarea { animation: none;}
+  .envelope-sent { animation: none; }
+  .result-message-sent { animation: none;}
+  
 }

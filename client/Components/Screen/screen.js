@@ -1,15 +1,13 @@
-'use strict'
+'use strict';
 
-import { $, renderText, createToast } from '../../Javascript/render.js';
-import * as FX from '../../Javascript/fx.js';
-
-import {cursorCoords} from '../../Javascript/app.js';
+import { $ } from '../../Javascript/render.js';
+import { cursorCoords } from '../../Javascript/app.js';
 
 
 const history = {
   page1: '',
-  page2: ''
-}
+  page2: '',
+};
 
 
 export default class Screen {
@@ -19,65 +17,55 @@ export default class Screen {
     this.deleteOldScreen();
   }
 
-    maths() {
-      let mainHeight = window.innerHeight; //Y value
-      let mainWidth = window.innerWidth; //X value
-      let ySum = cursorCoords.y / mainHeight;
-      this.yTotal = ySum * 100;
-      let xSum = cursorCoords.x / mainWidth;
-      this.xTotal = xSum * 100;
+  maths() {
+    const mainHeight = window.innerHeight; // Y value
+    const mainWidth = window.innerWidth; // X value
+    const ySum = cursorCoords.y / mainHeight;
+    this.yTotal = ySum * 100;
+    const xSum = cursorCoords.x / mainWidth;
+    this.xTotal = xSum * 100;
+  }
+
+
+  generateStructure(props) {
+    if ($('root')) {
+      $('root').classList.add('screen-hide');
+      $('root').id = 'old-screen';
+      $('body').removeChild($('nav'));
     }
+    this.screen = document.createElement('div');
+    this.screen.id = 'root';
+    this.screen.classList.add(props.class);
+    this.screen.style.transformOrigin = this.xTotal + '%' + this.yTotal + '%';
+    $('body').append(this.screen);
+  }
 
 
-
-
-    generateStructure(props) {
-      
-      // if($('root')) {
-      //   console.log(this.screenPosition);
-      // }
-
-
-      // if(this.screenPosition === -1) {
-      //   console.log("NEW SCREEN CREATED");
-      //   console.log(historyArray);
-      //   if(historyArray.length === 2) {
-      //     //apply styles for second page rendering here
-      //   } else {
-      //     historyArray[0].classList.add(props.class);
-      //   }
-
-
-      // } else {
-      //   console.log("SCREEN ALREADY EXISTS");
-
-      // }
-
-      
-
-
-
-
-      if($('root')) {
-          $('root').classList.add('screen-hide');
-          $('root').id = 'old-screen';
-          $('body').removeChild($('nav'));
-      }
-        this.screen = document.createElement('div');
-          this.screen.id = 'root';
-          this.screen.classList.add(props.class);
-          //this.screen.style.transformOrigin = this.xTotal + '%' + this.yTotal + '%';
-          $('body').append(this.screen);
+  setScroll(props) {
+    if (props.scroll) {
+      $('body').style.marginTop = '20vh';
+    } else {
+      $('body').style.marginTop = '0';
     }
-    
-    deleteOldScreen() {
-      setTimeout(function() {
-      if($('old-screen')) {
+    const offset = $('root').offsetTop;
+    ['mousewheel', 'touchmove'].forEach(evt =>
+      $('root').addEventListener(evt, function (e) {
+        if (window.scrollY === offset) {
+          $('root').style.overflowY = 'scroll';
+        } else {
+          console.log('JEEJRJE');
+          $('root').style.overflowY = 'hidden';
+        }
+      }),
+    );
+  }
+
+
+  deleteOldScreen() {
+    setTimeout(function () {
+      if ($('old-screen')) {
         $('body').removeChild($('old-screen'));
       }
     }, 100);
-    }
-
+  }
 }
-
-

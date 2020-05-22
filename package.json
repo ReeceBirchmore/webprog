@@ -11,8 +11,13 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
+    "googleapis": "^51.0.0",
     "pg": "^8.0.2",
     "pgtools": "^0.3.0",
     "postgres": "^1.0.2"
+  },
+  "devDependencies": {
+    "eslint": "^7.0.0",
+    "eslint-config-portsoc": "^0.6.0"
   }
 }

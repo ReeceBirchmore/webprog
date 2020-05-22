@@ -25,7 +25,7 @@ export default class EditCard {
     createEditCard(props) {
       this.el = document.createElement("div");
         this.el.id = props.id;
-        this.el.classList.add("card-edit");
+        this.el.classList.add("card-edit", 'elevated');
     }
 
 
@@ -38,8 +38,15 @@ export default class EditCard {
         renderText(divider, "Question Type");
       this.el.appendChild(divider);
 
-      this.select = new Input({id: "selector-" + props.id, type: "select", types: ['Text', 'Number', 'Multiple Choice', 'Checkboxes'], value: props.input, data: props.id})
+
+      
+
+      this.select = new Input({id: "selector-" + props.id, type: "select", types: ['text', 'number', 'single-select', 'multi-select'], value: props.input, qid: props.qid})
       this.el.append(this.select)
+      
+
+
+
       
       this.buttonsContainer = document.createElement('div');
         this.buttonsContainer.classList.add('card-edit-button-container');
