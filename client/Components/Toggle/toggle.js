@@ -1,7 +1,7 @@
 'use strict'
 
-import * as Render from '../../Javascript/render.js';
-import * as FX from '../../Javascript/fx.js';
+import * as Render from '/Javascript/render.js';
+import * as FX from '/Javascript/fx.js';
 
 
 function dismiss() {
