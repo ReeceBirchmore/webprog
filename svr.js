@@ -1,27 +1,28 @@
 'use strict';
 
+// #endregion
+// ////////////////////////////////////////////////////////////// CONSTANTS
+// #region Constants
 
 const express = require('express');
+// const maintain = require('./coldstartdb');
 const path = require('path');
-const app = express();
 const q = require('./questionnaire');
 
+// #endregion
+// ////////////////////////////////////////////////////////////// CONSTANTS
+// #region Constants
+const app = express();
 const router = express.Router();
-
-
+const dev = express.Router();
 const port = 8080;
 
-// app.use(express.static('client', { extensions: ['html'] }));
-
-
 app.use('/api', router);
-
-
+app.use('/dev', dev);
 app.use(express.static(__dirname + '/client'));
 
+// app.use(express.static('client', { extensions: ['html'] }));
 // app.use('/assets', express.static(__dirname + '/client/Assets/avatar.png'));
-
-
 // app.get('/assets/*', (req, res) => {
 //   console.log(req.params[0], "PARAM REQUEST")
 //   console.log(__dirname, "ASSETS ");
@@ -31,6 +32,14 @@ app.use(express.static(__dirname + '/client'));
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '/client/index.html'));
 });
+
+
+async function coldStart(req, res) {
+    const result = await maintain.coldStart();
+    res.json(result);
+
+}
+
 
 
 async function getAllQuizzes(req, res) {
@@ -165,5 +174,8 @@ router.post('/create/question/', express.json(), asyncWrap(addQuestion));
 router.post('/create/option/:id', express.json(), asyncWrap(addOption));
 router.post('/upload', express.json(), asyncWrap(uploadQuiz));
 
+
+router.get('/newdb', asyncWrap(coldStart));
+dev.get('/create', asyncWrap(coldStart));
 
 app.listen(port);

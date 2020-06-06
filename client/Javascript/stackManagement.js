@@ -8,10 +8,10 @@ import { $ } from './render.js';
 
 
 export function shuffle(val) {
-  cardStackArr.cards = [];
+  cardStackArr.cards = []; // We need to reset the cardStackArray each time it is called to refresh it
 
 
-  // Ugly code ahead
+  // Ugly code ahead, I apologise but there is not cute way to do this kind of stuff
   if (flowCount === 0 && $('prevbtn')) {
     $('prevbtn').disabled = true;
     $('prevbtn').classList.add('disabled');
@@ -29,13 +29,13 @@ export function shuffle(val) {
       $('root').removeChild($('envelopearticle'));
     }
   }
+
   // Display all given answers and give option to submit quiz
   if (flowCount === arrOfCards.length) {
     if ($('submitbtn')) {
       $('submitbtn').style.display = 'block';
       $('nextbtn').style.display = 'none';
     } else {
-
       const button = new Button({
         id: 'submitbtn',
         text: 'Submit',
@@ -44,7 +44,6 @@ export function shuffle(val) {
       });
       $('nextbtn').style.display = 'none';
     }
-
     if ($('card-submit')) {
       $('card-submit').style.display = 'block';
     } else {
@@ -55,6 +54,10 @@ export function shuffle(val) {
     }
   }
   // Ugly code end
+
+
+  // If the function is being called with no value, it means the questionnaire is initialising
+  // Else, rearrange the cardStackArray with the next 3 cards to display.
   if (!val) {
     intialise();
   } else {
@@ -64,6 +67,15 @@ export function shuffle(val) {
     sortDeck();
   }
 }
+
+
+/******************************************************************************
+ *
+ * Initialise the quiz, gather the first 3 cards for the arrOfCards
+ * (generated array) and put them into the cardStackArray (Array that handles
+ * the cards visible on the screen)
+ *
+ ******************************************************************************/
 
 function intialise() {
   for (let i = 0; i < 3; i++) {
@@ -83,6 +95,14 @@ export function changeDisplayMode() {
 }
 
 
+/******************************************************************************
+ *
+ * Manage the deck each time, check if reduced motion is on (if so, disable
+ * animations) and shuffle the cards, move the topmost card offscreen and 
+ * rearrange the cardStackArray with the next 3 required cards.
+ *
+ ******************************************************************************/
+
 function sortDeck() {
   for (let i = 0; i < cardStackArr.cards.length; i++) {
     if (cardStackArr.cards[i]) {
@@ -99,6 +119,7 @@ function sortDeck() {
   nextCard();
 }
 
+// Gather the next card for the arrOfCards to put into the bottom of the stack (end of cardStackArray)
 function nextCard() {
   if (arrOfCards[flowCount + 2]) {
     $('root').appendChild(arrOfCards[flowCount + 2]);

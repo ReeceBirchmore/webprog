@@ -20,7 +20,7 @@ export default class Nav {
     this.createNav(props);
     this.displayTitle(props);
     this.iconGeneration(props);
-    render(this.el, $('body'));
+    render(this.el, $('body')); // This is a persistent element, it will render itself to the page
   }
 
   createNav(props) {
@@ -28,45 +28,20 @@ export default class Nav {
   }
 
   displayTitle(props) {
-    if (props.title) renderText(this.el, props.title, 'p', 'nav-title');
+    if (props.title) renderText(this.el, props.title, 'p', 'nav-title', 'center');
   }
 
   iconGeneration(props) {
     if (props.icons) {
       for (let i = 0; i < props.icons.length; i++) {
-        const icon = new Icon({
-          id: props.icons[i],
-          renderPoint: this.el,
-          actions: props.actions[i],
-        });
+        if(props.icons[0] !== null) {
+          const icon = new Icon({
+            id: props.icons[i],
+            renderPoint: this.el,
+            actions: props.actions[i],
+          });
+        }
       }
     }
   }
-
-
-  // eventHandler(props) {
-  //   if (props.return) {
-  //     this.returnIcon.addEventListener('click', function () {
-  //       history.back();
-  //     });
-  //   }
-  // if (props.add) {
-
-  // }
-  //   if (props.close) {
-  //     this.closeIcon.addEventListener('click', function () {
-  //       Admin.generatePage();
-  //     });
-  //   }
-  // }
-
-
-  // addHandlers() {
-  //   if (this.clearIcon) {
-  //     this.clearIcon.addEventListener('click', function () {
-  //       sessionStorage.clear();
-  //       location.reload();
-  //     });
-  //   }
-  // }
 }

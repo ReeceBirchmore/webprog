@@ -6,7 +6,6 @@ import Button from '/Components/Button/button.js';
 import Input, { options } from '/Components/Input/input.js';
 import Progress from '/Components/Progress/progress.js';
 import Footer from '/Components/Footer/footer.js';
-import Modal from '/Components/Modal/modal.js';
 import Nav from '/Components/Nav/nav.js';
 import Screen from '/Components/Screen/screen.js';
 
@@ -34,7 +33,6 @@ let uid; // Quiz ID
 // Sort these
 let startTime;
 
-
 // #endregion Variables
 // ////////////////////////////////////////////////////////////// GENERATE PAGE
 // #region  Generate Quiz Setup
@@ -60,13 +58,8 @@ export function generateQuiz(param) {
   uid = param;
   flowCount = 0;
 
-  if (arrOfCards.length === 0) {
     generateQuestionnaire(uid);
-    generateQuestions(uid);
-  } else {
-    generateQuestionnaire(uid);
-    stackManager();
-  }
+  
 
   // Start the clock if timed!
   startTime = new Date();
@@ -91,33 +84,41 @@ export async function generateQuestionnaire(uid) {
     questionDataObject = [{ msg: 'Failed to load cards' }];
     return;
   }
-  console.log(questionDataObject);
-  const footer = new Footer({
-    id: 'Footer',
-  });
-  const button = new Button({
-    id: 'nextbtn',
-    text: 'Next',
-    action: 'Quiz.up',
-    param: +1,
-    render: 'Footer',
-    type: 'next',
-  });
-  // If the quiz does not allow the back button, disable it and enlarge the next button
-  if (questionDataObject[0].allowback !== false) {
-    const button = new Button({
-      id: 'prevbtn',
-      text: 'Previous',
-      action: 'Quiz.down',
-      param: -1,
-      render: 'Footer',
-      type: 'previous',
+
+  // IF Questionnaire EXISTS
+  if (questionDataObject[0] !== undefined) {
+  // Build the footer
+    const footer = new Footer({
+      id: 'Footer',
     });
-    $('nextbtn').style.width = '8rem';
+    // Build the Next Button
+    const button = new Button({
+      id: 'nextbtn',
+      text: 'Next',
+      action: 'Quiz.up',
+      param: +1,
+      render: 'Footer',
+      type: 'next',
+    });
+    // If the quiz does not allow the back button, disable it and enlarge the next button
+    if (questionDataObject[0].allowback !== false) {
+      const button = new Button({
+        id: 'prevbtn',
+        text: 'Previous',
+        action: 'Quiz.down',
+        param: -1,
+        render: 'Footer',
+        type: 'previous',
+      });
+      $('nextbtn').style.width = '8rem';
+    }
+    generateQuestions(uid);
   }
-  const progress = new Progress({
-    id: 'progressBar',
-  });
+
+  // ELSE IF DOES NOT EXIST
+  else {
+    console.log('This questionnaire does not exist');
+  }
 }
 
 
@@ -134,33 +135,68 @@ async function generateQuestions(uid) {
   const response = await fetch('/api/questions/' + uid.id);
   if (response.ok) {
     questions = await response.json();
+    console.log(questions);
     generateCards(questions);
   } else {
-    questions = [{ msg: 'Failed to load cards' }];
-    createToast(questions[0].msg, FX.toastClear, 'Close');
+    questions = [{ msg: 'Failed to load questions' }];
   }
 }
 
+
+/****************************************************************
+ *
+ *  This function does the heavy lifting of generating each
+ *  card, giving the cards the appropriate data and such
+ *
+ ***************************************************************/
+
 function generateCards(questions) {
-  const nav = new Nav({
-    id: 'nav',
-    title: '1 of ' + questions.length,
-    icons: ['clear', 'info'],
-    actions: [function () { location.reload(); }, function () { const modal = new Modal({ id: 'modal-link', type: 'info', content: questionDataObject[0] }); }],
+  // Generate the progress bar
+  const progress = new Progress({
+    id: 'progressBar',
+    qnum: '1 of ' + questions.length,
   });
 
+  // Generate the NavBar
+  const nav = new Nav({
+    id: 'nav',
+    title: questionDataObject[0].title,
+    icons: [(questionDataObject[0].allowback !== false) ? 'clear' : null],
+    actions: [function () { if (questionDataObject[0].allowback !== false) { location.reload(); } }],
+  });
+
+  // Define the question number (Primarily used for IDs)
   let qNum = 1;
 
+  // Begin looping through the returned questions array
   questions.forEach(question => {
     const card = new Card({ id: 'card-' + qNum++, required: true });
+
+    // Create the option type text to appear above the question
+    let info;
+    switch (question.input) {
+      case 'number':
+      case 'text':
+        info = 'Enter your response';
+        break;
+      case 'single-select':
+        info = 'Select one';
+        break;
+      case 'multi-select':
+        info = 'Select one or more';
+        break;
+    }
+    const typeinfo = renderText(card, info, 'p', 'type-info', 'subtext');
+
+
+    // We will now display the question text
     const text = renderText(card, question.question, 'label');
     text.classList.add('label');
     text.setAttribute('for', 'input-question-' + qNum);
 
-    // let subtext = new SubText(question);
+    // Finally, we will setup the inputs (Multiple Choice)
     const quesContainer = html('div', '', card, 'scroll-container');
-
-    if (question.options != null) {
+    if (question.options !== null && question.options.length > 1) {
       for (let x = 0; x < question.options.length; x++) {
         const input = new Input({
           id: 'input-' + x + '-question-' + qNum,
@@ -172,6 +208,7 @@ function generateCards(questions) {
         });
       }
     } else {
+      // If not multiple options, display usual text input field
       const input = new Input({
         id: 'input-question-' + qNum,
         type: question.input,
@@ -179,6 +216,7 @@ function generateCards(questions) {
         renderPoint: quesContainer,
       });
     }
+    // Push newly generated card to the ArrayOfCards
     arrOfCards.push(card);
   });
   shuffle();
@@ -205,7 +243,7 @@ function handleAnswers() {
     type: options.type,
   };
 
-  // Find if the object already exists in the array (User returning to edit question)
+  // Find if the above object already exists in the array (User returning to edit question)
   const inputIndex = answersObject.responses.findIndex(question => question.qid === flowCount + 1);
   if (inputIndex === -1) {
     answersObject.responses.push(response);
@@ -287,6 +325,11 @@ export async function submitQuiz() {
       'Content-Type': 'application/json',
     },
   });
+
+
+  createToast('Quiz Submitted', 'tick');
+
+
   // CHANGE THIS TO RENDERTEXT, USE EVENTHANDLER JS
   const link = document.createElement('p');
   link.addEventListener('click', function () {

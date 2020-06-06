@@ -10,11 +10,9 @@ import { $, renderText } from './render.js';
 **************************************************************************/
 
 let linger;
-let destroy;
-let bool = false;
+
 
 export function toastManagement() {
-  bool = false;
   setTimeout(function () {
     $('toast').classList.add('appear');
   }, 100);
@@ -34,13 +32,7 @@ export function toastManagement() {
 }
 
 export function toastClear() {
-  $('toast').classList.add('remove');
-  $('toast').classList.remove('appear');
-
-  setTimeout(function () {
-    bool = true;
-    $('body').removeChild($('toast'));
-  }, 100);
+  
 }
 
 
@@ -58,13 +50,14 @@ export function bounceModal() {
 
 /*************************************************************************
 *
-* Progress Bar and Nav Title Animation Management
+* Progress Bar and Question Number Management
 *
 **************************************************************************/
 
 export function progressCheck(val, quizLength) {
-  if ($('nav-title')) {
-    if (val < quizLength - 1) { $('nav-title').textContent = val + 1 + ' of ' + (quizLength - 1); }
+  if ($('qnumber')) {
+    if (val < quizLength - 1) { $('qnumber').textContent = val + 1 + ' of ' + (quizLength - 1); }
+    if (val === quizLength - 1) { $('qnumber').textContent = 'Finished'; }
   }
   const prog = $('progressSpan');
   prog.style.width = (val / (quizLength - 1)) * 100 + '%';
@@ -73,7 +66,7 @@ export function progressCheck(val, quizLength) {
 
 /*************************************************************************
 *
-* Submission Animation Management
+* Submission Animation Management, envelope animation
 *
 **************************************************************************/
 
@@ -86,4 +79,6 @@ export function submitAnimation() {
   if ($('prevbtn')) $('prevbtn').style.display = 'none';
   const text = renderText($('root'), 'Thanks for completing this questionnaire');
   text.classList.add('result-message-sent');
+  $('progressSpan').style.display = 'none';
+  $('qnumber').style.display = 'none';
 }

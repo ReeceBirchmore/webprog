@@ -85,11 +85,9 @@ export default class QuizCard {
       this.overviewContainer.addEventListener('click', function (event) {
         event.stopPropagation();
       });
-
-
       this.linkIcon.addEventListener('click', function () {
         navigator.clipboard.writeText('http://localhost:8080/#/quiz/' + props.id + '/flow/');
-        Render.createToast('Text Copied to Clipboard', null, 'close');
+        Render.createToast('Text Copied to Clipboard', 'clipboard');
         // window.open("http://localhost:8080/#/quiz/" + props.id + "/flow/", '_blank');
       });
       this.barchartIcon.addEventListener('click', function () {
@@ -109,4 +107,7 @@ export default class QuizCard {
       });
     }
   }
+
+
+
 }

@@ -1,23 +1,112 @@
 'use strict';
-const config = require('./config');
+
+// Created on 07/02/2020
+//
+// This module is responsible for the cold-start operation of the
+// system. This operation should be run anually to create all of
+// the new boards
+
+// ////////////////////////////////////////////////////////////// Create The Database
+
 
 const Postgres = require('pg').Client;
 
+// This can also be a connection string
+// (in which case the database part is ignored and replaced with postgres)
 
-const sql = new Postgres({
+const sql2 = new Postgres({
   user: 'postgres',
   host: 'localhost',
-  database: 'quiz',
+  database: 'template1',
   password: 'root',
   port: 5432,
 });
 
-sql.connect();
+sql2.connect();
 
-sql.on('error', (err) => {
+const sql = new Postgres({
+  user: 'postgres',
+  host: 'localhost',
+  database: 'quiz2',
+  password: 'root',
+  port: 5432,
+});
+
+
+sql2.on('error', (err) => {
   console.error('SQL Fail', err);
   sql.end();
 });
+
+sql2.query('DROP DATABASE IF EXISTS quiz2;')
+  .then(data => {
+    console.log('successfully dropped');
+    buildDB();
+  })
+  .catch(error => {
+    console.log(error);
+  });
+
+function buildDB() {
+  sql2.query('CREATE DATABASE quiz2;')
+    .then(data => {
+      console.log('successfully created');
+      sql2.end();
+      newConnection();
+    })
+    .catch(error => {
+      console.log(error);
+    });
+}
+
+function newConnection() {
+  sql.connect();
+  quizzesTable();
+}
+
+
+function quizzesTable() {
+  console.log('HELLO');
+  sql.query('CREATE TABLE IF NOT EXISTS Quizzes (id SERIAL PRIMARY KEY, title  text, allowback BOOLEAN, quizid TEXT); CREATE TABLE IF NOT EXISTS Questions (id SERIAL PRIMARY KEY, question  TEXT, quesnumber INT, quizid TEXT, input TEXT, options TEXT, req BOOLEAN); CREATE TABLE IF NOT EXISTS answers (id SERIAL PRIMARY KEY, answers  TEXT, quizid TEXT);')
+    .then(data => {
+      populateDummyQuizData();
+    })
+    .catch(error => {
+      console.log(error);
+    });
+}
+
+function populateDummyQuizData() {
+  sql.query("INSERT INTO Quizzes (title, quizid, allowback) VALUES('No Back Button Example', '26JBU', false); INSERT INTO Quizzes (title, quizid, allowback) VALUES('Allowed Back Button Example', '27JBU', true);")
+    .then(data => {
+      populateDummyQuestionData();
+    })
+    .catch(error => {
+      console.log(error);
+    });
+}
+
+function populateDummyQuestionData() {
+  sql.query("INSERT INTO Questions (question, quizid, input) VALUES('Is lybin fit?', '26JBU', 'text'); INSERT INTO Questions (question, quizid, input) VALUES('Is Lybin honestly not the fittest character?', '26JBU', 'text');INSERT INTO Questions (question, quizid, input) VALUES('What would you rate Lybin out of 5?', '26JBU', 'text');INSERT INTO Questions (question, quizid, input) VALUES('How do you personally feel Lybin has shaped your world?', '26JBU', 'text');INSERT INTO Questions (question, quizid, options, input) VALUES('What do you love the most about our lord Lybin?', '26JBU', '{That damned smile, his amazing body, his voice}', 'multi-select');INSERT INTO Questions (question, quizid, input) VALUES('How do you personally feel Lybin has shaped your world?','26JBU', 'text'); INSERT INTO Questions (question, quizid, input) VALUES('Is lybin fit?', '27JBU', 'text'); INSERT INTO Questions (question, quizid, input) VALUES('Is Lybin honestly not the fittest character?', '27JBU', 'text');INSERT INTO Questions (question, quizid, input) VALUES('What would you rate Lybin out of 5?', '27JBU', 'text');INSERT INTO Questions (question, quizid, input) VALUES('How do you personally feel Lybin has shaped your world?', '27JBU', 'text');INSERT INTO Questions (question, quizid, options, input) VALUES('What do you love the most about our lord Lybin?', '27JBU', '{That damned smile, his amazing body, his voice}', 'multi-select');INSERT INTO Questions (question, quizid, input) VALUES('How do you personally feel Lybin has shaped your world?','27JBU', 'text');")
+    .then(data => {
+      console.log("COMPLETED");
+    })
+    .catch(error => {
+      console.log(error);
+    });
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 function makeid(length) {
@@ -29,7 +118,6 @@ function makeid(length) {
   }
   return result;
 }
-
 
 async function listAllQuizzes() {
   try {
@@ -56,7 +144,7 @@ async function listQuestions(quizid) {
   console.log(quizid);
   const q = 'SELECT * FROM questions WHERE quizid = $1 ORDER BY id ASC;';
   const result = await sql.query(q, [quizid]);
-  console.log(result.rows);
+  console.log(result.rows, "TEST");
   return result.rows;
 }
 

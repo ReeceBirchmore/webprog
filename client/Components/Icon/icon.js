@@ -8,7 +8,7 @@ export default class Icon {
   constructor(props) {
     this.generateIcon(props);
     this.assignIcon(props);
-    eventHandler(this.el, props.event, props.actions);
+    if (props.actions) eventHandler(this.el, props.event, props.actions);
     return this.el;
   }
 

@@ -55,6 +55,7 @@ export default class Input {
         this.input = html('input', props.id, this.group);
         if (props.placeholder) this.input.placeholder = props.placeholder;
         if (props.type) this.input.type = props.type;
+        if (props.value) this.input.value = props.value;
         this.highlight = html('span', '', this.group, 'highlight');
         this.bar = html('span', '', this.group, 'bar');
         this.keyUpEventListener(this.input, props);
@@ -119,8 +120,10 @@ export default class Input {
     el.addEventListener('change', function (e) {
       const inputIndex = answersObject.responses.findIndex(question => question.qid === flowCount + 1);
       if (el.checked === true) {
-        if (inputIndex != -1) {
-          answersObject.responses[inputIndex].choices[0].push(e.target.value);
+        if (inputIndex !== -1) {
+          console.log("EXISTS")
+          console.log(answersObject.responses[inputIndex].choices)
+          answersObject.responses[inputIndex].choices.push(e.target.value);
           options.type = el.type;
         } else {
           options.qNumber = flowCount + 1;
@@ -130,7 +133,7 @@ export default class Input {
       } else {
         if (answersObject.responses[inputIndex]) {
           const valueToDelete = answersObject.responses[inputIndex].choices[0].findIndex(choice => choice === e.target.value);
-          if (valueToDelete != -1) {
+          if (valueToDelete !== -1) {
             answersObject.responses[inputIndex].choices[0].splice(valueToDelete, 1);
           }
         } else {
@@ -141,7 +144,7 @@ export default class Input {
     });
   }
 
-  keyUpEventListener(el, props) {
+  keyUpEventListener(el) {
     el.onblur = function () {
       console.log(el.id);
       window.sessionStorage.setItem(el.id, el.value);

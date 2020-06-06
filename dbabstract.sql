@@ -1,6 +1,5 @@
 DROP DATABASE IF EXISTS Quiz;
 
-
 CREATE DATABASE Quiz;
 
 CREATE TABLE IF NOT EXISTS Quizzes (
@@ -17,8 +16,6 @@ CREATE TABLE IF NOT EXISTS Questions (
     options TEXT,
     req BOOLEAN,
 );
-
-
 
 CREATE TABLE IF NOT EXISTS answers (
     id SERIAL PRIMARY KEY,
@@ -61,7 +58,7 @@ INSERT INTO Questions (question, quizid, input) VALUES('Is Lybin honestly not th
 INSERT INTO Questions (question, quizid, input) VALUES('What would you rate Lybin out of 5?', 26JBU, 'text');
 INSERT INTO Questions (question, quizid, input) VALUES('How do you personally feel Lybin has shaped your world?', 26JBU, 'text');
 INSERT INTO Questions (question, quizid, options, input) VALUES('What do you love the most about our lord Lybin?', 26JBU, '{That damned smile, his amazing body, his voice}', 'text');
-INSERT INTO Questions (question, quizid, input) VALUES('How do you personally feel Lybin has shaped your world?', , 'range');
+INSERT INTO Questions (question, quizid, input) VALUES('How do you personally feel Lybin has shaped your world?', , 'text');
 
 
 INSERT INTO Questions (question, quizid, options, input) VALUES('What do you love the most about our lord Lybin?', 'IAjDg', '{That damned smile, his amazing body, his voice}', 'text');

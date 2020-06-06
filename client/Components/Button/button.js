@@ -71,6 +71,7 @@ export default class Button {
 
   createBtn(props) {
     this.el = html('button', props.id, '', 'button');
+    this.el.classList.add('ripple');
     const text = renderText(this.el, props.text);
     text.classList.add('button-text');
   }

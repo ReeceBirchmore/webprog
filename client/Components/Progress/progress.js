@@ -1,15 +1,15 @@
 'use strict';
 
-import * as Render from '../../Javascript/render.js';
+import { $, render, renderText, html } from '../../Javascript/render.js';
 import * as FX from '../../Javascript/fx.js';
-import * as Quiz from '/Javascript/quiz.js';
 
 
 export default class Progress {
   constructor(props) {
     this.createBar(props);
-    Render.render(this.el, Render.$('root'));
-    this.setProgress(Quiz.quiz);
+    render(this.el, $('root'));
+    this.questionNumberProgress(props);
+    this.setProgress();
     return this.el;
   }
 
@@ -19,10 +19,15 @@ export default class Progress {
     this.el.classList.add('metre');
   }
 
+  questionNumberProgress(props) {
+    let qnumber = html('p', 'qnumber', this.el, 'p');
+    qnumber.textContent = props.qnum;
+  }
+
   setProgress() {
     this.span = document.createElement('span');
     this.span.id = 'progressSpan';
-    Render.render(this.span, this.el);
+    render(this.span, this.el);
     FX.progressCheck();
   }
 }

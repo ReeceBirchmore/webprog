@@ -28,6 +28,8 @@ let quizListObject;
 
 let filebutton;
 
+
+// Make this neater
 export function createUpload() {
   const label = document.createElement('label');
   label.id = 'upload-label';
@@ -45,10 +47,8 @@ export function createUpload() {
 }
 
 
-
-export function generatePage() {
-  // console.log(id_token)
-
+// Clean up all these functions
+export async function generatePage() {
   const screen = new Screen({ id: 'admin-console', class: 'adminScreen' });
   const nav = new Nav({ id: 'nav', title: 'Administrator Console', icons: ['add'], actions: [function () { const modal = new Modal({ type: 'upload', title: 'Upload a Quiz' }); }]});
   createUpload();
@@ -64,7 +64,7 @@ export function generatePage() {
 // #region Display Available Quizzes
 
 
-export async function displayQuizzes() {
+async function displayQuizzes() {
   let check = document.querySelectorAll('.card-quiz-list');
   check.forEach(element => {
     console.log(element);
@@ -99,7 +99,6 @@ export async function deleteQuiz(uid, quiztitle) {
     createToast(title, FX.toastClear, 'Close');
   } else {
     // Code if it failed here
-
   }
 }
 

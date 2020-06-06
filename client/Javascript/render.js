@@ -3,24 +3,19 @@
 import Toast from '/Components/Toast/toast.js';
 
 
-// Shorthand display function, to be moved!
+// #endregion
+// ////////////////////////////////////////////////////////////// RENDER ELEMENTS
+// #region Element Rendering
+
+/******************************
+ *
+ * @param {String} id - The ID of the element you wish to find, does not need to include the #
+ *
+ ******************************/
+
 function $(id) {
   return document.querySelector('#' + id);
 }
-
-const body = $('root');
-
-
-// #endregion
-// ////////////////////////////////////////////////////////////// SET RENDER STATE
-// #region State Handling
-
-// function setState(type, props) {
-//     console.log(type, props);
-
-
-// }
-
 
 // #endregion
 // ////////////////////////////////////////////////////////////// RENDER ELEMENTS
@@ -28,8 +23,8 @@ const body = $('root');
 
 /******************************
  *
- * @param {HTMLElement} el
- * @param {HTMLElement} domNode
+ * @param {HTMLElement} el - Reference to the new node created (Can be a direct reference or via the $ shorthand function)
+ * @param {HTMLElement} domNode - The element to attach the new node to
  *
  ******************************/
 
@@ -65,8 +60,11 @@ function useStyles(object) {
 
 /**************************
  *
- * @param {HTMLElement} el
- * @param {String} propText
+ * @param {HTMLElement} el - Reference to the HTML Element in which the text will be placed upon
+ * @param {String} propText - The text to generate
+ * @param {String} tag - The type of tag (H1, H2, P etc) - If left as '' it will default to p
+ * @param {String} id - The ID of the text, can be left blank but is not recommended
+ * @param {String} CSS - Any specific CSS stylings of the text (one css style only)
  *
  **************************/
 
@@ -102,8 +100,8 @@ function removeRender(el) {
 // #region Create Toast Function
 
 
-function createToast(message, action, actionText, params) {
-  const toast = new Toast({ id: 'toast', text: message, action: action, actionText: actionText, param: params });
+function createToast(message, icon) {
+  const toast = new Toast({ id: 'toast', text: message, icon: icon });
   render(toast, $('body'));
 }
 
@@ -115,9 +113,9 @@ function createToast(message, action, actionText, params) {
 
 function html(tag, id, renderPoint, css) {
   const el = document.createElement(tag);
-  if (id != '') el.id = id;
-  if (css != '') el.classList.add(css);
-  if (renderPoint != '') renderPoint.append(el);
+  if (id !== '') el.id = id;
+  if (css !== '') el.classList.add(css);
+  if (renderPoint !== '') renderPoint.append(el);
   return el;
 }
 
