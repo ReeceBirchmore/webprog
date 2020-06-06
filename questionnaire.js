@@ -25,7 +25,7 @@ const sql2 = new Postgres({
 sql2.connect();
 
 const sql = new Postgres({
-  user: 'postgres',
+  user: 'ayy',
   host: 'localhost',
   database: 'quiz2',
   password: 'root',
