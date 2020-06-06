@@ -15,8 +15,8 @@ const sql2 = new Postgres({
   user: 'postgres',
   host: 'localhost',
   database: 'template1',
-  password: 'root',
-  // secret123
+  // password: 'root',
+  password: 'secret123',
   port: 5432,
 });
 
@@ -52,8 +52,8 @@ const sql = new Postgres({
   user: 'postgres',
   host: 'localhost',
   database: 'quiz2',
-  password: 'root',
-  // secret123
+  // password: 'root',
+  password: 'secret123',
   port: 5432,
 });
 
