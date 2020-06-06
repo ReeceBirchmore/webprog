@@ -15,20 +15,20 @@ const Postgres = require('pg').Client;
 // (in which case the database part is ignored and replaced with postgres)
 
 const sql2 = new Postgres({
-  user: 'up850149',
+  user: 'postgres',
   host: 'localhost',
   database: 'template1',
-  password: 'MadMan123',
+  password: 'secret123',
   port: 5432,
 });
 
 sql2.connect();
 
 const sql = new Postgres({
-  user: 'ayy',
+  user: 'postgres',
   host: 'localhost',
   database: 'quiz2',
-  password: 'root',
+  password: 'secret123',
   port: 5432,
 });
 
