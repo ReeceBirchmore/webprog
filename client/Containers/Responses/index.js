@@ -140,11 +140,12 @@ function scrapeData(questions, answerData) {
       }
       if (answerData[i].responses[k].type === 'text' || answerData[i].responses[k].type === 'number') {
         const list = document.createElement('p');
+        console.log(answerData[i].responses[k])
         list.textContent = answerData[i].responses[k].choices[0];
         renderList(answerData, k, list);
       }
       if (answerData[i].responses[k].type === '') {
-        console.log('No answer given');
+        //console.log('No answer given');
       }
     }
   }
@@ -179,8 +180,10 @@ function renderBars(answerArray, questions, answerData) {
 
 
 async function renderList(answerData, k, list) {
+  console.log(k);
   const load = await $('card-' + (k));
   if (load) {
+    console.log($('card' + (k + 2)));
     $('card-' + (k + 1)).append(list);
   }
 }

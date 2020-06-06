@@ -59,7 +59,7 @@ export function generateQuiz(param) {
   flowCount = 0;
 
   generateQuestionnaire(uid);
-  console.log(questions)
+  console.log(questions);
 
   // Start the clock if timed!
   startTime = new Date();

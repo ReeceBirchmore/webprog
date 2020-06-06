@@ -50,7 +50,7 @@ export function createUpload() {
 // Clean up all these functions
 export async function generatePage() {
   const screen = new Screen({ id: 'admin-console', class: 'adminScreen' });
-  const nav = new Nav({ id: 'nav', title: 'Administrator Console', icons: ['add'], actions: [function () { const modal = new Modal({ type: 'upload', title: 'Upload a Quiz' }); }]});
+  //const nav = new Nav({ id: 'nav', title: 'Administrator Console', icons: ['add'], actions: [function () { const modal = new Modal({ type: 'upload', title: 'Upload a Quiz' }); }]});
   createUpload();
   displayQuizzes(params);
 }
@@ -122,11 +122,6 @@ export async function deleteQuestion(qid, question) {
 // #region Upload or create a new quiz
 
 
-
-
-
-
-
 export async function createNewQuiz(value) {
   const title = { value };
   if (title !== undefined) {
@@ -138,10 +133,14 @@ export async function createNewQuiz(value) {
       },
     });
     if (upload.ok) {
-      newQuizCreated(await upload.json());
+      displayQuizzes();
+      createToast('Quiz Uploaded Succesfully', 'uploadIcon');
     }
   }
 }
+
+
+
 
 export async function uploadJSON() {
   const jsonfile = await filebutton.files[0].text();
@@ -156,25 +155,15 @@ async function upload(jsonfile) {
       'Content-Type': 'application/json',
     },
   });
-  const uid = await upload.json();
   if (upload.ok === true) {
-    ModalFunctions.hideModal();
     displayQuizzes();
-    createToast('Quiz Uploaded Succesfully', deleteQuiz, 'Undo', uid);
+    createToast('Quiz Uploaded Succesfully', 'uploadIcon');
   } else {
     // Something went wrong!
   }
 }
 
 
-function newQuizCreated(uid) {
-  ModalFunctions.hideModal();
-  displayQuizzes();
-  createToast('Quiz Uploaded Succesfully', deleteQuiz, 'Undo', uid);
-  setTimeout(function () {
-    const modal = new Modal({ id: 'modal-link', type: 'info', title: 'Quiz Link', params: uid, text: 'http://localhost:8080/quiz/' + uid + '/flow/' });
-  }, 200);
-}
 
 
 // #endregion

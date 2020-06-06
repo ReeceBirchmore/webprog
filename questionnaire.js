@@ -11,29 +11,16 @@
 
 const Postgres = require('pg').Client;
 
-// This can also be a connection string
-// (in which case the database part is ignored and replaced with postgres)
-
 const sql2 = new Postgres({
   user: 'postgres',
   host: 'localhost',
   database: 'template1',
-  password: 'secret123',
+  password: 'root',
   // secret123
   port: 5432,
 });
 
 sql2.connect();
-
-const sql = new Postgres({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'quiz2',
-  password: 'secret123',
-  // secret123
-  port: 5432,
-});
-
 
 sql2.on('error', (err) => {
   console.error('SQL Fail', err);
@@ -60,6 +47,15 @@ function buildDB() {
       console.log(error);
     });
 }
+
+const sql = new Postgres({
+  user: 'postgres',
+  host: 'localhost',
+  database: 'quiz2',
+  password: 'root',
+  // secret123
+  port: 5432,
+});
 
 function newConnection() {
   sql.connect();
