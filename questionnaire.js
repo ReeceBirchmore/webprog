@@ -19,6 +19,7 @@ const sql2 = new Postgres({
   host: 'localhost',
   database: 'template1',
   password: 'secret123',
+  // secret123
   port: 5432,
 });
 
@@ -29,6 +30,7 @@ const sql = new Postgres({
   host: 'localhost',
   database: 'quiz2',
   password: 'secret123',
+  // secret123
   port: 5432,
 });
 
@@ -67,7 +69,7 @@ function newConnection() {
 
 function quizzesTable() {
   console.log('HELLO');
-  sql.query('CREATE TABLE IF NOT EXISTS Quizzes (id SERIAL PRIMARY KEY, title  text, allowback BOOLEAN, quizid TEXT); CREATE TABLE IF NOT EXISTS Questions (id SERIAL PRIMARY KEY, question  TEXT, quesnumber INT, quizid TEXT, input TEXT, options TEXT, req BOOLEAN); CREATE TABLE IF NOT EXISTS answers (id SERIAL PRIMARY KEY, answers  TEXT, quizid TEXT);')
+  sql.query('CREATE TABLE IF NOT EXISTS Quizzes (id SERIAL PRIMARY KEY, title  text, allowback BOOLEAN, quizid TEXT); CREATE TABLE IF NOT EXISTS Questions (id SERIAL PRIMARY KEY, question  TEXT, quesnumber INT, quizid TEXT, input TEXT, options TEXT [], req BOOLEAN); CREATE TABLE IF NOT EXISTS answers (id SERIAL PRIMARY KEY, answers  TEXT, quizid TEXT);')
     .then(data => {
       populateDummyQuizData();
     })
