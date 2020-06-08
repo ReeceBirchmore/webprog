@@ -47,9 +47,9 @@ body, html {
   overflow-y: scroll;
   z-index: 1;
   background-color: #42216C;
-  will-change: transform;
+  /* will-change: transform;
   -webkit-animation: scale-up 0.2s ease-out both;
-  animation: scale-up 0.2s ease-out both;
+  animation: scale-up 0.2s ease-out both; */
 }
 
 .screen-hide {
@@ -564,6 +564,7 @@ h2 {
   background-color: white;
   width: auto;
   margin: auto;
+  width:85vw;
   min-height: 60%;
   outline: none;
   /* max-height: 40%; */
@@ -575,10 +576,6 @@ h2 {
   align-items: left;
   padding: 1rem;
   text-align: left;
-  transition: transform 0.5s cubic-bezier(.32,.5,.82,.86);
-  will-change:transform;
-  transform: translateX(0) rotate(0);
-  transform-origin: top;
 }
 
 .overlay-container {

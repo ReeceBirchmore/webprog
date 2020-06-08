@@ -21,8 +21,6 @@ const router = new Router({
   root: '/',
 });
 
-alert("HELLO")
-
 router
   .add(/about/, () => {
     alert('welcome in about page');

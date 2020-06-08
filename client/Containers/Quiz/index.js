@@ -73,8 +73,7 @@ export function generateQuiz(param) {
  *
  *  This function will start the process of pulling the data
  *  from the database, dragging out quiz data (settings)
- *9602
- * 
+ *
  ***************************************************************/
 
 export async function generateQuestionnaire(uid) {
