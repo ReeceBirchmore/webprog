@@ -34,7 +34,7 @@ export default class Footer {
     this.el = document.createElement('div');
     this.el.id = props.id;
     this.el.classList.add('footer');
-    render(this.el, $('root'));
+    render(this.el, $('body'));
   }
 
 

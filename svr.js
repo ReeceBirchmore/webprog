@@ -5,13 +5,13 @@
 // #region Constants
 
 const express = require('express');
-// const maintain = require('./coldstartdb');
 const path = require('path');
 const q = require('./questionnaire');
 
 // #endregion
 // ////////////////////////////////////////////////////////////// CONSTANTS
 // #region Constants
+
 const app = express();
 const router = express.Router();
 const dev = express.Router();
@@ -41,7 +41,6 @@ async function coldStart(req, res) {
 }
 
 
-
 async function getAllQuizzes(req, res) {
   try {
     const result = await q.listAllQuizzes();
@@ -54,7 +53,7 @@ async function getAllQuizzes(req, res) {
 
 async function getQuizzes(req, res) {
   try {
-    const result = await q.getQuizDetails(req.params.id);
+    const result = await q.getQuiz(req.params.id);
     res.json(result);
   } catch (error) {
     res.sendStatus(400);
@@ -121,7 +120,6 @@ async function addOption(req, res) {
 }
 
 
-
 async function deleteQuiz(req, res) {
   try {
     const result = await q.deleteAQuiz(req.params.id);
@@ -144,9 +142,10 @@ async function deleteQuestion(req, res) {
 
 async function getAnswers(req, res) {
   try {
-    console.log(req.params.id, 'params id')
     const result = await q.getAnswerData(req.params.id);
+    console.log(result);
     res.json(result);
+
   } catch (error) {
     res.status(404).send('No match for that ID.');
   }
@@ -173,9 +172,5 @@ router.post('/create/quiz/', express.json(), asyncWrap(createQuiz));
 router.post('/create/question/', express.json(), asyncWrap(addQuestion));
 router.post('/create/option/:id', express.json(), asyncWrap(addOption));
 router.post('/upload', express.json(), asyncWrap(uploadQuiz));
-
-
-router.get('/newdb', asyncWrap(coldStart));
-dev.get('/create', asyncWrap(coldStart));
 
 app.listen(port);

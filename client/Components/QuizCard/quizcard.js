@@ -1,21 +1,25 @@
+/* eslint-disable no-unused-vars */
 'use strict';
 
-import Modal from '/Components/Modal/modal.js';
+import Divider from '/Components/Divider/divider.js';
+
+
 import * as Admin from '/Containers/Admin/index.js';
+import { deleteQuiz } from '/Containers/Admin/index.js';
 
 import * as Render from '/Javascript/render.js';
+import { $, render, renderText, html } from '/Javascript/render.js';
 
 
 export default class QuizCard {
   constructor(props) {
     this.createCard(props);
-    if (props.option) {
-      this.constructCreateQuizCardTemplate();
-    } else {
-      this.constructTemplate(props);
-    }
+    this.constructTemplate(props);
     this.addHandlers(props);
+
+
     Render.render(this.el, Render.$('root'));
+
     return this.el;
   }
 
@@ -27,20 +31,10 @@ export default class QuizCard {
 
   constructTemplate(props) {
     // Title Container Generation
-    const titleContainer = document.createElement('div');
-    titleContainer.classList.add('card-title-container');
-    this.el.appendChild(titleContainer);
-    Render.renderText(titleContainer, props.quizTitle, 'h2');
-    const openIcon = document.createElement('div');
-    openIcon.classList.add('icon-next');
-    titleContainer.appendChild(openIcon);
-
+    const titleContainer = html('div', props.id, this.el, 'card-title-container');
+    renderText(titleContainer, props.quizTitle, 'h2');
     // Divider Generation
-    const divider = document.createElement('div');
-    divider.classList.add('separator');
-    Render.renderText(divider, 'Details');
-    this.el.appendChild(divider);
-
+    const divider = new Divider(this.el, 'Details');
     // Container Generation
     this.overviewContainer = document.createElement('div');
     this.overviewContainer.classList.add('card-overview-container');
@@ -62,52 +56,34 @@ export default class QuizCard {
     this.editIcon = document.createElement('button');
     this.editIcon.classList.add('icon', 'edit', 'ripple');
     this.buttonsContainer.append(this.binIcon, this.linkIcon, this.barchartIcon, this.editIcon);
-
-
-    // Quiz Details Generation
-    Render.renderText(detailsContainer, '5 Questions');
-    Render.renderText(detailsContainer, '5 Responses');
-  }
-
-
-  constructCreateQuizCardTemplate() {
-    const icon = document.createElement('div');
-    icon.classList.add('card-quiz-add-icon');
-    this.el.appendChild(icon);
   }
 
 
   addHandlers(props) {
-    if (props.type === 'quiz') {
-      this.el.addEventListener('click', function () {
-        const modal = new Modal({ type: 'info', title: props.quizTitle, text: 'http://localhost:8080/quiz/' + props.uid + '/flow/' });
-      });
-      this.overviewContainer.addEventListener('click', function (event) {
-        event.stopPropagation();
-      });
-      this.linkIcon.addEventListener('click', function () {
-        navigator.clipboard.writeText('http://localhost:8080/#/quiz/' + props.id + '/flow/');
-        Render.createToast('Text Copied to Clipboard', 'clipboard');
-        // window.open("http://localhost:8080/#/quiz/" + props.id + "/flow/", '_blank');
-      });
-      this.barchartIcon.addEventListener('click', function () {
-        window.location = './#/admin/quiz/response/' + props.id;
-      });
-      this.binIcon.addEventListener('click', function () {
-        const popup = window.confirm('Are you sure you want to delete ' + props.quizTitle);
-        if (popup === true) Admin.deleteQuiz(props.id, props.quizTitle);
-      });
-      this.editIcon.addEventListener('click', function () {
-        window.location = './#/admin/quiz/edit/' + props.id;
-      });
-    }
-    if (props.type === 'create') {
-      this.el.addEventListener('click', function () {
-        const modal = new Modal({ type: 'upload', title: 'Upload a Quiz' });
-      });
-    }
+    this.el.addEventListener('click', function () {
+      // Action on clicking the card
+    });
+    this.overviewContainer.addEventListener('click', function (event) {
+      event.stopPropagation();
+    });
+
+    this.linkIcon.addEventListener('click', function () {
+      navigator.clipboard.writeText('http://localhost:8080/#/quiz/' + props.id + '/flow/');
+      Render.createToast('Text Copied to Clipboard', 'clipboard');
+      // window.open("http://localhost:8080/#/quiz/" + props.id + "/flow/", '_blank');
+    });
+
+    this.barchartIcon.addEventListener('click', function () {
+      window.location = './#/admin/quiz/response/' + props.id;
+    });
+
+    this.binIcon.addEventListener('click', function () {
+      const popup = window.confirm('Are you sure you want to delete ' + props.quizTitle);
+      if (popup === true) Admin.deleteQuiz(props.id, props.quizTitle);
+    });
+
+    this.editIcon.addEventListener('click', function () {
+      window.location = './#/admin/quiz/edit/' + props.id;
+    });
   }
-
-
-
 }

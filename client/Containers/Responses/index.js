@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 'use strict';
 
 import Card from '/Components/Card/card.js';
@@ -28,7 +29,6 @@ let answerArray = [];
 
 
 export async function viewResponses(uid) {
-  console.log(uid)
   const answerlist = await fetch('/api/answers/' + uid);
   if (answerlist.ok) {
     answerData = await answerlist.json();
@@ -140,7 +140,7 @@ function scrapeData(questions, answerData) {
       }
       if (answerData[i].responses[k].type === 'text' || answerData[i].responses[k].type === 'number') {
         const list = document.createElement('p');
-        console.log(answerData[i].responses[k])
+        console.log(answerData[i].responses[k], answerData[i].responses[k].type)
         list.textContent = answerData[i].responses[k].choices[0];
         renderList(answerData, k, list);
       }
@@ -179,11 +179,9 @@ function renderBars(answerArray, questions, answerData) {
 // #region  Render list items
 
 
-async function renderList(answerData, k, list) {
-  console.log(k);
-  const load = await $('card-' + (k));
+function renderList(answerData, k, list) {
+  const load = $('card-' + (k + 1));
   if (load) {
-    console.log($('card' + (k + 2)));
     $('card-' + (k + 1)).append(list);
   }
 }

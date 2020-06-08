@@ -73,7 +73,8 @@ export function generateQuiz(param) {
  *
  *  This function will start the process of pulling the data
  *  from the database, dragging out quiz data (settings)
- *
+ *9602
+ * 
  ***************************************************************/
 
 export async function generateQuestionnaire(uid) {
@@ -85,9 +86,8 @@ export async function generateQuestionnaire(uid) {
     return;
   }
 
-  // IF Questionnaire EXISTS
   if (questionDataObject[0] !== undefined) {
-  // Build the footer
+    // Build the footer
     const footer = new Footer({
       id: 'Footer',
     });
@@ -113,11 +113,8 @@ export async function generateQuestionnaire(uid) {
       $('nextbtn').style.width = '8rem';
     }
     generateQuestions(uid);
-  }
-
-  // ELSE IF DOES NOT EXIST
-  else {
-    console.log('This questionnaire does not exist');
+  } else {
+    console.error('This questionnaire does not exist');
   }
 }
 
@@ -234,7 +231,7 @@ function generateCards(questions) {
  *
  ***************************************************************/
 
-function handleAnswers() {
+export function handleAnswers() {
   // Answer object to be created to store user data
   const response = {
     qid: flowCount + 1,
@@ -318,7 +315,7 @@ function diff_minutes(dt2, dt1) {
 export async function submitQuiz() {
   FX.submitAnimation();
   timeDifference();
-  await fetch('/api/submit/' + uid.id, {
+  const submit = await fetch('/api/submit/' + uid.id, {
     method: 'POST',
     body: JSON.stringify(answersObject),
     headers: {
@@ -326,9 +323,11 @@ export async function submitQuiz() {
     },
   });
 
-
-  createToast('Quiz Submitted', 'tick');
-
+  if (submit.ok) {
+    createToast('Quiz Submitted!', 'tick');
+  } else {
+    createToast('Submission Failed!', 'close', true);
+  }
 
   // CHANGE THIS TO RENDERTEXT, USE EVENTHANDLER JS
   const link = document.createElement('p');
@@ -340,6 +339,12 @@ export async function submitQuiz() {
   $('root').appendChild(link);
 }
 
+
+/*********************************************************
+ *
+ * Download the users answers as a CSV
+ *
+ ********************************************************/
 
 function downloadCSV(args) {
   let csv = convertArrayOfObjectsToCSV({

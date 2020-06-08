@@ -31,7 +31,7 @@ export default class Screen {
     if ($('root')) {
       $('root').classList.add('screen-hide');
       $('root').id = 'old-screen';
-      $('body').removeChild($('nav'));
+      if ($('nav')) $('body').removeChild($('nav'));
     }
     this.screen = document.createElement('div');
     this.screen.id = 'root';

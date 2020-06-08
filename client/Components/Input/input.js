@@ -2,7 +2,7 @@
 
 import { renderText, $, createToast, render, removeRender, html } from '../../Javascript/render.js';
 import { toastClear } from '../../Javascript/fx.js';
-import { flowCount, answersObject, increase } from '../../Containers/Quiz/index.js';
+import { flowCount, answersObject, increase, handleAnswers } from '../../Containers/Quiz/index.js';
 
 import * as Admin from '../../Containers/Admin/index.js';
 import * as Edit from '/Containers/Edit/index.js';
@@ -153,7 +153,10 @@ export default class Input {
       options.type = el.type;
     };
     el.addEventListener('keyup', (e) => {
-      if (e.key === 'Enter') increase();
+      if (e.key === 'Enter') {
+        handleAnswers();
+        increase();
+      }
     });
   }
 }

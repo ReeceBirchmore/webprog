@@ -1,8 +1,7 @@
+/* eslint-disable no-unused-vars */
 'use strict';
 
-import EditCard from '/Components/Card/editcard.js';
-import Modal from '/Components/Modal/modal.js';
-import * as ModalFunctions from '/Components/Modal/modal.js';
+import Footer from '/Components/Footer/footer.js';
 import Nav from '/Components/Nav/nav.js';
 import QuizCard from '../../Components/QuizCard/quizcard.js';
 import Screen from '/Components/Screen/screen.js';
@@ -33,14 +32,17 @@ let filebutton;
 export function createUpload() {
   const label = document.createElement('label');
   label.id = 'upload-label';
-  label.classList.add('upload');
+  label.classList.add('button', 'upload');
+
+  
   filebutton = document.createElement('input');
   filebutton.id = 'file-upload';
   filebutton.type = 'file';
+  filebutton.accept = '.json';
   label.setAttribute('for', 'file-upload');
-  $('root').appendChild(label);
+  $('Footer').appendChild(label);
   $('upload-label').appendChild(filebutton);
-  renderText($('upload-label'), 'Upload Quiz');
+  renderText($('upload-label'), 'Upload Quiz JSON');
   filebutton.addEventListener('change', function () {
     uploadJSON();
   });
@@ -48,8 +50,11 @@ export function createUpload() {
 
 
 // Clean up all these functions
-export async function generatePage() {
+export function generatePage() {
   const screen = new Screen({ id: 'admin-console', class: 'adminScreen' });
+  const footer = new Footer({
+    id: 'Footer',
+  });
   //const nav = new Nav({ id: 'nav', title: 'Administrator Console', icons: ['add'], actions: [function () { const modal = new Modal({ type: 'upload', title: 'Upload a Quiz' }); }]});
   createUpload();
   displayQuizzes(params);
@@ -92,11 +97,11 @@ async function displayQuizzes() {
 
 
 export async function deleteQuiz(uid, quiztitle) {
-  const title = (!quiztitle) ? 'Quiz Deleted' : quiztitle + ' Deleted';
+  const title = (!quiztitle) ? 'Quiz Deleted!' : quiztitle + ' Deleted!';
   const deleteQuiz = await fetch('/api/delete/quiz/' + uid);
   if (deleteQuiz.ok) {
     displayQuizzes();
-    createToast(title, FX.toastClear, 'Close');
+    createToast(title, 'tick');
   } else {
     // Code if it failed here
   }
@@ -104,7 +109,7 @@ export async function deleteQuiz(uid, quiztitle) {
 
 
 export async function deleteQuestion(qid, question) {
-  const title = (!question) ? 'Question Deleted' : question + ' Deleted';
+  const title = (!question) ? 'Question Deleted!' : question + ' Deleted!';
   const deleteQuiz = await fetch('/api/delete/question/' + qid);
   if (deleteQuiz.ok) {
     console.log(uid);
@@ -132,14 +137,15 @@ export async function createNewQuiz(value) {
         'Content-Type': 'application/json',
       },
     });
+    console.log(upload);
     if (upload.ok) {
       displayQuizzes();
-      createToast('Quiz Uploaded Succesfully', 'uploadIcon');
+      createToast('Quiz Uploaded Succesfully!', 'uploadIcon');
+    } else {
+      console.log("NAG BOYE")
     }
   }
 }
-
-
 
 
 export async function uploadJSON() {
@@ -157,7 +163,7 @@ async function upload(jsonfile) {
   });
   if (upload.ok === true) {
     displayQuizzes();
-    createToast('Quiz Uploaded Succesfully', 'uploadIcon');
+    createToast('Quiz Uploaded Succesfully!', 'uploadIcon');
   } else {
     // Something went wrong!
   }

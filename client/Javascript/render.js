@@ -99,9 +99,16 @@ function removeRender(el) {
 // ////////////////////////////////////////////////////////////// CREATE TOAST POPUP ELEMENT
 // #region Create Toast Function
 
+/*********************************************************************
+ *
+ *  @property {String}   message - Text for the snackbar
+ *  @property {String}  icon - Icon to attach to the toast, must have a respective CSS class to appear
+ *  @property {Boolean}  error - True/False, determine snackbars colour, left blank = false.
+ *
+ */
 
-function createToast(message, icon) {
-  const toast = new Toast({ id: 'toast', text: message, icon: icon });
+function createToast(message, icon, error) {
+  const toast = new Toast({ id: 'toast', text: message, icon: icon, error: error });
   render(toast, $('body'));
 }
 
