@@ -2,11 +2,12 @@
 
 
 export default class Router {
-    routes = [];
-    mode = null;
-    root = '/';
+
   
     constructor(options) {
+      this.routes = [];
+      this.mode = null;
+      this.root = '/';
       this.mode = window.history.pushState ? 'history' : 'hash';
       if (options.mode) this.mode = options.mode;
       if (options.root) this.root = options.root;
