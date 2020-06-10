@@ -1,8 +1,15 @@
 'use strict';
 
 
-import { renderText } from '../../Javascript/render.js';
+import { renderText, render } from '../../Javascript/render.js';
 
+
+/*********************************************************************
+ *
+ *  @property {HTMLElement} el The element to append the new divider to (REQUIRED)
+ *  @property {String} text The text to include in the middle of the divider
+ *
+ */
 
 export default class Divider {
   constructor(el, text) {
@@ -13,6 +20,6 @@ export default class Divider {
     const divider = document.createElement('div');
     divider.classList.add('separator');
     renderText(divider, text);
-    el.appendChild(divider);
+    if (el !== undefined) render(divider, el);
   }
 }

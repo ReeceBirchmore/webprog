@@ -2,31 +2,51 @@
 
 import * as Render from '/Javascript/render.js';
 import * as FX from '/Javascript/fx.js';
+import { render } from '/Javascript/render.js';
 
 
-function dismiss() {
-  FX.toastClear();
-}
-
+/*********************************************************************
+ *
+ *  @typedef  {Object}    Props
+ *  @property {String}    props.id ID is automatically assigned
+ *  @property {String}    props.text Text for the snackbar
+ *  @property {Boolean}   props.error True or False, To determine the snackbars colour, default is False.
+ *
+ *  The toast function is in the render.js file, call upon the createToast function instead of directly calling it!
+ *
+ *  Example of use:
+ *
+ *  const toast = new Toast({
+ *    id: 'toast',
+ *    text: message,
+ *    error: error,
+ *  });
+ */
 
 export default class Toggle {
   constructor(props) {
-    this.createToggle(props);
-    // this.createSlider(props);
-    Render.render(this.el, Render.$('root'));
+    this.createToggleStructure(props);
+    render(this.el, props.renderPoint);
     return this.el;
   }
 
-  createToggle(props) {
-    this.el = document.createElement('div');
-    this.el.id = props.id;
-    this.el.classList.add('toggle-label');
-  }
 
-  createSlider(props) {
-    const action = props.action;
-    this.action = Render.renderText(this.el, props.actionText);
-    this.action.addEventListener('click', action);
-    this.action.classList.add('toastAction');
+  createToggleStructure(text) {
+    this.el = document.createElement('div');
+    this.el.classList.add('material-toggle');
+
+    this.input = document.createElement('input');
+    this.input.id = 'toggle';
+    this.input.type = 'checkbox';
+    this.input.setAttribute('name', 'toggle');
+    this.input.checked = true;
+
+    this.input.classList.add('switch');
+
+    this.label = document.createElement('label');
+    this.label.setAttribute('for', 'toggle');
+
+
+    this.el.append(this.input, this.label);
   }
 }

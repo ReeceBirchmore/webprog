@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 'use strict';
 
 
@@ -59,7 +60,6 @@ export function generateQuiz(param) {
   flowCount = 0;
 
   generateQuestionnaire(uid);
-  console.log(questions);
 
   // Start the clock if timed!
   startTime = new Date();
@@ -87,15 +87,12 @@ export async function generateQuestionnaire(uid) {
 
   if (questionDataObject[0] !== undefined) {
     // Build the footer
-    const footer = new Footer({
-      id: 'Footer',
-    });
+    const footer = new Footer();
     // Build the Next Button
     const button = new Button({
       id: 'nextbtn',
       text: 'Next',
-      action: 'Quiz.up',
-      param: +1,
+      action: function () { increase(); },
       render: 'Footer',
       type: 'next',
     });
@@ -104,8 +101,7 @@ export async function generateQuestionnaire(uid) {
       const button = new Button({
         id: 'prevbtn',
         text: 'Previous',
-        action: 'Quiz.down',
-        param: -1,
+        action: function () { decrease(); },
         render: 'Footer',
         type: 'previous',
       });
@@ -131,7 +127,6 @@ async function generateQuestions(uid) {
   const response = await fetch('/api/questions/' + uid.id);
   if (response.ok) {
     questions = await response.json();
-    console.log(questions);
     generateCards(questions);
   } else {
     questions = [{ msg: 'Failed to load questions' }];
@@ -323,9 +318,9 @@ export async function submitQuiz() {
   });
 
   if (submit.ok) {
-    createToast('Quiz Submitted!', 'tick');
+    createToast('Quiz Submitted!', false);
   } else {
-    createToast('Submission Failed!', 'close', true);
+    createToast('Submission Failed!', true);
   }
 
   // CHANGE THIS TO RENDERTEXT, USE EVENTHANDLER JS

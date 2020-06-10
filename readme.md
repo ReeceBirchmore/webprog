@@ -15,11 +15,31 @@ Contents:
 
 
 
+# How to use
+
+Run "npm i" in the directory to install and update any packages included within the package.json file
+
+Run "npm run start" to run the server. The server will rebuild the database and populate it with data to test. This is purely a development feature to ensure that while testing the database is consistent. 
+
+While using the application, it is best viewed in the chrome device emulator for mobile. The application scales to desktop, but looks best on mobile.
+
+Once the server has built, navigate to the IP address given for the VM (If the webpage does not open for you automatically), the webpage will auto-redirect to the administrator console.
+
+On the admin console you will see the list of pre-generated questionnaires. You can delete, share, edit/view responses, upload from a JSON or create a new quiz from scratch.
 
 
 
+# Known Issues
 
+The webpage should automatically open when the server has started, when running off the VM the webpage will not automatically open. 
 
+The biggest issue I had was getting the application to run in Safari, I have no real way to test on the Safari browser, I thought it could have been some public declarations I had made within my classes, but having removed all of those it still does not want to load. I would need access to a Mac with the latest edition of Safari to thoroughly test, as the library is shut I have no real method of testing. It works in all other major browsers.
+
+Sometimes when first loading a quiz the buttons can lock up and be a bit unresponsive, this is an issue I cant easily replicate using the dev tools, in order to fix you just have to refresh the page.
+
+Sometimes when loading a page by changing the URL hash buttons may not appear at all, this is to do with the method of my router and a disagreement between my routers desires and the powers that be in the Chromium Dev Team, if the buttons do not appear, refresh the page.
+
+When uploading a quiz, unless you follow a JSON that has the same structure as the example one, it will throw an error at you. 
 
 
 # Shorthand Functions
@@ -163,7 +183,7 @@ new Card();
 ```
 And can be modified further by including the following:
 - <b>id: 'id'</b> -  this will attach an ID to the card
-- <b>type:  'create, edit, quiz' </b> - selecting one of these three options will determine the overall structure of the card.
+- <b>required </b> - Boolean value to specify whether the question requires an answer before moving on.
 - <b> attachElement: 'element' </b> - by default, the card renders to the root of the page. Specifiyng a a position to render to here will override that.
 - <b> class: 'className' </b> - by default, the class of the card will be 'card', if the app needs to display a modified card it can pass through a new css class to override the card style.
 
@@ -187,29 +207,40 @@ The renderElement is the point in which the element will attach itself, the text
 <br/>
 <br/>
 
-## Graph
 
-The graph is a component used heavily in the responses view page for multiple optioned questions.
+## Input
+
+The inputs are all contained within one file, each input manages its own state through the use of event listeners and exports. 
 
 It is called upon by writing:
 
 ```
-new Graph({renderElement, width, text})
+new Input();
 ```
 
-<b> renderElement </b> - Refers to the element of which the graph will be situated on, typically this will be the base given somewhere in the code. Due to issues pairing the two, the base and graph have been seperated.
+The default creation for the above line would be a simple text box with no extra functions, ID, stylings or attachment points. In order to build up , we would add the following prop tags:
 
-<b> width </b> - Refers to the width of the bar (The maths will be required - To find percentage of A in B, the value is ((Value A / Value B) * 100) 
+```
+        const input = new Input({
+          id: 'input-' + x + '-question-' + qNum,
+          type: question.input,
+          options: question.options[x],
+          name: qNum,
+          renderPoint: HTMLElement,
+        });
+```
 
-<b> text </b> - Refers to any text being used by the graph, in the case of my responses page it was used to display the % number alongside the bar.
+<b>ID</b> The ID is the ID of the input, ti is not required but it is heavily required using it for future referencing
+
+<b>Type</b> The type of input to use (number, text, multi, single)
+
+<b>Options</b> If the question has multiple options, this will be an array of those options
+
+<b> Name </b> For multiple choice questions we require a group in order to collectively group radios and checkboxes. This can be left blank unless the type is of multiple selections.
+
+<b> renderPoint </b> The attachment point of which the input will stick to. Must be a valid HTMLElement currently appended to the webpage.
 
 >This element must have an element to attach itself to else it will not attach on the page. Page generation will not suffer from this, however the component will not appear if a valid, rendered component is not used.
-
-
-<br/>
-<br/>
-
-## Input
 
 <br/>
 <br/>
@@ -222,7 +253,7 @@ The navigation bar is a component that builds itself onto the screen with each p
 It is called upon by writing:
 
 ```
-new Nav({id, title});
+new Nav({id, title, icons, actions});
 ```
 
 The navigation bar will by default render to $('root'), this cannot be changed as the navbar is a fixed point that must not move in order to keep consistency.
@@ -230,7 +261,12 @@ The ID and Title are two optional tags, but recomended for manipulation. Title w
 
 The nav also offers an optional tag to display icons. These icons are predetermined by the Icon generation component:
 ```
-new Nav({id: 'nav', 'Example Questionnaire', icons: ['clear', 'info'], event:['click', 'scroll']});
+  const nav = new Nav({
+    id: 'nav',
+    title: questionDataObject[0].title,
+    icons: [(questionDataObject[0].allowback !== false) ? 'clear' : null],
+    actions: [function () { if (questionDataObject[0].allowback !== false) { location.reload(); } }],
+  });
 ```
 The nav bar calls upon the Icon component as well as the eventHandler function, therefore when generating the nav it is important to use the following tags:
 
@@ -256,8 +292,12 @@ The element itself requires no work beyond including an ID, due to changing data
 
 ```
 function progress(val) {
-    let prog = $('progressSpan');
-    prog.style.width = (val / (quizLength - 1)) * 100 + "%";
+    if ($('qnumber')) {
+    if (val < quizLength - 1) { $('qnumber').textContent = val + 1 + ' of ' + (quizLength - 1); }
+    if (val === quizLength - 1) { $('qnumber').textContent = 'Finished'; }
+  }
+  const prog = $('progressSpan');
+  prog.style.width = (val / (quizLength - 1)) * 100 + '%';
 }
 ```
 
@@ -287,21 +327,20 @@ Both tags on the screen are optional, yet recommended. The screen will render to
 
 ## Snackbar
 
-The snackbar is a handy, small and informative message popup that display information relevant to the user at any given prompt. (For example - uploading a quiz, saving a quiz, succesful login, error response from database, undo action)
+The snackbar is a handy, small and informative message popup that display information relevant to the user at any given prompt. (For example - uploading a quiz, saving a quiz, error response from database)
 
 It is called upon by writing:
 
 ```
-createToast('text', 'action', 'action text');
+createToast('Text for the popup', ErrorBoolean);
 ```
 
-The function simplifies the deployment of the snackbar, it takes 3 inputs (with the text being the only required value for any real world usage)
+The function simplifies the deployment of the snackbar, it takes 2 inputs (with the text being the only required value for any real world usage)
 
-<b> text </b> - The body of the snackbar
+<b> Text for the popup </b> - The body of the snackbar.
 
-<b> action </b> - The action you wish to occur if the user presses the action button, by default this will dismiss the snackbar.
+<b> ErrorBoolean </b> - Whether or not the snackbar should display as an error or not (For errors, this value should be true) by default it is false, so if no boolean is given, it will not generate as an error.
 
-<b> action text </b> - The text given to the action bar, by default this is "CLOSE"
 
 <br/>
 <br/>
@@ -322,17 +361,13 @@ The function simplifies the deployment of the snackbar, it takes 3 inputs (with 
 
 # Features
 
-- Sign in with Google //Not complete
 - Card Stacked layout
-- Switch between Stacked Card and Linear layout on the fly //Not complete
 - Dynamic Snackbars for errors and notifications 
-- Dynamic Themeing of content //Not complete
 - Single Page Layout with Local Routing
 
 
 - Quiz Features:
     - Review Answers before submitting
-    - Undo submission
     - Download CSV Format answers
 
 - Edit Quiz Page:
@@ -341,7 +376,9 @@ The function simplifies the deployment of the snackbar, it takes 3 inputs (with 
     - Allow Hiding the previous/restart button
     - Timed Quizzes
     - Force Required Questions
-    - Undo edit/Revert back
+    - Add new questions
+    - Change question input types
+    - Add options (for multiple option types)
 
 - Response Page Features:
     - Average completion time of quizzes
@@ -353,16 +390,12 @@ The function simplifies the deployment of the snackbar, it takes 3 inputs (with 
     - Quiz quick link generation
     - Upload a quiz JSON (Following the provided structure)
     - Generate a quiz from scratch
-    - Edit previously uploaded/generated quizzes
     - Delete quizzes
-    - Undo deletion
-    - Undo upload
 
 # Accessibility Considerations
 
-The application currently supports the following:
+The application currently supports:
 - Reduced Motion (System Setting) - Disables any and all animations
-- Dark Mode (System Setting) - Self explanatory
 
 
 <br/>

@@ -34,27 +34,6 @@ function render(el, domNode) {
 
 
 // #endregion
-// ////////////////////////////////////////////////////////////// STYLE ELEMENTS
-// #region Use Styling
-
-/************************
- *
- * @param {Object} object
- *
- ************************/
-
-function useStyles(object) {
-  const styleString = (
-    Object.entries(object).reduce((styleString, [propName, propValue]) => {
-      // console.log(`${styleString}${propName}:${propValue};`);
-      return `${styleString}${propName}:${propValue};`;
-    }, '')
-  );
-  return styleString;
-}
-
-
-// #endregion
 // ////////////////////////////////////////////////////////////// TEXT ELEMENTS
 // #region Text Rendering
 
@@ -86,11 +65,11 @@ function renderText(el, propText, tag, id, css) {
 
 /*************************
  *
- * @param {HTMLElement} el
+ * @param {HTMLElement} el - The element to remove from the root of the webpage.
  *
  *************************/
 
-function removeRender(el) {
+function remove(el) {
   $('root').removeChild(el);
 }
 
@@ -102,14 +81,12 @@ function removeRender(el) {
 /*********************************************************************
  *
  *  @property {String}   message - Text for the snackbar
- *  @property {String}  icon - Icon to attach to the toast, must have a respective CSS class to appear
  *  @property {Boolean}  error - True/False, determine snackbars colour, left blank = false.
  *
  */
 
-function createToast(message, icon, error) {
-  const toast = new Toast({ id: 'toast', text: message, icon: icon, error: error });
-  render(toast, $('body'));
+function createToast(message, error) {
+  const toast = new Toast({ id: 'toast', text: message, error: error });
 }
 
 
@@ -132,4 +109,4 @@ function html(tag, id, renderPoint, css) {
 // #region Exports
 
 
-export { render, $, useStyles, renderText, removeRender, createToast, html };
+export { render, $, renderText, remove, createToast, html };

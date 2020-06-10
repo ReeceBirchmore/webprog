@@ -42,7 +42,11 @@ async function gatherDetails(quizid) {
   if (questionnaire.ok) {
     const qData = await questionnaire.json();
     if (qData.length !== 0) {
-      const nav = new Nav({ id: 'nav', title: 'Edit ' + qData[0].title, icons: ['add'], actions: [function () { saveQuestionnaire(); }] });
+      const nav = new Nav({
+        id: 'nav',
+        title: 'Edit ' + qData[0].title,
+        icons: ['return', 'add'],
+        actions: [function () { window.location = './#/admin' }, function () { saveQuestionnaire(); }] });
       editQuiz(quizid);
     } else {
       console.log('quiz didnt exist');
@@ -54,7 +58,7 @@ async function gatherDetails(quizid) {
 
 
 async function editQuiz(uid) {
-  let check = document.querySelectorAll('.card-edit');
+  let check = document.querySelectorAll('.card-linear');
   check.forEach(element => {
     $('root').removeChild(element);
   });
@@ -233,24 +237,17 @@ async function saveQuestionnaire() {
 }
 
 
-export function cardButtonsOverlay(id) {
-  console.log(id);
-  if ($(id).dataset.open !== 'true') {
-    const list = document.querySelectorAll('.card-edit');
-    list.forEach(card => {
-      card.style.transform = 'translateX(0)';
-      card.setAttribute('data-open', false);
-    });
-    $(id).setAttribute('data-open', true);
-    $(id).style.transition = '0.3s';
-    $(id).style.transform = 'translateX(-40%)';
+
+
+export async function deleteQuestion(qid, question) {
+  const title = (!question) ? 'Question Deleted!' : question + ' Deleted!';
+  const deleteQuiz = await fetch('/api/delete/question/' + qid);
+  if (deleteQuiz.ok) {
+    console.log(uid);
+    editQuiz(uid);
+    createToast(title, FX.toastClear, 'Close');
   } else {
-    $(id).setAttribute('data-open', false);
-    $(id).style.transform = 'translateX(0)';
-    const list = document.querySelectorAll('.card-edit');
-    list.forEach(card => {
-      card.style.transform = 'translateX(0)';
-    });
-    console.log(list);
+    // Code if it failed here
+
   }
 }

@@ -1,9 +1,9 @@
+/* eslint-disable no-unused-vars */
 'use strict';
 
 import SubmissionCard from '/Components/SubmissionCard/submissioncard.js';
 import Button from '/Components/Button/button.js';
-
-import { arrOfCards, cardStackArr, flowCount, answersObject } from '../Containers/Quiz/index.js';
+import { arrOfCards, cardStackArr, flowCount, answersObject, submitQuiz } from '/Containers/Quiz/index.js';
 import { $ } from './render.js';
 
 
@@ -30,7 +30,7 @@ export function shuffle(val) {
     }
   }
 
-  // Display all given answers and give option to submit quiz
+  // Display all given answers and give option to submit quiz if the question counter matrches the length of the array of cards
   if (flowCount === arrOfCards.length) {
     if ($('submitbtn')) {
       $('submitbtn').style.display = 'block';
@@ -40,7 +40,7 @@ export function shuffle(val) {
         id: 'submitbtn',
         text: 'Submit',
         type: 'submit',
-        action: 'submit',
+        action: function () { submitQuiz(); },
       });
       $('nextbtn').style.display = 'none';
     }
@@ -90,15 +90,10 @@ function intialise() {
 }
 
 
-export function changeDisplayMode() {
-  // code
-}
-
-
 /******************************************************************************
  *
  * Manage the deck each time, check if reduced motion is on (if so, disable
- * animations) and shuffle the cards, move the topmost card offscreen and 
+ * animations) and shuffle the cards, move the topmost card offscreen and
  * rearrange the cardStackArray with the next 3 required cards.
  *
  ******************************************************************************/

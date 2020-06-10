@@ -1,6 +1,22 @@
 'use strict';
 
-import { $, renderText, html } from '../../Javascript/render.js';
+import { $, renderText, html } from '/Javascript/render.js';
+
+/*********************************************************************
+ *
+ *  @typedef  {Object}      Props
+ *  @property {String}      props.id ID to assign the element, recommended for further referencing
+ *  @property {Array}       props.answers Stored Object Array of the answers given from the user
+ *
+ *  The submission card is called in the StackManagement.js file
+ *
+ *  Example of use:
+ *
+ *  const card = new SubmissionCard({
+ *    id: 'card-submit',
+ *    answers: answersObject.responses,
+ *  });
+ */
 
 
 export default class SubmissionCard {
@@ -8,7 +24,6 @@ export default class SubmissionCard {
     this.createCard(props);
     this.generateEnvelope(props);
   }
-
 
   createCard(props) {
     this.el = html('div', (!props.id) ? '' : props.id, '', '');

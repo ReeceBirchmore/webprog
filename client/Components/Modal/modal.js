@@ -4,6 +4,8 @@ import ModalContent from '../../Components/Modal/modal-content.js';
 import { $, html } from '../../Javascript/render.js';
 import eventHandler from '/Javascript/eventhandlers.js';
 
+// CAN DELETE
+
 export function hideModal() {
   if ($('modalbg')) {
     $('modal').classList.add('modal-destroy');

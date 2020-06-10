@@ -3,7 +3,7 @@
 import Input from '/Components/Input/input.js';
 import Divider from '/Components/Divider/divider.js';
 import Icon from '/Components/Icon/icon.js';
-import Toggle from '/Components/Input/toggle.js';
+import Toggle from '/Components/Toggle/toggle.js';
 
 import { $, renderText, html, render } from '/Javascript/render.js';
 import * as Admin from '/Containers/Admin/index.js';
@@ -19,11 +19,10 @@ export default class EditCard {
   }
 
   createEditCard(props) {
-    console.log(props)
-    
     this.el = document.createElement('div');
     this.el.id = props.id;
-    this.el.classList.add('card-edit', 'elevated');
+    this.el.classList.add('card-linear', 'elevated');
+    this.toggle = new Toggle({ renderPoint: this.el });
   }
 
   createEditCardTemplate(props) {
@@ -38,6 +37,7 @@ export default class EditCard {
     // Select Type Input
     this.select = new Input({ id: 'selector-' + props.id, type: 'select', types: ['text', 'number', 'single-select', 'multi-select'], value: props.input, qid: props.qid });
     this.el.append(this.select);
+    
 
     render(this.el, $('root'));
   }

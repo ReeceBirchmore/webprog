@@ -1,13 +1,23 @@
 'use strict';
 
-import { $ } from '../../Javascript/render.js';
-import { cursorCoords } from '../../Javascript/app.js';
+import { $, html } from '/Javascript/render.js';
+import { cursorCoords } from '/Javascript/app.js';
 
 
-const history = {
-  page1: '',
-  page2: '',
-};
+/*********************************************************************
+ *
+ *  @typedef  {Object}      Props
+ *  @property {String}      props.id ID to assign the element, recommended for further referencing
+ *  @property {String}      props.class Specify a specific overriding class the screen should have
+ *
+ *
+ *  Example of use:
+ *
+ *  const screen = new Screen({
+ *    id: 'admin-console',
+ *    class: 'adminScreen',
+ *  });
+ */
 
 
 export default class Screen {
@@ -18,6 +28,9 @@ export default class Screen {
   }
 
   maths() {
+    // Initially created to allow for the window to open based on the position touched, animations
+    // have since been removed to save on performance. Can be readded by adding a scale-up css keyframe
+    // animation to the screen class in question
     const mainHeight = window.innerHeight; // Y value
     const mainWidth = window.innerWidth; // X value
     const ySum = cursorCoords.y / mainHeight;
@@ -33,33 +46,10 @@ export default class Screen {
       $('root').id = 'old-screen';
       if ($('nav')) $('body').removeChild($('nav'));
     }
-    this.screen = document.createElement('div');
-    this.screen.id = 'root';
-    this.screen.classList.add(props.class);
+
+    this.screen = html('div', 'root', $('body'), props.class)
     this.screen.style.transformOrigin = this.xTotal + '%' + this.yTotal + '%';
-    $('body').append(this.screen);
   }
-
-
-  setScroll(props) {
-    if (props.scroll) {
-      $('body').style.marginTop = '20vh';
-    } else {
-      $('body').style.marginTop = '0';
-    }
-    const offset = $('root').offsetTop;
-    ['mousewheel', 'touchmove'].forEach(evt =>
-      $('root').addEventListener(evt, function (e) {
-        if (window.scrollY === offset) {
-          $('root').style.overflowY = 'scroll';
-        } else {
-          console.log('JEEJRJE');
-          $('root').style.overflowY = 'hidden';
-        }
-      }),
-    );
-  }
-
 
   deleteOldScreen() {
     setTimeout(function () {

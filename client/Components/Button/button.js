@@ -2,70 +2,37 @@
 
 
 import { $, render, renderText, html } from '/Javascript/render.js';
-import * as Quiz from '/Containers/Quiz/index.js';
-import * as Admin from '/Containers/Admin/index.js';
-import * as FX from '/Javascript/fx.js';
+import eventHandler from '/Javascript/eventhandlers.js';
 
 
-function addHandler(el, props) {
-  el.addEventListener('click', function () {
-    if (props.action === 'Quiz.up') {
-      Quiz.increase(0);
-    }
-
-    if (props.action === 'Quiz.down') {
-      Quiz.decrease(0);
-    }
-
-
-    if (props.action === 'routerNav') {
-      Router.get(props.action);
-    }
-
-
-    if (props.action === 'toast') {
-      FX.toastManagement();
-    }
-
-
-    if (props.action === 'progress') {
-      FX.progressCheck(props.param);
-    }
-
-
-    if (props.action === 'openQuiz') {
-      Quiz.openQuiz(props.param);
-    }
-
-
-    if (props.action === 'toLinear') {
-      Quiz.toLinear(props.param);
-    }
-
-
-    if (props.action === 'submit') {
-      Quiz.submitQuiz();
-    }
-
-
-    if (props.action === 'upload') {
-      Admin.uploadJSON();
-    }
-
-    if (props.action === 'createQuiz') {
-      Admin.createNewQuiz({ answers }.answers.response[0].value);
-    }
-  });
-}
-
-export let input1;
-
+/*********************************************************************
+ *
+ *  @typedef  {Object}  Props
+ *  @property {String}  props.id ID to assign the element, recommended for further referencing
+ *  @property {String}  props.type Type of button (allows for precise css placement)
+ *  @property {Array}   props.actions Actions for the button
+ *  @property {String}  props.render The renderpoint for the button, if left blank or ommited, it will default to the root
+ *  @property {String}  props.text The text for the button
+ *
+ *  The button is called upon in all main container files.
+ *
+ *  Example of use:
+ *
+ *  const button = new Button({
+ *    id: 'nextbtn',
+ *    text: 'Next',
+ *    action: function () { increase(); },
+ *    render: 'Footer',
+ *    type: 'next',
+ *  });
+ *
+ */
 
 export default class Button {
   constructor(props) {
     this.createBtn(props);
     this.generateStyles(props);
-    addHandler(this.el, props);
+    this.action(props);
     this.renderPoint(props);
   }
 
@@ -89,21 +56,16 @@ export default class Button {
       case 'submit':
         this.el.classList.add('submit');
         break;
-    }
 
-    if (props.type === 'create') {
-      const text = document.createElement('div');
-      renderText(text, 'Create Quiz');
-      text.classList.add('div');
-      this.el.appendChild(text);
-      this.el.classList.add('upload');
-    }
-
-    if (props.type === 'else') {
-      // empty code
+      case 'error':
+        // Error code
+        break;
     }
   }
 
+  action(props) {
+    eventHandler(this.el, 'click', props.action, true);
+  }
 
   renderPoint(props) {
     if (!props.render) {

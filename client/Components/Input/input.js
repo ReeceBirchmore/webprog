@@ -1,14 +1,33 @@
 'use strict';
 
-import { renderText, $, createToast, render, removeRender, html } from '../../Javascript/render.js';
-import { toastClear } from '../../Javascript/fx.js';
-import { flowCount, answersObject, increase, handleAnswers } from '../../Containers/Quiz/index.js';
-
-import * as Admin from '../../Containers/Admin/index.js';
+import { renderText, $, render, html } from '/Javascript/render.js';
+import { flowCount, answersObject, increase, handleAnswers } from '/Containers/Quiz/index.js';
 import * as Edit from '/Containers/Edit/index.js';
 
 
 export const options = { qNumber: '', choices: [], title: '', type: '' };
+
+
+/*********************************************************************
+ *
+ *  @typedef  {Object}      Props
+ *  @property {String}      props.id ID to assign the element, recommended for further referencing
+ *  @property {Int}         props.name For Multi Option questions, allows reference to a group of options
+ *  @property {Array}       props.options List of options (If the input type is multiple option)
+ *  @property {HTMLElement} props.renderPoint Reference for where to attach the input (REQUIRED)
+ *  @property {String}      props.type The type of input to be displayed
+ *
+ *
+ *  Example of use:
+ *
+ *  const input = new Input({
+ *     id: 'input-' + x + '-question-' + qNum,
+ *     type: question.input,
+ *     options: question.options[x],
+ *     name: qNum,
+ *     renderPoint: quesContainer,
+ *   });
+ */
 
 
 export default class Input {
@@ -89,18 +108,8 @@ export default class Input {
     }
   }
 
-
-  setType() {
-    // code for setting type
-  }
-
-  setAttributes() {
-    // code for setting attributes
-  }
-
-
-  /* Event listeners to rework */
-
+  // The below code is to handle the states of the inputs, each input will report the values back to the
+  // main calling JS file (quiz index.js) and store the answers using eventlisteners
   dropdownEventListener(el) {
     el.addEventListener('change', function () {
       Edit.changeQuestionType(el.dataset.number);
@@ -121,7 +130,6 @@ export default class Input {
       const inputIndex = answersObject.responses.findIndex(question => question.qid === flowCount + 1);
       if (el.checked === true) {
         if (inputIndex !== -1) {
-          console.log("EXISTS")
           console.log(answersObject.responses[inputIndex].choices)
           answersObject.responses[inputIndex].choices.push(e.target.value);
           options.type = el.type;
@@ -146,7 +154,6 @@ export default class Input {
 
   keyUpEventListener(el) {
     el.onblur = function () {
-      console.log(el.id);
       window.sessionStorage.setItem(el.id, el.value);
       options.qNumber = flowCount + 1;
       options.choices.push(el.value);

@@ -2,7 +2,7 @@
 
 
 import Icon from '/Components/Icon/icon.js';
-import { $, render, renderText, html } from '../../Javascript/render.js';
+import { $, render, renderText, html } from '/Javascript/render.js';
 
 /*********************************************************************
  *
@@ -12,6 +12,16 @@ import { $, render, renderText, html } from '../../Javascript/render.js';
  *  @property {Array}   props.actions Actions for the respective icons, the number of actions should match the number of icons
  *  @property {String}  props.title The title to be used on the nav, optional but recommended
  *
+ *
+ *  Example of use:
+ *
+ *  const nav = new Nav({
+ *    id: 'nav',
+ *    title: questionDataObject[0].title,
+ *    icons: [(questionDataObject[0].allowback !== false) ? 'clear' : null],
+ *    actions: [function () { if (questionDataObject[0].allowback !== false) { location.reload(); } }],
+ *  });
+ *
  */
 
 
@@ -20,11 +30,12 @@ export default class Nav {
     this.createNav(props);
     this.displayTitle(props);
     this.iconGeneration(props);
-    render(this.el, $('body')); // This is a persistent element, it will render itself to the page
+    render(this.el, $('body')); // This is classed as a persistent element, it will render itself onto the page
   }
 
   createNav(props) {
     this.el = html('div', props.id, '', 'nav');
+    if (props.elevated) this.el.classList.add('elevated')
   }
 
   displayTitle(props) {
@@ -34,7 +45,7 @@ export default class Nav {
   iconGeneration(props) {
     if (props.icons) {
       for (let i = 0; i < props.icons.length; i++) {
-        if(props.icons[0] !== null) {
+        if (props.icons[0] !== null) {
           const icon = new Icon({
             id: props.icons[i],
             renderPoint: this.el,

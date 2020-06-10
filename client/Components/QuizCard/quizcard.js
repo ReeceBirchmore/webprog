@@ -2,24 +2,34 @@
 'use strict';
 
 import Divider from '/Components/Divider/divider.js';
-
-
-import * as Admin from '/Containers/Admin/index.js';
 import { deleteQuiz } from '/Containers/Admin/index.js';
+import { $, render, renderText, html, createToast } from '/Javascript/render.js';
 
-import * as Render from '/Javascript/render.js';
-import { $, render, renderText, html } from '/Javascript/render.js';
 
+/*********************************************************************
+ *
+ *  @typedef  {Object}  Props
+ *  @property {String}  props.id ID to assign the element, optional but recommended for further referencing
+ *  @property {String}  props.quizTitle Title of the questionnaire
+ *  @property {String}  props.uid ID tof the questionnaire (REQUIRED)
+ *
+ *
+ *  Example of use:
+ *
+ *  const card = new QuizCard({
+ *    id: quiz.quizid,
+ *    quizTitle: quiz.title,
+ *    uid: quiz.quizid,
+ *  });
+ *
+ */
 
 export default class QuizCard {
   constructor(props) {
     this.createCard(props);
     this.constructTemplate(props);
     this.addHandlers(props);
-
-
-    Render.render(this.el, Render.$('root'));
-
+    render(this.el, $('root')); // These elements are not persistent, but will always display directly on the root
     return this.el;
   }
 
@@ -34,17 +44,11 @@ export default class QuizCard {
     const titleContainer = html('div', props.id, this.el, 'card-title-container');
     renderText(titleContainer, props.quizTitle, 'h2');
     // Divider Generation
-    const divider = new Divider(this.el, 'Details');
-    // Container Generation
-    this.overviewContainer = document.createElement('div');
-    this.overviewContainer.classList.add('card-overview-container');
-    this.el.appendChild(this.overviewContainer);
-    const detailsContainer = document.createElement('div');
-    detailsContainer.classList.add('card-details-container');
-    this.overviewContainer.appendChild(detailsContainer);
+    const divider = new Divider(this.el, 'Actions');
+
     this.buttonsContainer = document.createElement('div');
     this.buttonsContainer.classList.add('card-buttons-container');
-    this.overviewContainer.appendChild(this.buttonsContainer);
+    this.el.appendChild(this.buttonsContainer);
 
     // Icon Generation
     this.binIcon = document.createElement('button');
@@ -63,27 +67,24 @@ export default class QuizCard {
     this.el.addEventListener('click', function () {
       // Action on clicking the card
     });
-    this.overviewContainer.addEventListener('click', function (event) {
-      event.stopPropagation();
-    });
 
     this.linkIcon.addEventListener('click', function () {
-      navigator.clipboard.writeText('http://localhost:8080/#/quiz/' + props.id + '/flow/');
-      Render.createToast('Text Copied to Clipboard', 'clipboard');
+      navigator.clipboard.writeText('http://localhost:8080/#/quiz/' + props.id);
+      createToast('Text Copied to Clipboard', 'clipboard');
       // window.open("http://localhost:8080/#/quiz/" + props.id + "/flow/", '_blank');
     });
 
     this.barchartIcon.addEventListener('click', function () {
-      window.location = './#/admin/quiz/response/' + props.id;
+      window.location = './#/admin/response/' + props.id;
     });
 
     this.binIcon.addEventListener('click', function () {
       const popup = window.confirm('Are you sure you want to delete ' + props.quizTitle);
-      if (popup === true) Admin.deleteQuiz(props.id, props.quizTitle);
+      if (popup === true) deleteQuiz(props.id, props.quizTitle);
     });
 
     this.editIcon.addEventListener('click', function () {
-      window.location = './#/admin/quiz/edit/' + props.id;
+      window.location = './#/admin/edit/' + props.id;
     });
   }
 }

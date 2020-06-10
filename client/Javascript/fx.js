@@ -2,55 +2,11 @@
 
 import { $, renderText } from './render.js';
 
-
-/*************************************************************************
-*
-* Toast Notification Animation Management
-*
-**************************************************************************/
-
-let linger;
-
-
-export function toastManagement() {
-  setTimeout(function () {
-    $('toast').classList.add('appear');
-  }, 100);
-
-  linger = setTimeout(function () {
-    if (!bool) {
-      $('toast').classList.add('remove');
-      $('toast').classList.remove('appear');
-    }
-  }, 3000);
-
-  destroy = setTimeout(function () {
-    if (!bool) {
-      $('root').removeChild($('toast'));
-    }
-  }, 3500);
-}
-
-export function toastClear() {
-  
-}
-
-
-/*************************************************************************
-*
-* Modal Animation Management
-*
-**************************************************************************/
-
-export function bounceModal() {
-  console.log($('modal'));
-  $('modal').classList.add('bounce-in');
-}
-
-
 /*************************************************************************
 *
 * Progress Bar and Question Number Management
+* @property {Int} val The number (for example, the current question number the user is on)
+* @property {Int} quizLength The overall length of the quiz
 *
 **************************************************************************/
 

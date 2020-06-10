@@ -1,7 +1,23 @@
 'use strict';
 
-import { $, render, renderText, html } from '../../Javascript/render.js';
-import * as FX from '../../Javascript/fx.js';
+import { $, render, html } from '/Javascript/render.js';
+import { progressCheck } from '/Javascript/fx.js';
+
+
+/*********************************************************************
+ *
+ *  @typedef  {Object}      Props
+ *  @property {String}      props.id ID to assign the element, recommended for further referencing
+ *  @property {String}      props.qnum For the initial text to appear (before being controlled by FX Manager)
+ *
+ *
+ *  Example of use:
+ *
+ *  const progress = new Progress({
+ *    id: 'progressBar',
+ *    qnum: '1 of ' + questions.length,
+ *  });
+ */
 
 
 export default class Progress {
@@ -20,7 +36,7 @@ export default class Progress {
   }
 
   questionNumberProgress(props) {
-    let qnumber = html('p', 'qnumber', this.el, 'p');
+    const qnumber = html('p', 'qnumber', this.el, 'p');
     qnumber.textContent = props.qnum;
   }
 
@@ -28,6 +44,6 @@ export default class Progress {
     this.span = document.createElement('span');
     this.span.id = 'progressSpan';
     render(this.span, this.el);
-    FX.progressCheck();
+    progressCheck();
   }
 }

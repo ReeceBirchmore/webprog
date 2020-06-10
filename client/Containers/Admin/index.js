@@ -5,10 +5,7 @@ import Footer from '/Components/Footer/footer.js';
 import Nav from '/Components/Nav/nav.js';
 import QuizCard from '../../Components/QuizCard/quizcard.js';
 import Screen from '/Components/Screen/screen.js';
-
-
 import { $, createToast, renderText, html } from '/Javascript/render.js';
-import * as FX from '../../Javascript/fx.js';
 
 
 // #endregion
@@ -21,27 +18,18 @@ import * as FX from '../../Javascript/fx.js';
  *
  *************************/
 
-let params;
-let uid;
 let quizListObject;
-
 let filebutton;
 
 
 // Make this neater
 export function createUpload() {
-  const label = document.createElement('label');
-  label.id = 'upload-label';
-  label.classList.add('button', 'upload');
-
-  
-  filebutton = document.createElement('input');
-  filebutton.id = 'file-upload';
+  const label = html('label', 'upload-label', $('Footer'), 'upload');
+  label.classList.add('button');
+  filebutton = html('input', 'file-upload', label)
   filebutton.type = 'file';
   filebutton.accept = '.json';
   label.setAttribute('for', 'file-upload');
-  $('Footer').appendChild(label);
-  $('upload-label').appendChild(filebutton);
   renderText($('upload-label'), 'Upload Quiz JSON');
   filebutton.addEventListener('change', function () {
     uploadJSON();
@@ -55,13 +43,14 @@ export function generatePage() {
   const footer = new Footer({
     id: 'Footer',
   });
-  //const nav = new Nav({ id: 'nav', title: 'Administrator Console', icons: ['add'], actions: [function () { const modal = new Modal({ type: 'upload', title: 'Upload a Quiz' }); }]});
+  const nav = new Nav({
+    id: 'nav',
+    title: 'Administrator Panel',
+    elevated: true,
+  });
   createUpload();
-  displayQuizzes(params);
+  displayQuizzes();
 }
-
-
-// new Toggle({id:'toggletest'});
 
 
 // #endregion
@@ -72,7 +61,6 @@ export function generatePage() {
 async function displayQuizzes() {
   let check = document.querySelectorAll('.card-quiz-list');
   check.forEach(element => {
-    console.log(element);
     $('root').removeChild(element);
   });
   check = null;
@@ -81,7 +69,7 @@ async function displayQuizzes() {
     if (quizlist.ok) {
       quizListObject = await quizlist.json();
     } else {
-      quizListObject = [{ msg: 'Failed to load cards' }];
+      createToast('Error Loading Quizzes', true);
       return;
     }
     quizListObject.forEach(quiz => {
@@ -97,33 +85,18 @@ async function displayQuizzes() {
 
 
 export async function deleteQuiz(uid, quiztitle) {
-  const title = (!quiztitle) ? 'Quiz Deleted!' : quiztitle + ' Deleted!';
   const deleteQuiz = await fetch('/api/delete/quiz/' + uid);
   if (deleteQuiz.ok) {
     displayQuizzes();
-    createToast(title, 'tick');
+    createToast((!quiztitle) ? 'Quiz Deleted!' : quiztitle + ' Deleted', 'tick');
   } else {
-    // Code if it failed here
-  }
-}
-
-
-export async function deleteQuestion(qid, question) {
-  const title = (!question) ? 'Question Deleted!' : question + ' Deleted!';
-  const deleteQuiz = await fetch('/api/delete/question/' + qid);
-  if (deleteQuiz.ok) {
-    console.log(uid);
-    editQuiz(uid);
-    createToast(title, FX.toastClear, 'Close');
-  } else {
-    // Code if it failed here
-
+    createToast('Failed to Delete Quiz', true);
   }
 }
 
 
 // #endregion
-// ////////////////////////////////////////////////////////////// CREATE
+// ////////////////////////////////////////////////////////////// CREATE/UPLOAD
 // #region Upload or create a new quiz
 
 
@@ -137,12 +110,11 @@ export async function createNewQuiz(value) {
         'Content-Type': 'application/json',
       },
     });
-    console.log(upload);
+    displayQuizzes();
     if (upload.ok) {
-      displayQuizzes();
-      createToast('Quiz Uploaded Succesfully!', 'uploadIcon');
+      createToast('Quiz Created Succesfully');
     } else {
-      console.log("NAG BOYE")
+      createToast('Quiz Creation Failed', true);
     }
   }
 }
@@ -161,17 +133,11 @@ async function upload(jsonfile) {
       'Content-Type': 'application/json',
     },
   });
+  displayQuizzes();
   if (upload.ok === true) {
-    displayQuizzes();
-    createToast('Quiz Uploaded Succesfully!', 'uploadIcon');
-    filebutton.files = [];
+    createToast('Quiz Uploaded Succesfully');
+    filebutton.files[0] = [];
   } else {
-    // Something went wrong!
+    createToast('Quiz Upload Failed', true);
   }
 }
-
-
-// #endregion
-// ////////////////////////////////////////////////////////////// EDIT
-// #region Edit Quizzes
-

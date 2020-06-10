@@ -1,13 +1,7 @@
 'use strict';
 
 import Icon from '/Components/Icon/icon.js';
-import { $, renderText } from '/Javascript/render.js';
-import * as FX from '../../Javascript/fx.js';
-
-
-function dismiss() {
-  FX.toastClear();
-}
+import { $, renderText, render } from '/Javascript/render.js';
 
 
 function animate(toast) {
@@ -28,19 +22,28 @@ function animate(toast) {
  *
  *  @typedef  {Object}  Props
  *  @property {String}  props.id ID is automatically assigned
- *  @property {String}  props.icon Icon to attach to the toast, must have a respective CSS class to appear
  *  @property {String}   props.text Text for the snackbar
  *  @property {Boolean}  props.error True or False, To determine the snackbars colour, default is False.
  *
+ *  The toast function is in the render.js file, call upon the createToast function instead of directly calling it!
+ *
+ *  Example of use:
+ *
+ *  const toast = new Toast({
+ *    id: 'toast',
+ *    text: message,
+ *    error: error,
+ *  });
  */
 
 
 export default class Toast {
   constructor(props) {
     this.createToast(props);
-    this.attachIcon(props.icon);
-    if (props.text) renderText(this.el, props.text, 'p', 'toast');
+    this.attachIcon(props);
+    this.attachText(props);
     animate(this.el);
+    render(this.el, $('body')); // This is classed as a persistennt element, it will render itself onto the page
     return this.el;
   }
 
@@ -51,10 +54,14 @@ export default class Toast {
     if (props.error === true) this.el.classList.add('error');
   }
 
-  attachIcon(icon) {
+  attachIcon(props) {
     const toastIcon = new Icon({
-      id: icon,
+      id: (props.error === true) ? 'close' : 'tick',
       renderPoint: this.el,
     });
+  }
+
+  attachText(props) {
+    if (props.text) renderText(this.el, props.text, 'p', 'toast');
   }
 }

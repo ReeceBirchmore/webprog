@@ -8,6 +8,7 @@ import Screen from '/Components/Screen/screen.js';
 
 import { $, createToast, renderText } from '/Javascript/render.js';
 import * as FX from '../../Javascript/fx.js';
+import * as Admin from '/Containers/Admin/index.js';
 
 
 // #endregion
@@ -20,7 +21,6 @@ let questions;
 let quizInfo;
 let quizLength;
 let answerArray = [];
-
 
 
 // #endregion
@@ -48,9 +48,6 @@ export async function viewResponses(uid) {
   if (quizdetails.ok) {
     quizInfo = await quizdetails.json();
   }
-
-  console.log(questions, answerData, quizInfo[0])
-
   generateResponsesPage(questions, answerData, quizInfo[0]);
 }
 
@@ -64,8 +61,13 @@ function generateResponsesPage(questions, answerData, quizdetails) {
   answerArray = []; // Reset the array with each load to prevent buildup
   if (answerData.length !== 0) quizLength = answerData[0].responses.length;
   const screen = new Screen({ id: 'admin-response-quiz', class: 'adminScreen', type: 'response', scroll: true });
-  const nav = new Nav({ id: 'nav', title: answerData.length + ' Responses', return: true });
-
+  const nav = new Nav({
+    id: 'nav',
+    title: answerData.length + ' Responses',
+    icons: ['return'],
+    actions: [function () { window.location = './#/admin'; }],
+    elevated: true,
+  });
 
   let numberCount = 1;
 
@@ -73,24 +75,9 @@ function generateResponsesPage(questions, answerData, quizdetails) {
   // Quiz details overview Card
   const detailsCard = new Card({ id: 'details-card', class: 'card-linear' });
   $('root').append(detailsCard);
-  renderText(detailsCard, quizdetails.title, 'h2');
-  const divider = new Divider(detailsCard, 'Quiz Information');
-  if (answerData.length === 0) {
-    renderText(detailsCard, 'This quiz has not had any responses yet.');
-    return;
-  } else {
-    if (quizdetails.allowback === false || quizdetails.allowback === null) {
-      renderText(detailsCard, 'The back button is disabled for this quiz.', 'p');
-    }
-    if (quizdetails.timelimit != null) {
-      renderText(detailsCard, 'This quiz has a time limit of ' + quizdetails.timelimit + 'minutes.', 'p');
-    }
-    let time = 0;
-    answerData.forEach(answer => { time += answer.time; });
-    time = time / answerData.length;
-    renderText(detailsCard, 'On average, this quiz takes ' + parseInt(time)  + ' seconds to complete.', 'p');
-  }
-
+  renderText(detailsCard, quizdetails.title, 'h2', 'title', 'center');
+ 
+  // ---------------------------------------------------------------------- //
   questions.forEach(question => {
     const card = new Card({ id: 'card-' + numberCount++, class: 'card-linear' });
     card.classList.add('card-linear');
@@ -131,6 +118,7 @@ function generateResponsesPage(questions, answerData, quizdetails) {
 function scrapeData(questions, answerData) {
   for (let i = 0; i < answerData.length; i++) {
     for (let k = 0; k < answerData[i].responses.length; k++) {
+      console.log(answerData[i].responses[k]);
       if (answerData[i].responses[k].type === 'checkbox' || answerData[i].responses[k].type === 'radio') {
         const object = answerArray[k];
         for (let j = 0; j < answerData[i].responses[k].choices[0].length; j++) {
@@ -140,12 +128,11 @@ function scrapeData(questions, answerData) {
       }
       if (answerData[i].responses[k].type === 'text' || answerData[i].responses[k].type === 'number') {
         const list = document.createElement('p');
-        console.log(answerData[i].responses[k], answerData[i].responses[k].type)
         list.textContent = answerData[i].responses[k].choices[0];
         renderList(answerData, k, list);
       }
       if (answerData[i].responses[k].type === '') {
-        //console.log('No answer given');
+        // console.log('No answer given');
       }
     }
   }
@@ -159,6 +146,7 @@ function scrapeData(questions, answerData) {
 
 
 function renderBars(answerArray, questions, answerData) {
+  console.log(answerArray, questions, answerData)
   for (let i = 0; i < answerArray.length; i++) {
     if (questions[i].input === 'multi-select' || questions[i].input === 'single-select' ) {
       for (let j = 0; j < questions[i].options.length; j++) {
