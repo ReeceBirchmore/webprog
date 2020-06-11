@@ -6,7 +6,7 @@
 
 
 const Postgres = require('pg').Client;
-const config = require ('./dbabstract/config2.json')
+const config = require('./config.json')
 
 // // //#endregion
 // // ////////////////////////////////////////////////////////////// Connect to the Database

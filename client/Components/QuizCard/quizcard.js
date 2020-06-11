@@ -93,7 +93,7 @@ export default class QuizCard {
     });
 
     this.editIcon.addEventListener('click', function () {
- 9602     window.location = './#/admin/edit/' + props.id;
+      window.location = './#/admin/edit/' + props.id;
     });
   }
 }
