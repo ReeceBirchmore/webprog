@@ -1,7 +1,3 @@
-DROP TABLE IF EXISTS quizzes;
-DROP TABLE IF EXISTS questions;
-DROP TABLE IF EXISTS answers;
-
 CREATE TABLE IF NOT EXISTS quizzes (
     id SERIAL PRIMARY KEY,
     title  text,
