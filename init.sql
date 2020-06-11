@@ -2,13 +2,13 @@ DROP TABLE IF EXISTS quizzes;
 DROP TABLE IF EXISTS questions;
 DROP TABLE IF EXISTS answers;
 
-CREATE TABLE IF NOT EXISTS Quizzes (
+CREATE TABLE IF NOT EXISTS quizzes (
     id SERIAL PRIMARY KEY,
     title  text,
     allowback BOOLEAN,
 );
 
-CREATE TABLE IF NOT EXISTS Questions (
+CREATE TABLE IF NOT EXISTS questions (
     id SERIAL PRIMARY KEY,
     question  TEXT,
     quizid TEXT,
