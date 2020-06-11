@@ -10,20 +10,52 @@ Contents:
 3. Features
 4. Accessibility Considerations
 6. Design Choices and Data Handling Decisions
-
+7. API Lanes
 
 
 
 
 # How to use
 
+
+## Stage 1
+
 Run "npm i" in the directory to install and update any packages included within the package.json file
 
-Run "npm run start" to run the server. The server will rebuild the database and populate it with data to test. This is purely a development feature to ensure that while testing the database is consistent. 
+Open the project in the editor of choice, navigate to the folder labelled 'dbabstract' (cd dbabstract - for terminal users)
+
+In the dbabstract folder are 3 files, config1.json, config2.json and setup.js
+
+You will need to open config1.json AND config2.json and modify the following lines of code:
+- <b>User:</b> Enter a VALID username for your postgres installation, it must have administrative rights in order to create and modify the database.
+- <b>Password:</b> The VALID password for the above account listed
+
+> If the connection fails, it could be due to a lack of a database to support commands. It worked on my system, but if it doesn't work for you, add the following line below the "host" line in config1.json:
+```
+"database" : "template1",
+```
+
+The database template1 is the default database almost every psql installation, however you can opt to put any database there (provided it exists within your installation)
+
+
+## Stage 2
+
+Run the command 
+```
+npm run setup
+```
+In your terminal window, or alternatively, for VSCode users, select the NPM Scripts window from the bottom left and run the "Setup" script.
+
+This will build then build the database for you, once it has completed it will notify you, terminate the connection and you can proceed.
+
+
+## Stage 3
+
+Run "npm run start" to run the server. 
 
 While using the application, it is best viewed in the chrome device emulator for mobile. The application scales to desktop, but looks best on mobile.
 
-Once the server has built, navigate to the IP address given for the VM (If the webpage does not open for you automatically), the webpage will auto-redirect to the administrator console.
+Once the server has built, navigate to the IP address given for the VM, the webpage will auto-redirect to the administrator console.
 
 On the admin console you will see the list of pre-generated questionnaires. You can delete, share, edit/view responses, upload from a JSON or create a new quiz from scratch.
 
@@ -31,15 +63,13 @@ On the admin console you will see the list of pre-generated questionnaires. You 
 
 # Known Issues
 
-The webpage should automatically open when the server has started, when running off the VM the webpage will not automatically open. 
-
-The biggest issue I had was getting the application to run in Safari, I have no real way to test on the Safari browser, I thought it could have been some public declarations I had made within my classes, but having removed all of those it still does not want to load. I would need access to a Mac with the latest edition of Safari to thoroughly test, as the library is shut I have no real method of testing. It works in all other major browsers.
+The biggest issue I had was getting the application to run in Safari, I have no real way to test on the Safari browser, I thought it could have been some public declarations I had made within my classes, but having removed the ones I can see it still does not want to load. I would need access to a Mac with the latest edition of Safari to thoroughly test, as the library is shut I have no real method of testing. It works in all other major browsers.
 
 Sometimes when first loading a quiz the buttons can lock up and be a bit unresponsive, this is an issue I cant easily replicate using the dev tools, in order to fix you just have to refresh the page.
 
-Sometimes when loading a page by changing the URL hash buttons may not appear at all, this is to do with the method of my router and a disagreement between my routers desires and the powers that be in the Chromium Dev Team, if the buttons do not appear, refresh the page.
+Sometimes when loading a page by changing the URL hash, buttons may not appear at all - this is to do with the method of my router and a disagreement between my routers desires and the powers that be in the Chromium Dev Team, if the buttons do not appear, refresh the page.
 
-When uploading a quiz, unless you follow a JSON that has the same structure as the example one, it will throw an error at you. 
+When uploading a quiz, unless you follow a JSON that has the same structure as the example one, it will throw an error at you. I'm calling this a design choice.
 
 
 # Shorthand Functions
@@ -50,7 +80,7 @@ Writing short isn't always better, so hopefully the explanations of the function
 
 <br/>
 
-###  $('text');
+##  $('text');
 
 This is a shorthand *document.querySelector()* function, it will return the element found by typing the ID of an element you wish to find. This can be integrated into single code lines where space may be tight in order to keep to standard.
 
@@ -71,7 +101,7 @@ In the above demo, the first element with the ID of card will be returned and di
 <br/>
 <br/>
 
-### html('tag', 'id', 'renderElement', 'class');
+## html('tag', 'id', 'renderElement', 'class');
 
 This is a shorthand method of creating an element to render onto the page. It will create the tag entered, apply any classes, give the newly made element the entered ID and, if entered, render the element onto the renderElement portion.
 
@@ -79,19 +109,18 @@ The full function:
 
 ```
 function html(tag, id, renderPoint, css) {
-    let el = document.createElement(tag);
-        if(id) el.id = id;
-        if(css) el.classList.add(css);
-        if(renderPoint) renderPoint.append(el);
-        return el;
+  const el = document.createElement(tag);
+  if (id !== '') el.id = id;
+  if (css !== '') el.classList.add(css);
+  if (renderPoint !== '') renderPoint.append(el);
+  return el;
 }
-
 ```
 
 Example of use:
 
 ```
- let card = html('div', 'card-1', '', 'card');
+ let card = html('div', 'card-1', $('root'), 'card');
 ```
 In the above demo, we created a div element, gave it an ID, gave it no render point and gave it the css style 'card'. 
 The returned element will not be rendered directly onto the page or any other element, as such we can choose to render it at any point later on by calling the id with $('id') or with the variable name card (provided it is in the same scope).
@@ -101,20 +130,23 @@ The returned element will not be rendered directly onto the page or any other el
 <br/>
 <br/>
 
-### renderText('element', 'text', 'tag');
+## renderText('element', 'text', 'tag');
 
 This is a shorthand method of creating a text node to apply to an element. It will create an element based upon the tag entered in 'tag' (if no tag, it will default to p) then generate text based upon the text entererd within the 'text' portion and attach as appropriate. Once the text is created it will render the text onto the element specified in 'element'.
 
 The full function:
 
 ```
-function renderText(el, propText, tag) {
-    let textTag = tag ? tag : "p"; 
-    const text = document.createElement(textTag);
-    const textContent = document.createTextNode(propText);
-        text.appendChild(textContent);
-        el.appendChild(text);
-    return text;
+
+function renderText(el, propText, tag, id, css) {
+  const textTag = tag || 'p';
+  const text = document.createElement(textTag);
+  text.id = id;
+  const textContent = document.createTextNode(propText);
+  text.appendChild(textContent);
+  text.classList.add(css);
+  el.appendChild(text);
+  return text;
 }
 ```
 
@@ -124,7 +156,7 @@ Example of use:
 
 ```
 let card = new Card({id: 'card-id'});
-renderText($('card-id'), "This is a demo", "h2");
+renderText($('card-id'), "This is a demo", "h2", 'demo-id', 'small-text-css');
 ```
 In the demo above, $('card-id') is used to located the card, however, as the components are generated within the same scope, 'card' can be used to refer to the card HTML element.
 
@@ -134,7 +166,7 @@ In the demo above, $('card-id') is used to located the card, however, as the com
 
 
 
-<li>render('element', 'renderPoint');
+## render('element', 'renderPoint');
 
 This is a shorthand method of appending elements
 
@@ -422,3 +454,56 @@ This is a very long statement, but it breaks down quite nicely and shows the str
 
 
 By seperating the components up from the main JS we are able to introduce granular controls to each input as it is generated and only call upon the components required at any specific point. It also means that modifications to the one component file will have an impact across the entire website, should a component structure change be required, it is only a few lines to fix compared to potentially hundreds.
+
+
+
+# API Lanes
+
+
+The list of available APIS is as such:
+
+### /question/:id - Gets the questions (requires a quizID)
+
+Example of use:
+```
+async function generateQuestions(uid) {
+  const response = await fetch('/api/questions/' + uid.id);
+  if (response.ok) {
+    questions = await response.json();
+    generateCards(questions);
+  } else {
+    createToast("Failed to Load Questions", true)
+  }
+}
+```
+
+Where UID.id is the quizid for referencing questions with the associated quizid
+
+
+
+### /quizlist - Gets a list of all the quizzes
+
+Example of use:
+
+```
+async function displayQuizzes() {
+    const quizlist = await fetch('/api/quizlist/');
+    if (quizlist.ok) {
+      quizListObject = await quizlist.json();
+    } else {
+      createToast('Error Loading Quizzes', true);
+      return;
+    }
+}
+```
+
+
+
+
+### /answers/:id - Gets all answers for a given quizid
+
+Example of use:
+
+```
+
+```

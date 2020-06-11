@@ -9,6 +9,7 @@ import Screen from '/Components/Screen/screen.js';
 import { $, createToast, renderText } from '/Javascript/render.js';
 import * as FX from '../../Javascript/fx.js';
 import * as Admin from '/Containers/Admin/index.js';
+import { render } from '../../Javascript/render.js';
 
 
 // #endregion
@@ -33,15 +34,14 @@ export async function viewResponses(uid) {
   if (answerlist.ok) {
     answerData = await answerlist.json();
   } else {
-    answerData = [{ msg: 'Failed to load cards' }];
+    createToast('Failed to Load Answers', true);
     return;
   }
   const response = await fetch('/api/questions/' + uid);
   if (response.ok) {
     questions = await response.json();
   } else {
-    questions = [{ msg: 'Failed to load cards' }];
-    createToast(questions[0].msg, FX.toastClear, 'Close');
+    createToast('Failed to Load Questions', true);
     return;
   }
   const quizdetails = await fetch('/api/quizzes/' + uid);
@@ -73,10 +73,18 @@ function generateResponsesPage(questions, answerData, quizdetails) {
 
 
   // Quiz details overview Card
-  const detailsCard = new Card({ id: 'details-card', class: 'card-linear' });
-  $('root').append(detailsCard);
-  renderText(detailsCard, quizdetails.title, 'h2', 'title', 'center');
- 
+  const detailsCard = new Card({
+    id: 'details-card',
+    class: 'card-linear',
+  });
+  render(detailsCard, $('root'));
+  renderText(detailsCard, quizdetails.title, 'h2');
+  const divider = new Divider(detailsCard, 'Quiz Information');
+  if (answerData.length === 0) {
+    renderText(detailsCard, 'This quiz has not had any responses yet.');
+    return;
+  }
+
   // ---------------------------------------------------------------------- //
   questions.forEach(question => {
     const card = new Card({ id: 'card-' + numberCount++, class: 'card-linear' });

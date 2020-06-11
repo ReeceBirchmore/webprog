@@ -75,6 +75,7 @@ export default class Input {
         if (props.placeholder) this.input.placeholder = props.placeholder;
         if (props.type) this.input.type = props.type;
         if (props.value) this.input.value = props.value;
+        if (props.readOnly) this.input.readOnly = true;
         this.highlight = html('span', '', this.group, 'highlight');
         this.bar = html('span', '', this.group, 'bar');
         this.keyUpEventListener(this.input, props);

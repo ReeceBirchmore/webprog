@@ -1,7 +1,7 @@
 'use strict';
 
 // #endregion
-// ////////////////////////////////////////////////////////////// CONSTANTS
+// ////////////////////////////////////////////////////////////// REQUIRES
 // #region Constants
 
 const express = require('express');
@@ -18,28 +18,16 @@ const dev = express.Router();
 const port = 8080;
 
 app.use('/api', router);
-app.use('/dev', dev);
 app.use(express.static(__dirname + '/client'));
-
-// app.use(express.static('client', { extensions: ['html'] }));
-// app.use('/assets', express.static(__dirname + '/client/Assets/avatar.png'));
-// app.get('/assets/*', (req, res) => {
-//   console.log(req.params[0], "PARAM REQUEST")
-//   console.log(__dirname, "ASSETS ");
-//   res.sendFile(path.join(__dirname, '/client/assets/' + req.params[0]));
-// })
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '/client/index.html'));
 });
 
 
-async function coldStart(req, res) {
-    const result = await maintain.coldStart();
-    res.json(result);
-
-}
-
+// #endregion
+// ////////////////////////////////////////////////////////////// FUNCTIONS
+// #region Constants
 
 async function getAllQuizzes(req, res) {
   try {
@@ -162,15 +150,17 @@ function asyncWrap(f) {
 
 router.get('/questions/:id', asyncWrap(getQuestions));
 router.get('/quizzes/:id', asyncWrap(getQuizzes));
+router.get('/quizzes', asyncWrap(getAllQuizzes));
 router.get('/answers/:id', asyncWrap(getAnswers));
-router.get('/quizlist', asyncWrap(getAllQuizzes));
-router.get('/delete/quiz/:id', asyncWrap(deleteQuiz));
-router.get('/delete/question/:id/', asyncWrap(deleteQuestion));
 
-router.post('/submit/:id', express.json(), asyncWrap(submitQuiz));
+router.delete('/delete/quiz/:id', asyncWrap(deleteQuiz));
+router.delete('/delete/question/:id/', asyncWrap(deleteQuestion));
+
+router.put('/create/question/', express.json(), asyncWrap(addQuestion));
+router.put('/create/option/:id', express.json(), asyncWrap(addOption));
+
 router.post('/create/quiz/', express.json(), asyncWrap(createQuiz));
-router.post('/create/question/', express.json(), asyncWrap(addQuestion));
-router.post('/create/option/:id', express.json(), asyncWrap(addOption));
+router.post('/submit/:id', express.json(), asyncWrap(submitQuiz));
 router.post('/upload', express.json(), asyncWrap(uploadQuiz));
 
 app.listen(port);

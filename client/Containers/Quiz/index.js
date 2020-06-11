@@ -129,7 +129,7 @@ async function generateQuestions(uid) {
     questions = await response.json();
     generateCards(questions);
   } else {
-    questions = [{ msg: 'Failed to load questions' }];
+    createToast("Failed to Load Questions", true)
   }
 }
 

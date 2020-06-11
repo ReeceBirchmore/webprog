@@ -2,6 +2,7 @@
 'use strict';
 
 import Divider from '/Components/Divider/divider.js';
+import Input from '/Components/Input/input.js';
 import { deleteQuiz } from '/Containers/Admin/index.js';
 import { $, render, renderText, html, createToast } from '/Javascript/render.js';
 
@@ -11,7 +12,7 @@ import { $, render, renderText, html, createToast } from '/Javascript/render.js'
  *  @typedef  {Object}  Props
  *  @property {String}  props.id ID to assign the element, optional but recommended for further referencing
  *  @property {String}  props.quizTitle Title of the questionnaire
- *  @property {String}  props.uid ID tof the questionnaire (REQUIRED)
+ *  @property {String}  props.uid ID of the questionnaire (REQUIRED)
  *
  *
  *  Example of use:
@@ -29,7 +30,7 @@ export default class QuizCard {
     this.createCard(props);
     this.constructTemplate(props);
     this.addHandlers(props);
-    render(this.el, $('root')); // These elements are not persistent, but will always display directly on the root
+    render(this.el, $('root')); // This is classed as a persistent element, it will render itself onto the page
     return this.el;
   }
 
@@ -50,7 +51,20 @@ export default class QuizCard {
     this.buttonsContainer.classList.add('card-buttons-container');
     this.el.appendChild(this.buttonsContainer);
 
+
+    // Link generation
+    this.linkInput = new Input({
+      id: 'link-' + props.id,
+      type: 'text',
+      renderPoint: this.el,
+      value: 'http://localhost:8080/#/quiz/' + props.id,
+      readOnly: true,
+    });
+    this.linkInput.setAttribute('readonly', true);
+
+
     // Icon Generation
+    this.binIcon = new Icon({})
     this.binIcon = document.createElement('button');
     this.binIcon.classList.add('icon', 'bin', 'ripple');
     this.linkIcon = document.createElement('button');
@@ -62,14 +76,15 @@ export default class QuizCard {
     this.buttonsContainer.append(this.binIcon, this.linkIcon, this.barchartIcon, this.editIcon);
   }
 
-
   addHandlers(props) {
     this.el.addEventListener('click', function () {
       // Action on clicking the card
     });
 
     this.linkIcon.addEventListener('click', function () {
-      navigator.clipboard.writeText('http://localhost:8080/#/quiz/' + props.id);
+      $('link-' + props.id).select();
+      $('link-' + props.id).setSelectionRange(0, 99999);
+      document.execCommand('copy');
       createToast('Text Copied to Clipboard', 'clipboard');
       // window.open("http://localhost:8080/#/quiz/" + props.id + "/flow/", '_blank');
     });

@@ -26,7 +26,7 @@ let filebutton;
 export function createUpload() {
   const label = html('label', 'upload-label', $('Footer'), 'upload');
   label.classList.add('button');
-  filebutton = html('input', 'file-upload', label)
+  filebutton = html('input', 'file-upload', label);
   filebutton.type = 'file';
   filebutton.accept = '.json';
   label.setAttribute('for', 'file-upload');
@@ -65,7 +65,12 @@ async function displayQuizzes() {
   });
   check = null;
   if (check === null) {
-    const quizlist = await fetch('/api/quizlist/');
+    const quizlist = await fetch('/api/quizzes/', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
     if (quizlist.ok) {
       quizListObject = await quizlist.json();
     } else {
@@ -85,10 +90,15 @@ async function displayQuizzes() {
 
 
 export async function deleteQuiz(uid, quiztitle) {
-  const deleteQuiz = await fetch('/api/delete/quiz/' + uid);
+  const deleteQuiz = await fetch('/api/delete/quiz/' + uid, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
   if (deleteQuiz.ok) {
     displayQuizzes();
-    createToast((!quiztitle) ? 'Quiz Deleted!' : quiztitle + ' Deleted', 'tick');
+    createToast((!quiztitle) ? 'Quiz Deleted' : quiztitle + ' Deleted', 'tick');
   } else {
     createToast('Failed to Delete Quiz', true);
   }
@@ -100,34 +110,32 @@ export async function deleteQuiz(uid, quiztitle) {
 // #region Upload or create a new quiz
 
 
-export async function createNewQuiz(value) {
-  const title = { value };
-  if (title !== undefined) {
-    const upload = await fetch('/api/create/quiz', {
-      method: 'POST', // or 'PUT'
-      body: JSON.stringify(title),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    displayQuizzes();
-    if (upload.ok) {
-      createToast('Quiz Created Succesfully');
-    } else {
-      createToast('Quiz Creation Failed', true);
-    }
+export async function createNewQuiz() {
+  const upload = await fetch('/api/create/quiz', {
+    method: 'POST', // or 'PUT'
+    body: JSON.stringify(title),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  displayQuizzes();
+  if (upload.ok) {
+    createToast('Quiz Created Succesfully');
+  } else {
+    createToast('Quiz Creation Failed', true);
   }
 }
 
 
 export async function uploadJSON() {
   const jsonfile = await filebutton.files[0].text();
+  console.log(filebutton.files[0]);
   upload(jsonfile);
 }
 
 async function upload(jsonfile) {
   const upload = await fetch('/api/upload', {
-    method: 'POST', // or 'PUT'
+    method: 'POST',
     body: jsonfile,
     headers: {
       'Content-Type': 'application/json',
@@ -136,7 +144,8 @@ async function upload(jsonfile) {
   displayQuizzes();
   if (upload.ok === true) {
     createToast('Quiz Uploaded Succesfully');
-    filebutton.files[0] = [];
+    console.log(filebutton.files);
+    filebutton.value = '';
   } else {
     createToast('Quiz Upload Failed', true);
   }
