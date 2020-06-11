@@ -4,7 +4,7 @@
 CREATE TABLE quizzes (
     id SERIAL PRIMARY KEY,
     title  text,
-    allowback BOOLEAN,
+    allowback BOOLEAN
 );
 
 CREATE TABLE questions (
@@ -12,7 +12,7 @@ CREATE TABLE questions (
     question  TEXT,
     quizid TEXT,
     input TEXT,
-    options TEXT [],
+    options TEXT []
 );
 
 CREATE TABLE answers (
