@@ -6,20 +6,13 @@
 
 
 const Postgres = require('pg').Client;
-
+const config = require ('./dbabstract/config2.json')
 
 // // //#endregion
 // // ////////////////////////////////////////////////////////////// Connect to the Database
 // // ////#region This module will connect to the db
 
-const sql = new Postgres({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'quiz',
-  password: 'root',
-  // password: 'secret123',
-  port: 5432,
-});
+const sql = new Postgres(config);
 
 sql.connect();
 
