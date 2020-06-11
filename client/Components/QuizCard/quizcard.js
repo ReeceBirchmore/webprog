@@ -64,7 +64,7 @@ export default class QuizCard {
 
 
     // Icon Generation
-    this.binIcon = new Icon({})
+    
     this.binIcon = document.createElement('button');
     this.binIcon.classList.add('icon', 'bin', 'ripple');
     this.linkIcon = document.createElement('button');
