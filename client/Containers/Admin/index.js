@@ -5,18 +5,13 @@ import Footer from '/Components/Footer/footer.js';
 import Nav from '/Components/Nav/nav.js';
 import QuizCard from '../../Components/QuizCard/quizcard.js';
 import Screen from '/Components/Screen/screen.js';
+import Icon from '/Components/Icon/icon.js';
 import { $, createToast, renderText, html } from '/Javascript/render.js';
 
 
 // #endregion
 // ////////////////////////////////////////////////////////////// Generate Quiz
 // #region  Generate Quiz Setup
-
-/*************************
- *
- * @param { Array } params
- *
- *************************/
 
 let quizListObject;
 let filebutton;
@@ -30,7 +25,7 @@ export function createUpload() {
   filebutton.type = 'file';
   filebutton.accept = '.json';
   label.setAttribute('for', 'file-upload');
-  renderText($('upload-label'), 'Upload Quiz JSON');
+  const icon = new Icon({ id: 'add', renderPoint: label });
   filebutton.addEventListener('change', function () {
     uploadJSON();
   });
@@ -39,7 +34,10 @@ export function createUpload() {
 
 // Clean up all these functions
 export function generatePage() {
-  const screen = new Screen({ id: 'admin-console', class: 'adminScreen' });
+  const screen = new Screen({ 
+    id: 'admin-console',
+    class: 'adminScreen' 
+  });
   const footer = new Footer({
     id: 'Footer',
   });
@@ -112,7 +110,7 @@ export async function deleteQuiz(uid, quiztitle) {
 
 export async function createNewQuiz() {
   const upload = await fetch('/api/create/quiz', {
-    method: 'POST', // or 'PUT'
+    method: 'POST',
     body: JSON.stringify(title),
     headers: {
       'Content-Type': 'application/json',
@@ -129,7 +127,6 @@ export async function createNewQuiz() {
 
 export async function uploadJSON() {
   const jsonfile = await filebutton.files[0].text();
-  console.log(filebutton.files[0]);
   upload(jsonfile);
 }
 
@@ -144,7 +141,6 @@ async function upload(jsonfile) {
   displayQuizzes();
   if (upload.ok === true) {
     createToast('Quiz Uploaded Succesfully');
-    console.log(filebutton.files);
     filebutton.value = '';
   } else {
     createToast('Quiz Upload Failed', true);

@@ -903,10 +903,7 @@ input.switch:empty ~ label:after {
 
 .add {
   background-image: url('./Assets/Images/addwhite.png');
-  position: absolute!important;
-  right:5vw;
 }
-
 
 .clear {
   background-image: url('./Assets/Images/clearformwhite.png');
@@ -929,7 +926,6 @@ input.switch:empty ~ label:after {
   background-image: url('./Assets/Images/close.png');
   padding:0.8rem!important;
 }
-
 
 .tick {
   background-image: url('./Assets/Images/tick.png');
@@ -1029,11 +1025,13 @@ input.switch:empty ~ label:after {
 }
 
 .upload {
-  width: 70vw;
-  height:auto;
-  border-radius:0.4rem;
+  width: 56px;
+  height:56px;
+  border-radius:50%;
   box-shadow: 0 6px 10px;
   border: none;
+  position: fixed;
+  right: 5vw;
   outline: none;
   display: flex;
   align-items: center;
@@ -1053,6 +1051,7 @@ input.switch:empty ~ label:after {
 
 input[type="file"] {
     display: none;
+    z-index:1000;
 }
 
 

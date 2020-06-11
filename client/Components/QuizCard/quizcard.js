@@ -3,6 +3,7 @@
 
 import Divider from '/Components/Divider/divider.js';
 import Input from '/Components/Input/input.js';
+import Icon from '/Components/Icon/icon.js';
 import { deleteQuiz } from '/Containers/Admin/index.js';
 import { $, render, renderText, html, createToast } from '/Javascript/render.js';
 
@@ -57,23 +58,17 @@ export default class QuizCard {
       id: 'link-' + props.id,
       type: 'text',
       renderPoint: this.el,
-      value: 'http://localhost:8080/#/quiz/' + props.id,
+      value: window.location.href + '/#/quiz/' + props.id,
       readOnly: true,
     });
     this.linkInput.setAttribute('readonly', true);
 
 
     // Icon Generation
-    
-    this.binIcon = document.createElement('button');
-    this.binIcon.classList.add('icon', 'bin', 'ripple');
-    this.linkIcon = document.createElement('button');
-    this.linkIcon.classList.add('icon', 'link', 'ripple');
-    this.barchartIcon = document.createElement('button');
-    this.barchartIcon.classList.add('icon', 'barchart', 'ripple');
-    this.editIcon = document.createElement('button');
-    this.editIcon.classList.add('icon', 'edit', 'ripple');
-    this.buttonsContainer.append(this.binIcon, this.linkIcon, this.barchartIcon, this.editIcon);
+    this.bin = new Icon({ id: 'bin', renderPoint: this.buttonsContainer });
+    this.linkIcon = new Icon({ id: 'link', renderPoint: this.buttonsContainer });
+    this.barchartIcon = new Icon({ id: 'barchart', renderPoint: this.buttonsContainer });
+    this.editIcon = new Icon({ id: 'edit', renderPoint: this.buttonsContainer });
   }
 
   addHandlers(props) {
@@ -86,20 +81,19 @@ export default class QuizCard {
       $('link-' + props.id).setSelectionRange(0, 99999);
       document.execCommand('copy');
       createToast('Text Copied to Clipboard', 'clipboard');
-      // window.open("http://localhost:8080/#/quiz/" + props.id + "/flow/", '_blank');
     });
 
     this.barchartIcon.addEventListener('click', function () {
       window.location = './#/admin/response/' + props.id;
     });
 
-    this.binIcon.addEventListener('click', function () {
+    this.bin.addEventListener('click', function () {
       const popup = window.confirm('Are you sure you want to delete ' + props.quizTitle);
       if (popup === true) deleteQuiz(props.id, props.quizTitle);
     });
 
     this.editIcon.addEventListener('click', function () {
-      window.location = './#/admin/edit/' + props.id;
+ 9602     window.location = './#/admin/edit/' + props.id;
     });
   }
 }

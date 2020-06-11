@@ -6,6 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "setup": "cd dbabstract && node setup",
+    "create": "createdb quiz psql < dbabstract.sql",
     "start": "node svr"
   },
   "author": "UP850149",
@@ -13,7 +14,6 @@
   "dependencies": {
     "express": "^4.17.1",
     "pg": "^8.0.2",
-    "pgtools": "^0.3.0"
   },
   "devDependencies": {
     "eslint": "^7.0.0",
