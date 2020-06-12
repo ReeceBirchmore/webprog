@@ -299,6 +299,17 @@ function multiType(id) {
 
 /******************************************************************************
  *
+ * This function is triggered whenever the user modifies a question title
+ *
+ ******************************************************************************/
+
+
+export function changeQuestionTitle(id) {
+
+}
+
+/******************************************************************************
+ *
  *  This function will handle the event listeners for the options entered
  *
  * 1) If the text is clicked, remove it from the screen
