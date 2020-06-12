@@ -18,6 +18,9 @@ function detectClickandTouch() {
 }
 
 
+
+
+
 // Local Routing, add new pre-defined routes here
 const router = new Router({
   mode: 'hash',

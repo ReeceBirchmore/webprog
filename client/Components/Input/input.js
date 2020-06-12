@@ -70,7 +70,6 @@ export default class Input {
     switch (props.type) {
       case 'text':
       case 'number':
-      case undefined:
         this.input = html('input', props.id, this.group);
         if (props.placeholder) this.input.placeholder = props.placeholder;
         if (props.type) this.input.type = props.type;
@@ -78,7 +77,7 @@ export default class Input {
         if (props.readOnly) this.input.readOnly = true;
         this.highlight = html('span', '', this.group, 'highlight');
         this.bar = html('span', '', this.group, 'bar');
-        this.keyUpEventListener(this.input, props);
+        if (props.eventListeners !== false) this.keyUpEventListener(this.input, props);
         break;
 
       case 'single-select':
@@ -87,12 +86,12 @@ export default class Input {
         this.input.type = 'radio';
         if (props.name) this.input.name = props.name;
         if (props.options) this.input.value = props.options;
+        this.textLabel = html('label', '', this.group);
         // Need to seperate question choices from answers table to allow 3D quizzing
         // if(props.linkedQ != null) input.setAttribute('data-link-q', props.linkedQ)
-        this.textLabel = html('label', '', this.group);
         if (props.id) this.textLabel.setAttribute('for', props.id);
         renderText(this.textLabel, props.options, 'span');
-        this.radioEventListener(this.input, props);
+        if (props.eventListeners !== false) this.radioEventListener(this.input, props);
         break;
 
       case 'multi-select':
@@ -104,7 +103,7 @@ export default class Input {
         this.textLabel = html('label', '', this.group);
         if (props.id) this.textLabel.setAttribute('for', props.id);
         renderText(this.textLabel, props.options, 'span');
-        this.checkboxEventListener(this.input, props);
+        if (props.eventListeners !== false) this.checkboxEventListener(this.input, props);
         break;
     }
   }

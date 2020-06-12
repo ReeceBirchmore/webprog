@@ -13,7 +13,8 @@ CREATE TABLE questions (
     question  TEXT,
     quizid TEXT,
     input TEXT,
-    options TEXT []
+    options TEXT [],
+    minmax TEXT []
 );
 
 CREATE TABLE answers (

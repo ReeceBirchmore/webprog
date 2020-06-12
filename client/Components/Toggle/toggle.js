@@ -31,20 +31,20 @@ export default class Toggle {
   }
 
 
-  createToggleStructure(text) {
+  createToggleStructure(props) {
     this.el = document.createElement('div');
     this.el.classList.add('material-toggle');
 
     this.input = document.createElement('input');
-    this.input.id = 'toggle';
+    this.input.id = props.id;
     this.input.type = 'checkbox';
-    this.input.setAttribute('name', 'toggle');
-    this.input.checked = true;
+    this.input.setAttribute('name', props.id);
+    this.input.checked = false;
 
     this.input.classList.add('switch');
 
     this.label = document.createElement('label');
-    this.label.setAttribute('for', 'toggle');
+    this.label.setAttribute('for', props.id);
 
 
     this.el.append(this.input, this.label);

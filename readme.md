@@ -22,32 +22,22 @@ Contents:
 
 Run "npm i" in the directory to install and update any packages included within the package.json file
 
-Open the project in the editor of choice, navigate to the folder labelled 'dbabstract' (cd dbabstract - for terminal users)
-
-In the dbabstract folder are 3 files, config1.json, config2.json and setup.js
-
-You will need to open config1.json AND config2.json and modify the following lines of code:
-- <b>User:</b> Enter a VALID username for your postgres installation, it must have administrative rights in order to create and modify the database.
-- <b>Password:</b> The VALID password for the above account listed
-
-> If the connection fails, it could be due to a lack of a database to support commands. It worked on my system, but if it doesn't work for you, add the following line below the "host" line in config1.json:
-```
-"database" : "template1",
-```
-
-The database template1 is the default database almost every psql installation, however you can opt to put any database there (provided it exists within your installation)
-
 
 ## Stage 2
 
-Run the command 
+Open the project in the editor of choice, open the config.json file and modify the following:
+
+- <b>User:</b> Enter a VALID username for your postgres installation, it must have administrative rights in order to create and modify the database.
+- <b>Password:</b> The VALID password for the above account listed
+
+
+Once you have entered this data, open terminal and CD to the file location, then type:
+
 ```
 npm run setup
 ```
-In your terminal window, or alternatively, for VSCode users, select the NPM Scripts window from the bottom left and run the "Setup" script.
 
-This will build then build the database for you, once it has completed it will notify you, terminate the connection and you can proceed.
-
+This should construct and populate a database named 'quiz', if the setup fails initially, it could be because the database already exists. Drop the database from the psql server and try again.
 
 ## Stage 3
 

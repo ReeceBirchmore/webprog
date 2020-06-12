@@ -99,8 +99,21 @@ function html(tag, id, renderPoint, css) {
   const el = document.createElement(tag);
   if (id !== '') el.id = id;
   if (css !== '') el.classList.add(css);
-  if (renderPoint !== '') renderPoint.append(el);
+  if (renderPoint !== '') renderPoint.appendChild(el);
   return el;
+}
+
+// #endregion
+// ////////////////////////////////////////////////////////////// Click or Touch Detail
+// #region Detect Device Type
+
+
+let pointer;
+
+if ('ontouchstart' in document.documentElement) {
+  pointer = 'Tap';
+} else {
+  pointer = 'Click';
 }
 
 
@@ -109,4 +122,4 @@ function html(tag, id, renderPoint, css) {
 // #region Exports
 
 
-export { render, $, renderText, remove, createToast, html };
+export { render, $, renderText, remove, createToast, html, pointer };

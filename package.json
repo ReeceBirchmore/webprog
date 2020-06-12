@@ -5,8 +5,7 @@
   "main": "svr.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "setup": "cd dbabstract && node setup",
-    "create": "createdb quiz && psql quiz < init.sql",
+    "setup": "createdb quiz && psql quiz < init.sql",
     "start": "node svr"
   },
   "author": "UP850149",
