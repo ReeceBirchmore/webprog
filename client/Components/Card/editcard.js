@@ -10,7 +10,7 @@ import { $, renderText, html, render, pointer } from '/Javascript/render.js';
 import * as Admin from '/Containers/Admin/index.js';
 import * as Edit from '/Containers/Edit/index.js';
 
-import { optionTextCount, addOption, removeOptionEventListeners } from '/Containers/Edit/index.js';
+import { optionTextCount, addOption, removeOptionEventListeners, changeQuestionTitle } from '/Containers/Edit/index.js';
 
 export default class EditCard {
   constructor(props) {
@@ -46,6 +46,7 @@ export default class EditCard {
       renderPoint: this.el,
       eventListeners: false,
     });
+    this.changeTitleHandler(props);
 
     // Select Type Input
     this.select = new Input({
@@ -64,6 +65,20 @@ export default class EditCard {
     // Append a pre-prepared group to the card
     this.group = html('div', 'group-' + props.qid, $('card-' + props.qid));
     this.group.setAttribute('data-type', props.input);
+  }
+
+  /******************************************************************************
+   *
+   * This function will handle the question title being updated
+   *
+   ******************************************************************************/
+
+
+  changeTitleHandler(props) {
+    this.input.addEventListener('input', function () {
+      console.log($('title-' + props.qid).value);
+      changeQuestionTitle($('title-' + props.qid).value, props.qid)
+    });
   }
 
 
@@ -118,7 +133,7 @@ export default class EditCard {
 
     props.options.forEach(options => {
       const inputIndex = props.options.findIndex(option => option === options);
-      const option = html('div', 'option-' + inputIndex, this.optionsGroup, 'selector-toolbar');
+      const option = html('div', 'options-' + props.qid + '-option-' + inputIndex, this.optionsGroup, 'selector-toolbar');
       renderText(option, options, 'p', '', 'option_text');
       removeOptionEventListeners(props.qid, inputIndex, $('optionInput-' + props.qid).value);
     });
@@ -145,7 +160,7 @@ export default class EditCard {
       if (e.key === 'Enter') {
         if (addOption($('optionInput-' + props.qid).value, props.qid) === true) {
           const inputIndex = props.options.findIndex(option => option === $('optionInput-' + props.qid).value);
-          const newOption = html('p', 'option-' + inputIndex, $('options-' + props.qid), 'selector-toolbar');
+          const newOption = html('p', 'options-' + props.qid + '-option-' + inputIndex, $('options-' + props.qid), 'selector-toolbar');
           renderText(newOption, $('optionInput-' + props.qid).value, 'p', '', 'option_text');
           removeOptionEventListeners(props.qid, inputIndex, $('optionInput-' + props.qid).value);
           $('optionInput-' + props.qid).value = '';

@@ -129,15 +129,26 @@ async function addAQuestion(quizid) {
 async function addAOption(optiondata) {
   const data = JSON.parse(optiondata).arr;
   data.forEach(async question => {
-    const option = question.option;
+    const option = question.options;
     const id = question.id;
     const type = question.type;
+    const title = question.title;
+    const required = question.required;
     // Step 1. Update the questions type
     const typeq = 'UPDATE Questions SET input = $1 WHERE id = $2';
     await sql.query(typeq, [type, id]);
-    // Update the Array of options
+    // Step 2. Update the Array of options
     const optionq = 'UPDATE Questions SET options = $1 WHERE id = $2';
     await sql.query(optionq, [option, id]);
+    // Step 3. Update the question title
+    const titleq = 'UPDATE Questions SET question = $1 WHERE id = $2';
+    await sql.query(titleq, [title, id]);
+    // Step 4. Update required status
+
+    // Step 5. Update MinMax values
+
+    // Step 6. Update
+
   });
   return true;
 }

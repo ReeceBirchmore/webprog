@@ -74,11 +74,17 @@ async function gatherDetails(quizid) {
   } else {
     createToast('Failed to Load Questions', true);
   }
+
+  const nav = new Nav({
+    id: 'nav',
+    title: (questionnaireData.length !== 0) ? 'Edit ' + questionnaireData[0].title : 'Invalid Quiz',
+    icons: ['return', 'add'],
+    actions: [function () { window.location = './#/admin'; }, function () { saveQuestionnaire(); }],
+  });
 }
 
 
 let questionNumber = 1;
-
 let editedQuestionObject;
 
 function deployCards() {
@@ -90,8 +96,10 @@ function deployCards() {
     editedQuestionObject.id = question.id; // ID of the question
     editedQuestionObject.options = (question.options === null) ? null : question.options; // Options for the question
     editedQuestionObject.minMax = (question.minMax === null) ? null : question.minMax;
+    editedQuestionObject.required = question.required;
     arrOfQuiz.arr.push(editedQuestionObject);
 
+  
     // Prefabricating an object of all the questions pulled off the db
     const questionObject = {
       id: question.id,
@@ -161,7 +169,7 @@ export function changeQuestionType(id) {
 
     case 'single-select':
     case 'multi-select':
-      const optionGroup = html('div', 'options-' + id, $('card-' + id), 'option_group')
+      const optionGroup = html('div', 'options-' + id, $('card-' + id), 'option_group');
       multiType(id);
       break;
 
@@ -193,6 +201,7 @@ export function changeQuestionType(id) {
  ******************************************************************************/
 
 function modifyInputGroup(id) {
+  console.log(arrOfQuiz);
   if ($('group-' + id).dataset.type !== 'multi-select' || $('group-' + id).dataset.type !== 'single-select') {
     if ($('group-' + id)) $('card-' + id).removeChild($('group-' + id));
   }
@@ -236,7 +245,7 @@ function numberType(id) {
       if (e.key === 'Enter') {
 
       }
-    })
+    });
   }
 }
 
@@ -253,7 +262,7 @@ function numberType(id) {
  * and press the enter button to submit it as an option.
  *
  * 1) Detect if the enter key has been pressed
- * 2) Run the addOption function (to add the new value to the end of the options 
+ * 2) Run the addOption function (to add the new value to the end of the options
  *    array relative to the question)
  * 2A) IF the addOption returns true (Value isn't a duplicate) proceed, else, stop
  * 3) Search through the edited questions array, find the questions
@@ -286,7 +295,7 @@ function multiType(id) {
         if (addOption($('optionInput-' + id).value, id) === true) {
           const findQuestion = arrOfQuiz.arr.findIndex(id => id.id === parsedID);
           const optionArrPos = arrOfQuiz.arr[findQuestion].options.findIndex(option => option === $('optionInput-' + id).value);
-          const newOption = html('div', 'option-' + optionArrPos, $('options-' + id), 'selector-toolbar');
+          const newOption = html('div', 'options-' + id + '-option-' + optionArrPos, $('options-' + id), 'selector-toolbar');
           renderText(newOption, $('optionInput-' + id).value, 'p', '', 'option_text');
           removeOptionEventListeners(id, optionArrPos, $('optionInput-' + id).value);
           $('optionInput-' + id).value = '';
@@ -304,8 +313,9 @@ function multiType(id) {
  ******************************************************************************/
 
 
-export function changeQuestionTitle(id) {
-
+export function changeQuestionTitle(value, id) {
+  const inputIndex = arrOfQuiz.arr.findIndex(title => title.id === parseInt(id));
+  arrOfQuiz.arr[inputIndex].title = value;
 }
 
 /******************************************************************************
@@ -318,8 +328,10 @@ export function changeQuestionTitle(id) {
  ******************************************************************************/
 
 export function removeOptionEventListeners(qid, oid, value) {
-  $('option-' + oid).addEventListener('click', function (e) {
-    $('options-' + qid).removeChild($('option-' + oid));
+  console.log("HELLO")
+  $('options-' + qid + '-option-' + oid).addEventListener('click', function (e) {
+    console.log(qid)
+    $('options-' + qid).removeChild($('options-' + qid + '-option-' + oid));
     removeOption(qid, value);
   });
 }
@@ -346,7 +358,6 @@ export function addOption(value, id) {
 
   if (arrOfQuiz.arr[inputIndex].options.findIndex(option => option === value) === -1) {
     arrOfQuiz.arr[inputIndex].options.push(value);
-    console.log('TEST');
     return true;
   } else {
     createToast('Duplicate Entry', true);
@@ -374,6 +385,25 @@ export function removeOption(qid, value) {
   const indexToSplice = arrOfQuiz.arr[findQuestion].options.findIndex(option => option === value);
   arrOfQuiz.arr[findQuestion].options.splice(indexToSplice, 1);
 }
+
+
+async function saveQuestionnaire() {
+  const sendOption = await fetch('/api/quizzes/update/' + uid, {
+    method: 'PUT',
+    body: JSON.stringify(arrOfQuiz),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  const response = await sendOption.json();
+  if (response.ok) {
+    // It didnt break!
+  } else {
+    // Something went wrong!
+  }
+}
+
+
 
 
 // export function buildEditor(quizid) {

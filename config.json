@@ -1,6 +1,6 @@
 {
   "user" : "postgres",
-  "password" : "secret123",
+  "password" : "root",
   "host" : "localhost",
   "database" : "quiz",
   "port" : 5432

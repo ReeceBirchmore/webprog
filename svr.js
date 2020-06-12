@@ -156,9 +156,9 @@ router.get('/answers/:id', asyncWrap(getAnswers));
 router.delete('/delete/quiz/:id', asyncWrap(deleteQuiz));
 router.delete('/delete/question/:id/', asyncWrap(deleteQuestion));
 
-router.post('/create/question/', express.json(), asyncWrap(addQuestion));
-router.post('/create/option/:id', express.json(), asyncWrap(addOption));
+router.put('/quizzes/update/:id', express.json(), asyncWrap(addOption));
 
+router.post('/create/question/', express.json(), asyncWrap(addQuestion));
 router.post('/create/quiz/', express.json(), asyncWrap(createQuiz));
 router.post('/submit/:id', express.json(), asyncWrap(submitQuiz));
 router.post('/upload', express.json(), asyncWrap(uploadQuiz));

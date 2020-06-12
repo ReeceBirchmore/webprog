@@ -14,7 +14,8 @@ CREATE TABLE questions (
     quizid TEXT,
     input TEXT,
     options TEXT [],
-    minmax TEXT []
+    minmax TEXT [],
+    required BOOLEAN
 );
 
 CREATE TABLE answers (
@@ -27,7 +28,7 @@ CREATE TABLE answers (
 INSERT INTO quizzes (title, quizid, allowback) VALUES('No Back Button', '26JBU', false);
 INSERT INTO quizzes (title, quizid, allowback) VALUES('Allow Back Button', '27JBU', true);
 
-INSERT INTO questions (question, quizid, input) VALUES('Is lybin fit?', '26JBU', 'text');
+INSERT INTO questions (question, quizid, input, required) VALUES('Is lybin fit?', '26JBU', 'text', true);
 INSERT INTO questions (question, quizid, input) VALUES('Is Lybin honestly not the fittest character?', '26JBU', 'text');
 INSERT INTO questions (question, quizid, input) VALUES('What would you rate Lybin out of 5?', '26JBU', 'text');
 INSERT INTO questions (question, quizid, input) VALUES('How do you personally feel Lybin has shaped your world?', '26JBU', 'text');
