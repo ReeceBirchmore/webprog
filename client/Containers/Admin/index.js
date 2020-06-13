@@ -25,7 +25,7 @@ export function createUpload() {
   filebutton.type = 'file';
   filebutton.accept = '.json';
   label.setAttribute('for', 'file-upload');
-  const icon = new Icon({ id: 'add', renderPoint: label });
+  //const icon = new Icon({ id: 'add', renderPoint: label });
   filebutton.addEventListener('change', function () {
     uploadJSON();
   });
@@ -34,9 +34,9 @@ export function createUpload() {
 
 // Clean up all these functions
 export function generatePage() {
-  const screen = new Screen({ 
+  const screen = new Screen({
     id: 'admin-console',
-    class: 'adminScreen' 
+    class: 'adminScreen',
   });
   const footer = new Footer({
     id: 'Footer',

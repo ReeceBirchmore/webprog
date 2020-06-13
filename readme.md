@@ -393,17 +393,16 @@ The function simplifies the deployment of the snackbar, it takes 2 inputs (with 
     - Download CSV Format answers
 
 - Edit Quiz Page:
-    - Restrict inputs (Min/Max amount for Number, Max/Min length for Text)
-    - Directional Quizzes (3D Quiz)
+    - Restrict inputs (Min/Max amount for Number)
     - Allow Hiding the previous/restart button
     - Timed Quizzes
     - Force Required Questions
     - Add new questions
     - Change question input types
-    - Add options (for multiple option types)
+    - Add and remove options (for multiple option types)
+    - Restrict to one questionnaire response per device
 
 - Response Page Features:
-    - Average completion time of quizzes
     - Number of responses
     - Bar charts to show % of checkbox/radio responses
     - Download CSV formatted responses

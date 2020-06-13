@@ -1,7 +1,7 @@
 'use strict';
 
 import Icon from '/Components/Icon/icon.js';
-import { $, renderText, render } from '/Javascript/render.js';
+import { $, renderText, render, remove } from '/Javascript/render.js';
 
 
 function animate(toast) {
@@ -11,6 +11,9 @@ function animate(toast) {
   setTimeout(function () {
     toast.classList.remove('appear');
   }, 2000);
+  setTimeout(function () {
+    remove(toast);
+  }, 2500);
 }
 
 

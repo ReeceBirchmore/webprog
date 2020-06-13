@@ -6,7 +6,7 @@
 
 
 const Postgres = require('pg').Client;
-const config = require('./config.json')
+const config = require('./config.json');
 
 // // //#endregion
 // // ////////////////////////////////////////////////////////////// Connect to the Database
@@ -93,8 +93,13 @@ async function quizUpload(data) {
   // Step 1, run the ID Generator
   const uid = makeid(5);
   // Step 2, create the quiz entry in the quizzes table
-  const quizq = 'INSERT INTO Quizzes (title, quizid) VALUES ($1, $2)';
-  await sql.query(quizq, [data.name, uid]);
+  console.log(data);
+  const allowBack = !!((data.allowBack === undefined || data.allowBack === true));
+  const restrict = !!((data.restrict === undefined || data.restrict === true));
+  const enabled = !!((data.enabled === undefined || data.enabled === true));
+
+  const quizq = 'INSERT INTO Quizzes (title, quizid, allowback, restrict, enabled) VALUES ($1, $2, $3, $4, $5)';
+  await sql.query(quizq, [data.name, uid, allowBack, restrict, enabled]);
   // Step 3, insert the questions into the database
   data.questions.forEach(async question => {
     const questionq = 'INSERT INTO questions (question, quizid, input, options) VALUES( $1, $2, $3, $4) ';
@@ -128,12 +133,25 @@ async function addAQuestion(quizid) {
 
 async function addAOption(optiondata) {
   const data = JSON.parse(optiondata).arr;
+
+  const quizid = data[0].id;
+  const title = data[0].quiztitle;
+  const enabled = data[0].enabled;
+  const restricted = data[0].restricted;
+  const allowBack = data[0].allowback;
+
+
+  const questionnaireq = 'UPDATE Quizzes SET title = $1, enabled = $2, restrict = $3, allowback = $4 WHERE quizid = $5';
+  await sql.query(questionnaireq, [title, enabled, restricted, allowBack, quizid]);
+
   data.forEach(async question => {
     const option = question.options;
     const id = question.id;
     const type = question.type;
     const title = question.title;
     const required = question.required;
+    const min = question.min;
+    const max = question.max;
     // Step 1. Update the questions type
     const typeq = 'UPDATE Questions SET input = $1 WHERE id = $2';
     await sql.query(typeq, [type, id]);
@@ -144,11 +162,13 @@ async function addAOption(optiondata) {
     const titleq = 'UPDATE Questions SET question = $1 WHERE id = $2';
     await sql.query(titleq, [title, id]);
     // Step 4. Update required status
-
+    const requiredq = 'UPDATE Questions SET required = $1 WHERE id = $2';
+    await sql.query(requiredq, [required, id]);
     // Step 5. Update MinMax values
-
-    // Step 6. Update
-
+    const minq = 'UPDATE Questions SET min = $1 WHERE id = $2';
+    await sql.query(minq, [min, id]);
+    const maxq = 'UPDATE Questions SET max = $1 WHERE id = $2';
+    await sql.query(maxq, [max, id]);
   });
   return true;
 }

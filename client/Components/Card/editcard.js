@@ -10,7 +10,7 @@ import { $, renderText, html, render, pointer } from '/Javascript/render.js';
 import * as Admin from '/Containers/Admin/index.js';
 import * as Edit from '/Containers/Edit/index.js';
 
-import { optionTextCount, addOption, removeOptionEventListeners, changeQuestionTitle } from '/Containers/Edit/index.js';
+import { optionTextCount, addOption, removeOptionEventListeners, changeQuestionTitle, changeRequired, changeMinValue, changeMaxValue } from '/Containers/Edit/index.js';
 
 export default class EditCard {
   constructor(props) {
@@ -26,16 +26,21 @@ export default class EditCard {
     this.el = document.createElement('div');
     this.el.id = props.id;
     this.el.classList.add('card-linear', 'elevated');
+    render(this.el);
   }
 
   createEditCardTemplate(props) {
     // Question Number and Required Toggle
     const titleContainer = html('div', '', this.el, 'card-title-container');
     renderText(titleContainer, 'Question ' + props.questionNum, 'h2');
+    renderText(titleContainer, 'Required Question', 'p', 'text-' + props.qid, 'small');
     this.toggle = new Toggle({
       id: 'toggle-' + props.qid,
       renderPoint: titleContainer,
+      checked: props.required,
     });
+    $('text-' + props.qid).style.color = (props.required === true) ? 'black' : '#AAA5AF';
+    this.toggleHandler(props);
 
     // Title Input
     this.input = new Input({
@@ -59,13 +64,12 @@ export default class EditCard {
       renderPoint: this.el,
     });
 
-    // Render the card on the page
-    render(this.el, $('root'));
 
     // Append a pre-prepared group to the card
     this.group = html('div', 'group-' + props.qid, $('card-' + props.qid));
     this.group.setAttribute('data-type', props.input);
   }
+
 
   /******************************************************************************
    *
@@ -73,14 +77,44 @@ export default class EditCard {
    *
    ******************************************************************************/
 
-
   changeTitleHandler(props) {
     this.input.addEventListener('input', function () {
-      console.log($('title-' + props.qid).value);
-      changeQuestionTitle($('title-' + props.qid).value, props.qid)
+      changeQuestionTitle($('title-' + props.qid).value, props.qid);
     });
   }
 
+  /******************************************************************************
+   *
+   * This function will handle the required toggle being updated
+   *
+   ******************************************************************************/
+  toggleHandler(props) {
+    this.toggle.addEventListener('change', function () {
+      changeRequired($('toggle-' + props.qid).checked, props.qid);
+    });
+  }
+
+  /******************************************************************************
+   *
+   * This function will handle the Min/Max values being updated
+   *
+   ******************************************************************************/
+
+  numberEventListeners(props) {
+    this.min.addEventListener('input', function (e) {
+      changeMinValue(parseInt($('min-' + props.qid).value), props.qid);
+    });
+
+    this.max.addEventListener('input', function (e) {
+      changeMaxValue(parseInt($('max-' + props.qid).value), props.qid);
+    });
+  }
+
+  /******************************************************************************
+   *
+   * This function will handle the type being changed (dropdown)
+   *
+   ******************************************************************************/
 
   optionConstraints(props) {
     // Number Input Constraints (Min/Max)
@@ -88,17 +122,20 @@ export default class EditCard {
       this.min = new Input({
         id: 'min-' + props.qid,
         placeholder: 'Enter Min',
-        type: 'text',
+        type: 'number',
         renderPoint: this.group,
         eventListeners: false,
+        value: props.min,
       });
       this.max = new Input({
         id: 'max-' + props.qid,
         placeholder: 'Enter Max',
-        type: 'text',
+        type: 'number',
         renderPoint: this.group,
         eventListeners: false,
+        value: props.max,
       });
+      this.numberEventListeners(props);
     }
     // Multi Option Input
     if (props.input === 'single-select' || props.input === 'multi-select') {

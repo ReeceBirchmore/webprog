@@ -104,7 +104,7 @@ body, html {
 **************************************************************************/
 
 h2 {
-    font-size: 1.3rem;
+    font-size: 1.4rem;
     letter-spacing: 0.07rem;
     text-shadow: #fff 0px 1px 1px;
 }
@@ -124,9 +124,16 @@ h2 {
 
 .subtext {
   font-size: 1rem;
+  /* color: 	#AAA5AF; */
+  color: black;
+  text-shadow:#D1CDD2 0px 1px 1px;
+}
+
+.small {
+  font-size: 0.7rem;
   color: 	#AAA5AF;
   text-shadow:#D1CDD2 0px 1px 1px;
-  color:
+  margin-right: 3.3rem;
 }
 
 /*************************************************************************
@@ -152,7 +159,7 @@ h2 {
 
 .scroll-container {
   overflow-y: scroll!important;
-  height:200%;
+  height:170%;
   width:100%;
   padding:0;
 }
@@ -248,6 +255,7 @@ h2 {
   border-radius: 0.4rem;
   display: flex;
   flex-direction: column;
+  margin-bottom: 1rem;;
   align-items: left;
   padding: 1rem;
   text-align: left;
@@ -287,6 +295,7 @@ h2 {
 
 .card-title-container {
   display: flex;
+  position: relative;
   width:100%;
   height:auto;
   align-items: center;
@@ -338,7 +347,7 @@ h2 {
   position: absolute;
   left: 0;
   right: 0;
-  height: auto;
+  height: 60%;
   top: 7.5rem;
   border-radius: 0.5rem;
   width: 21rem;
@@ -352,6 +361,7 @@ h2 {
 .side {
   height: 12rem;
   padding:0;
+  height: 60%;
   box-sizing: border-box;
   background-color: white!important;
   outline: 1px solid transparent;
@@ -483,9 +493,9 @@ h2 {
 @keyframes scaleLetter {
   46% {transform: translateY(-8rem) scale(0.5, 0.5);}
   56% {transform: translateY(-7rem) scale(0.4, 0.5);}
-  90% {transform: translateY(-4.9rem) scale(0.3, 0.5);}
-  97% {transform: translateY(-4.3rem) scale(0.33, 0.5);}
-  100%{transform: translateY(-12%) scale(0.3, 0.4);}
+  90% {transform: translateY(-6rem) scale(0.3, 0.5);}
+  97% {transform: translateY(-5rem) scale(0.33, 0.5);}
+  100%{transform: translateY(-4.9rem) scale(0.3, 0.4);}
 }
 
 
@@ -693,11 +703,14 @@ option {
 /* Codepen Inspiration - https://codepen.io/danny_pule/pen/vNbqxx */
 
 .material-toggle {
-  margin-right: 1rem;
   position: absolute;
   right: 0;
-  top: 2.5rem;
+  top: 1.45rem;
   width: 40px;
+}
+
+.material-toggle-settings {
+  top: 1rem!important;
 }
 
 
@@ -774,7 +787,7 @@ input.switch:empty ~ label:after {
   background-color: white;
   padding: 1rem 2rem;
   font-family: sans-serif, Arial;
-  font-size: 16px;
+  /* font-size: 16px; */
   border: 1px solid rgb(154, 155, 162);
   color: 	rgb(37, 38, 41);
   border-radius: 4px;
@@ -938,6 +951,12 @@ input.switch:empty ~ label:after {
   padding:0.8rem!important;
 }
 
+.save {
+  background-image: url('./Assets/Images/tick.png');
+  position: absolute!important;
+  right:5vw;
+}
+
 /*************************************************************************
 *
 * Buttons Default Style Management
@@ -966,7 +985,7 @@ input.switch:empty ~ label:after {
 .button-text {
   padding-left:12px;
   padding-right: 12px;
-  font-size: 1rem;
+  /* font-size: 1rem; */
   color: white!important;
 }
 
@@ -1051,7 +1070,7 @@ input.switch:empty ~ label:after {
 .upload::before {
   cursor: pointer;
   font-weight: 700;
-  font-size: 10pt;
+  /* font-size: 10pt; */
   padding:1rem;
 }
 
@@ -1135,11 +1154,26 @@ Things to move eventually */
   box-sizing: border-box;
 }
 
+.option_row {
+  display: flex;
+  flex-direction: row;
+  width:100%;
+  padding: 0;
+  margin: 0;
+  justify-content: space-between;
+}
+
 .option_text {
   cursor: pointer;
   font-size: 1rem;
 }
 
+.option_container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: space-between;
+}
 
 /*************************************************************************
 *

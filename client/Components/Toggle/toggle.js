@@ -1,8 +1,7 @@
 'use strict';
 
-import * as Render from '/Javascript/render.js';
 import * as FX from '/Javascript/fx.js';
-import { render } from '/Javascript/render.js';
+import { render, renderText } from '/Javascript/render.js';
 
 
 /*********************************************************************
@@ -32,14 +31,18 @@ export default class Toggle {
 
 
   createToggleStructure(props) {
+
     this.el = document.createElement('div');
     this.el.classList.add('material-toggle');
+
+    if (props.class) this.el.classList.add(props.class)
+
 
     this.input = document.createElement('input');
     this.input.id = props.id;
     this.input.type = 'checkbox';
     this.input.setAttribute('name', props.id);
-    this.input.checked = false;
+    this.input.checked = props.checked;
 
     this.input.classList.add('switch');
 

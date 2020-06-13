@@ -45,12 +45,6 @@ let startTime;
  *
  ***************************************************************/
 
-/*************************
- *
- * @param { Array } params
- *
- *************************/
-
 export function generateQuiz(param) {
   const screen = new Screen({
     id: 'quiz',
@@ -58,11 +52,7 @@ export function generateQuiz(param) {
   });
   uid = param;
   flowCount = 0;
-
   generateQuestionnaire(uid);
-
-  // Start the clock if timed!
-  startTime = new Date();
 }
 
 // #endregion
@@ -129,7 +119,7 @@ async function generateQuestions(uid) {
     questions = await response.json();
     generateCards(questions);
   } else {
-    createToast("Failed to Load Questions", true)
+    createToast('Failed to Load Questions', true);
   }
 }
 
@@ -181,13 +171,13 @@ function generateCards(questions) {
 
 
     // We will now display the question text
-    const text = renderText(card, question.question, 'label');
-    text.classList.add('label');
+    const text = renderText(card, question.question, 'label', '', 'label');
+
     text.setAttribute('for', 'input-question-' + qNum);
 
     // Finally, we will setup the inputs (Multiple Choice)
     const quesContainer = html('div', '', card, 'scroll-container');
-    if (question.options !== null && question.options.length > 1) {
+    if (question.options !== null && question.options.length > 0) {
       for (let x = 0; x < question.options.length; x++) {
         const input = new Input({
           id: 'input-' + x + '-question-' + qNum,
@@ -205,7 +195,10 @@ function generateCards(questions) {
         type: question.input,
         title: question.question,
         renderPoint: quesContainer,
+        min: question.min,
+        max: question.max,
       });
+      console.log(question.min, question.max);
     }
     // Push newly generated card to the ArrayOfCards
     arrOfCards.push(card);
@@ -255,20 +248,26 @@ export function handleAnswers() {
 
 /****************************************************************
  *
- *  These functions will handle the direction of the stack, by
- *  increase a counter 'flowCount' the application is able to keep track
- *  of what question the user should be on.
+ *  These functions control the flow of the stack, they also perform
+ *  some validation checks to ensure the questions have
+ *  been correctly answered.
  *
  ***************************************************************/
 
 
 export function increase() {
-  handleAnswers();
-  if (flowCount < arrOfCards.length) {
-    flowCount++;
-    $('card-' + flowCount).classList.add('card-remove');
-    shuffle('shuffle');
-    FX.progressCheck(flowCount, arrOfCards.length + 1);
+  if ((questions[flowCount].required === true && options.choices.length <= 0)) {
+    createToast('This is a Required Question!', true);
+  } else if ($('input-question-' + (flowCount + 2)) && $('input-question-' + (flowCount + 2)).type === 'number' && (parseInt($('input-question-' + (flowCount + 2)).value) < parseInt($('input-question-' + (flowCount + 2)).min) || parseInt($('input-question-' + (flowCount + 2)).value) > parseInt($('input-question-' + (flowCount + 2)).max))) {
+    createToast('Select a Number Between ' + $('input-question-' + (flowCount + 2)).min + ' and ' + $('input-question-' + (flowCount + 2)).max, true);
+  } else {
+    handleAnswers();
+    if (flowCount < arrOfCards.length) {
+      flowCount++;
+      $('card-' + flowCount).classList.add('card-remove');
+      shuffle('shuffle');
+      FX.progressCheck(flowCount, arrOfCards.length + 1);
+    }
   }
 }
 

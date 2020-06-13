@@ -75,6 +75,9 @@ export default class Input {
         if (props.type) this.input.type = props.type;
         if (props.value) this.input.value = props.value;
         if (props.readOnly) this.input.readOnly = true;
+        if (props.min) this.input.min = props.min;
+        if (props.max) this.input.max = props.max;
+
         this.highlight = html('span', '', this.group, 'highlight');
         this.bar = html('span', '', this.group, 'bar');
         if (props.eventListeners !== false) this.keyUpEventListener(this.input, props);
@@ -154,10 +157,10 @@ export default class Input {
 
   keyUpEventListener(el) {
     el.onblur = function () {
-      window.sessionStorage.setItem(el.id, el.value);
       options.qNumber = flowCount + 1;
-      options.choices.push(el.value);
+      options.choices[0] = el.value;
       options.type = el.type;
+      console.log(options.choices)
     };
     el.addEventListener('keyup', (e) => {
       if (e.key === 'Enter') {

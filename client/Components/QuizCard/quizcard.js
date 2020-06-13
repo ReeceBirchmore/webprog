@@ -58,7 +58,7 @@ export default class QuizCard {
       id: 'link-' + props.id,
       type: 'text',
       renderPoint: this.el,
-      value: window.location.href + '/#/quiz/' + props.id,
+      value: window.location.href.split('/')[2] + '/#/quiz/' + props.id,
       readOnly: true,
     });
     this.linkInput.setAttribute('readonly', true);

@@ -70,7 +70,7 @@ function renderText(el, propText, tag, id, css) {
  *************************/
 
 function remove(el) {
-  $('root').removeChild(el);
+  $('body').removeChild(el);
 }
 
 

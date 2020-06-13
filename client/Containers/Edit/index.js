@@ -4,14 +4,14 @@
 import EditCard from '/Components/Card/editcard.js';
 import Nav from '/Components/Nav/nav.js';
 import Screen from '/Components/Screen/screen.js';
-import Icon from '/Components/Icon/icon.js';
-import Button from '/Components/Button/button.js';
+
 import Divider from '/Components/Divider/divider.js';
 import Input from '/Components/Input/input.js';
+import SettingsCard from '/Components/Card/settingscard.js';
 
 import * as Admin from '/Containers/Admin/index.js';
 import { $, createToast, renderText, html, pointer } from '/Javascript/render.js';
-import * as FX from '/Javascript/fx.js';
+
 
 // #endregion
 // ////////////////////////////////////////////////////////////// EDIT
@@ -20,31 +20,22 @@ import * as FX from '/Javascript/fx.js';
 
 let uid;
 const questionArray = [];
-let questionlist;
 const arrOfQuiz = { arr: [] };
-const optionObject = {
-  type: '',
-  title: '',
-  option: [],
-  id: '',
-};
+const optionObject = {};
 export const optionTextCount = 0;
+let questionNumber = 1;
 
 
 export function buildEditor(quizid) {
   uid = quizid;
+  const arrOfQuiz = { arr: [] };
+  questionNumber = 1;
   const screen = new Screen({
     id: 'edit-screen',
     class: 'adminScreen',
   });
   gatherDetails(quizid);
 }
-
-// const nav = new Nav({
-//   id: 'nav',
-//   title: (qData.length !== 0) ? 'Edit ' + qData[0].title : 'Invalid Quiz',
-//   icons: ['return', 'add'],
-//   actions: [function () { window.location = './#/admin'; }, function () { saveQuestionnaire(); }] });
 
 
 // The two main portions of the editor, the questionnaire data and the question data
@@ -65,7 +56,6 @@ async function gatherDetails(quizid) {
   } else {
     createToast('Invalid Questionnaire ID', true);
   }
-
   // Grab the questions
   const question = await fetch('/api/questions/' + uid);
   if (question.ok) {
@@ -74,20 +64,41 @@ async function gatherDetails(quizid) {
   } else {
     createToast('Failed to Load Questions', true);
   }
-
   const nav = new Nav({
     id: 'nav',
     title: (questionnaireData.length !== 0) ? 'Edit ' + questionnaireData[0].title : 'Invalid Quiz',
-    icons: ['return', 'add'],
+    icons: ['return', 'save'],
     actions: [function () { window.location = './#/admin'; }, function () { saveQuestionnaire(); }],
+    elevated: true,
   });
 }
 
 
-let questionNumber = 1;
+
 let editedQuestionObject;
 
 function deployCards() {
+  console.log(questionnaireData[0])
+  const quizSettingsCard = new SettingsCard({
+    id: 'settings-card',
+    title: questionnaireData[0].title,
+    enabled: questionnaireData[0].enabled,
+    restricted: questionnaireData[0].restrict,
+    allowBack: questionnaireData[0].allowback,
+  });
+
+  editedQuestionObject = Object.create(optionObject);
+  editedQuestionObject.id = questionnaireData[0].quizid;
+  editedQuestionObject.quiztitle = questionnaireData[0].title; // Title of the questionnaire
+  editedQuestionObject.enabled = questionnaireData[0].enabled; // Enable the questionnaire
+  editedQuestionObject.restricted = questionnaireData[0].restrict; // restrict submissions
+  editedQuestionObject.allowback = questionnaireData[0].allowback; // Allow the back button
+  arrOfQuiz.arr.push(editedQuestionObject);
+
+  console.log(arrOfQuiz.arr[0]);
+
+
+
   questionData.forEach(question => {
     // Prefabricating an object to store the edited questions in (Try to neaten this bit up)
     editedQuestionObject = Object.create(optionObject);
@@ -95,20 +106,10 @@ function deployCards() {
     editedQuestionObject.type = question.input; // Input type of the question
     editedQuestionObject.id = question.id; // ID of the question
     editedQuestionObject.options = (question.options === null) ? null : question.options; // Options for the question
-    editedQuestionObject.minMax = (question.minMax === null) ? null : question.minMax;
+    editedQuestionObject.min = (question.min === null) ? null : question.min;
+    editedQuestionObject.max = (question.max === null) ? null : question.max;
     editedQuestionObject.required = question.required;
     arrOfQuiz.arr.push(editedQuestionObject);
-
-  
-    // Prefabricating an object of all the questions pulled off the db
-    const questionObject = {
-      id: question.id,
-      quizid: question.quizid,
-      question: question.question,
-      type: question.input,
-      options: question.options,
-    };
-    questionArray.push(questionObject);
 
 
     // Generate a card for each question
@@ -120,6 +121,9 @@ function deployCards() {
       input: question.input,
       qid: question.id,
       options: question.options,
+      required: question.required,
+      min: question.min,
+      max: question.max,
     });
   });
 }
@@ -169,7 +173,7 @@ export function changeQuestionType(id) {
 
     case 'single-select':
     case 'multi-select':
-      const optionGroup = html('div', 'options-' + id, $('card-' + id), 'option_group');
+      const multiGroup = html('div', 'options-' + id, $('card-' + id), 'option_group');
       multiType(id);
       break;
 
@@ -201,7 +205,6 @@ export function changeQuestionType(id) {
  ******************************************************************************/
 
 function modifyInputGroup(id) {
-  console.log(arrOfQuiz);
   if ($('group-' + id).dataset.type !== 'multi-select' || $('group-' + id).dataset.type !== 'single-select') {
     if ($('group-' + id)) $('card-' + id).removeChild($('group-' + id));
   }
@@ -229,22 +232,24 @@ function numberType(id) {
     const min = new Input({
       id: 'min-' + id,
       placeholder: 'Enter Min',
-      type: 'text',
+      type: 'number',
       renderPoint: $('group-' + id),
       eventListeners: false,
     });
     const max = new Input({
       id: 'max-' + id,
       placeholder: 'Enter Max',
-      type: 'text',
+      type: 'number',
       renderPoint: $('group-' + id),
       eventListeners: false,
     });
 
-    min.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter') {
+    min.addEventListener('input', function (e) {
+      changeMinValue(parseInt($('min-' + id).value), parseInt(id));
+    });
 
-      }
+    max.addEventListener('input', function (e) {
+      changeMaxValue(parseInt($('max-' + id).value), parseInt(id));
     });
   }
 }
@@ -286,16 +291,14 @@ function multiType(id) {
       renderPoint: $('group-' + id),
       eventListeners: false,
     });
-
     renderText($('group-' + id), pointer + ' options to delete', 'p', '', 'subtext');
-
     optionInput.addEventListener('keydown', function (e) {
       const parsedID = parseInt(id);
       if (e.key === 'Enter') {
         if (addOption($('optionInput-' + id).value, id) === true) {
           const findQuestion = arrOfQuiz.arr.findIndex(id => id.id === parsedID);
           const optionArrPos = arrOfQuiz.arr[findQuestion].options.findIndex(option => option === $('optionInput-' + id).value);
-          const newOption = html('div', 'options-' + id + '-option-' + optionArrPos, $('options-' + id), 'selector-toolbar');
+          const newOption = html('div', 'options-' + id + '-option-' + optionArrPos, $('options-' + id), 'option_row');
           renderText(newOption, $('optionInput-' + id).value, 'p', '', 'option_text');
           removeOptionEventListeners(id, optionArrPos, $('optionInput-' + id).value);
           $('optionInput-' + id).value = '';
@@ -303,6 +306,69 @@ function multiType(id) {
       }
     });
   }
+}
+
+/******************************************************************************
+ *
+ * These functions are triggered whenever the user edits the Min/Max constratints
+ *
+ ******************************************************************************/
+
+export function changeMinValue(value, id) {
+  console.log(id);
+  const inputIndex = arrOfQuiz.arr.findIndex(value => value.id === id);
+  if (parseInt($('max-' + id).value) > parseInt($('min-' + id).value)) {
+    createToast('Min Must Be Lower than Max', true);
+  } else {
+    console.log(arrOfQuiz.arr[inputIndex]);
+    arrOfQuiz.arr[inputIndex].min = parseInt($('min-' + id).value);
+  }
+}
+
+export function changeMaxValue(value, id) {
+  const inputIndex = arrOfQuiz.arr.findIndex(value => value.id === id);
+  if (parseInt($('max-' + id).value) < parseInt($('min-' + id).value)) {
+    createToast('Max Must Be Greater Than Min', true);
+  } else {
+    arrOfQuiz.arr[inputIndex].max = parseInt($('max-' + id).value);
+  }
+}
+
+
+/******************************************************************************
+ *
+ * These functions are triggered whenever a questionnaire setting is toggled
+ *
+ ******************************************************************************/
+
+export function editTitle(value) {
+  arrOfQuiz.arr[0].quiztitle = value;
+  $('nav-title').textContent = 'Edit ' + value;
+}
+
+export function enableQuiz(value) {
+  arrOfQuiz.arr[0].enabled = value;
+}
+
+export function enableBack(value) {
+  arrOfQuiz.arr[0].allowback = value;
+}
+
+export function enableRestrict(value) {
+  arrOfQuiz.arr[0].restricted = value;
+}
+
+/******************************************************************************
+ *
+ * This function is triggered whenever the user toggles the required toggle
+ *
+ ******************************************************************************/
+
+
+export function changeRequired(value, id) {
+  const inputIndex = arrOfQuiz.arr.findIndex(title => title.id === parseInt(id));
+  $('text-' + id).style.color = (value === true) ? 'black' : '#AAA5AF';
+  arrOfQuiz.arr[inputIndex].required = value;
 }
 
 
@@ -328,9 +394,7 @@ export function changeQuestionTitle(value, id) {
  ******************************************************************************/
 
 export function removeOptionEventListeners(qid, oid, value) {
-  console.log("HELLO")
   $('options-' + qid + '-option-' + oid).addEventListener('click', function (e) {
-    console.log(qid)
     $('options-' + qid).removeChild($('options-' + qid + '-option-' + oid));
     removeOption(qid, value);
   });
@@ -351,16 +415,20 @@ export function removeOptionEventListeners(qid, oid, value) {
  ****************************************************************/
 
 export function addOption(value, id) {
-  const inputIndex = arrOfQuiz.arr.findIndex(option => option.id === parseInt(id));
-  if (arrOfQuiz.arr[inputIndex].options === null) {
-    arrOfQuiz.arr[inputIndex].options = [];
-  }
-
-  if (arrOfQuiz.arr[inputIndex].options.findIndex(option => option === value) === -1) {
-    arrOfQuiz.arr[inputIndex].options.push(value);
-    return true;
+  if ($('optionInput-' + id).value.length !== 0) {
+    const inputIndex = arrOfQuiz.arr.findIndex(option => option.id === parseInt(id));
+    if (arrOfQuiz.arr[inputIndex].options === null) {
+      arrOfQuiz.arr[inputIndex].options = [];
+    }
+    if (arrOfQuiz.arr[inputIndex].options.findIndex(option => option === value) === -1) {
+      arrOfQuiz.arr[inputIndex].options.push(value);
+      return true;
+    } else {
+      createToast('Duplicate Entry', true);
+      return false;
+    }
   } else {
-    createToast('Duplicate Entry', true);
+    createToast('Option Required', true);
     return false;
   }
 }
@@ -387,233 +455,41 @@ export function removeOption(qid, value) {
 }
 
 
+/***************************************************************
+ *
+ * This function is triggered when the user presses the save button
+ *
+ * 1) It will perform an initial check to ensure there are no multi
+ *    option type questions with missing arrays, it will notify the
+ *    user if it detects any.
+ * 2) It will stringify the arrOfQuiz object generated earlier and
+ *    ship it off to the server for handling
+ * 2) Splice out the passed value "value" from the array
+ *
+ ****************************************************************/
+
+
 async function saveQuestionnaire() {
-  const sendOption = await fetch('/api/quizzes/update/' + uid, {
+  for (let i = 0; i < arrOfQuiz.arr.length; i++) {
+    if (arrOfQuiz.arr[i].type === 'single-select' || arrOfQuiz.arr[i].type === 'multi-select') {
+      if (arrOfQuiz.arr[i].options === null || arrOfQuiz.arr[i].options.length === 0) {
+        createToast('Please Check Question ' + (i + 1), true);
+        return;
+      }
+    }
+  }
+
+  const updateQuestions = await fetch('/api/quizzes/update/' + uid, {
     method: 'PUT',
     body: JSON.stringify(arrOfQuiz),
     headers: {
       'Content-Type': 'application/json',
     },
   });
-  const response = await sendOption.json();
-  if (response.ok) {
-    // It didnt break!
+  const questionResponse = await updateQuestions.json();
+  if (questionResponse === true) {
+    createToast('Quiz Updated Succesfully');
   } else {
-    // Something went wrong!
+    createToast('Quiz Update Failed', true);
   }
 }
-
-
-
-
-// export function buildEditor(quizid) {
-//   uid = quizid;
-//   const screen = new Screen({ id: 'admin-edit-quiz', class: 'adminScreen', title: 'Quiz Editor' });
-//   gatherDetails(quizid);
-// }
-
-// async function gatherDetails(quizid) {
-//   const questionnaire = await fetch('/api/quizzes/' + quizid);
-//   if (questionnaire.ok) {
-//     const qData = await questionnaire.json();
-//     const nav = new Nav({
-//       id: 'nav',
-//       title: (qData.length !== 0) ? 'Edit ' + qData[0].title : 'Invalid Quiz',
-//       icons: ['return', 'add'],
-//       actions: [function () { window.location = './#/admin'; }, function () { saveQuestionnaire(); }] });
-//     if (qData.length !== 0) {
-//       editQuiz(quizid);
-//     } else {
-//       createToast('Invalid Questionnaire ID', true);
-//       console.log('quiz doesnt exist');
-//     }
-//   } else {
-//     const qData = [{ msg: 'Failed to load cards' }];
-//   }
-// }
-
-
-// async function editQuiz(uid) {
-//   let check = document.querySelectorAll('.card-linear');
-//   check.forEach(element => {
-//     $('root').removeChild(element);
-//   });
-//   check = null;
-//   if (check === null) {
-//     const response = await fetch('/api/questions/' + uid);
-//     if (response.ok) {
-//       questionlist = await response.json();
-//       let i = 1;
-//       questionlist.forEach(question => {
-//         console.log(question.options);
-
-//         // PreMake the Edited Question Array!!
-//         const options = Object.create(optionObject);
-//         options.title = question.question;
-//         options.type = question.input;
-//         options.id = question.id;
-//         options.option = (question.options === null) ? [] : question.options;
-//         arrOfQuiz.arr.push(options);
-
-
-//         // Questions pulled from DB OBJECT
-//         const questionObject = {
-//           id: question.id,
-//           quizid: question.quizid,
-//           question: question.question,
-//           type: question.input,
-//           options: question.options,
-//         };
-
-//         questionArray.push(questionObject);
-
-
-//         const card = new EditCard({ id: 'card-' + question.id, title: question.question, questionNum: i++, input: question.input, qid: question.id });
-//         const group = html('div', 'options-' + question.id, card, 'option-group');
-
-
-//         if (question.options !== null) {
-//           // Generate a container for all the options
-//           const optionbox = html('div', 'option-group-' + question.id, card, 'option_group');
-//           // Generate all the options
-//           question.options.forEach(option => {
-//             const optionbox = html('div', '' + question.id, $('option-group-' + question.id), 'optionbox');
-//             const deleteIcon = new Icon({
-//               id: 'close',
-//               renderPoint: optionbox,
-//             });
-//             const list = document.createElement('p');
-//             list.textContent = option;
-//             optionbox.append(list);
-//           });
-
-//           // Container for new option button
-//           const newOption = document.createElement('div');
-//         }
-//       });
-//     }
-//   }
-//   const card = new EditCard({ id: 'add-question', type: 'add' });
-//   $('root').append(card);
-// }
-
-// export async function addQuestion() {
-//   saveQuestionnaire(questionlist);
-// }
-
-
-// // Array and Object to store the data as the user edits the quiz
-// let optionCount = 0;
-// export let optionTextCount = 0;
-
-
-// export function changeQuestionType(id) {
-//   const inputIndex = arrOfQuiz.arr.findIndex(option => option.id === parseInt(id));
-//   if (inputIndex === -1) {
-//     const options = Object.create(optionObject);
-//     options.type = $('selector-card-' + id).value;
-//     options.id = parseInt(id);
-//     options.option = [];
-//     arrOfQuiz.arr.push(options);
-//     console.log(arrOfQuiz);
-//   } else {
-//     console.log(arrOfQuiz, 'EXISTS');
-//     arrOfQuiz.arr[inputIndex].type = $('selector-card-' + id).value;
-//   }
-
-//   switch ($('selector-card-' + id).value) {
-//     case 'text':
-//       console.log(id);
-//       $('card-' + id).removeChild($('option-' + id));
-//       break;
-//     case 'number':
-//       $('card-' + id).removeChild($('option-' + id));
-//       break;
-//     case 'single-select':
-//     case 'multi-select':
-//       const option = document.createElement('div');
-//       option.classList.add('optionbox');
-//       // Make a component
-//       if (!$('option-' + id)) {
-//         const input = document.createElement('input');
-//         input.type = 'text';
-//         input.id = 'option-' + id;
-//         input.setAttribute('data-id', id);
-//         $('option-' + id).append(option);
-//         option.append(input);
-//         input.addEventListener('input', function () {
-//           if ($('options-text-' + optionTextCount) === null) {
-//             const optionbox = html('div', 'options-text-' + optionTextCount, $('options-' + id), 'optionbox');
-//             const deleteIcon = new Icon({
-//               id: 'closeblack',
-//               renderPoint: optionbox,
-//             });
-//             const list = document.createElement('p');
-//             list.id = 'text-' + optionTextCount;
-//             list.textContent = input.value;
-//             optionbox.append(list);
-
-//           } else {
-//             $('text-' + optionTextCount).textContent = input.value;
-//           }
-//         });
-
-//         input.addEventListener('keydown', function (e) {
-//           if (e.key === 'Enter') {
-//             addOption(input.value, id);
-//             input.value = '';
-//           }
-//         });
-//         break;
-//       } else {
-//         console.log('IT WAS THERE ALL ALONG ');
-//       }
-//   }
-// }
-
-
-// export function addOption(value, id) {
-//   optionTextCount++;
-//   const inputIndex = arrOfQuiz.arr.findIndex(option => option.id === parseInt(id));
-//   if (inputIndex === -1) {
-//     const options = Object.create(optionObject);
-//     options.option = [];
-//     options.option.push(value);
-//     options.id = parseInt(id);
-//     arrOfQuiz.arr.push(options);
-//   } else {
-//     arrOfQuiz.arr[inputIndex].option.push(value);
-//   }
-// }
-
-
-// // Save the questionnaire, send the object array off to the server
-// async function saveQuestionnaire() {
-//   const sendOption = await fetch('/api/create/option/' + uid, {
-//     method: 'POST', // or 'PUT'
-//     body: JSON.stringify(arrOfQuiz),
-//     headers: {
-//       'Content-Type': 'application/json',
-//     },
-//   });
-//   const response = await sendOption.json();
-//   if (response.ok) {
-//     // It didnt break!
-//   } else {
-//     // Something went wrong!
-//   }
-// }
-
-
-// export async function deleteQuestion(qid, question) {
-//   const title = (!question) ? 'Question Deleted!' : question + ' Deleted!';
-//   const deleteQuiz = await fetch('/api/delete/question/' + qid);
-//   if (deleteQuiz.ok) {
-//     console.log(uid);
-//     editQuiz(uid);
-//     createToast(title, FX.toastClear, 'Close');
-//   } else {
-//     // Code if it failed here
-
-//   }
-// }
