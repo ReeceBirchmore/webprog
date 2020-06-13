@@ -76,6 +76,11 @@ export async function generateQuestionnaire(uid) {
   }
 
   if (questionDataObject[0] !== undefined) {
+    // Prevent multiple submissions if the questionnaire has the submission restrictions enabled
+    if (questionDataObject[0].restrict === true && window.localStorage.getItem(uid.id) === 'true') {
+      createToast('You Are Only Allowed One Attempt', true);
+      return;
+    }
     // Build the footer
     const footer = new Footer();
     // Build the Next Button
@@ -86,7 +91,9 @@ export async function generateQuestionnaire(uid) {
       render: 'Footer',
       type: 'next',
     });
-    // If the quiz does not allow the back button, disable it and enlarge the next button
+
+    // We will perform the questionnaire restriction checks here
+    // If the questionnaire does not allow the back button, disable it and enlarge the next button
     if (questionDataObject[0].allowback !== false) {
       const button = new Button({
         id: 'prevbtn',
@@ -97,6 +104,7 @@ export async function generateQuestionnaire(uid) {
       });
       $('nextbtn').style.width = '8rem';
     }
+    
     generateQuestions(uid);
   } else {
     console.error('This questionnaire does not exist');
@@ -293,21 +301,11 @@ export function decrease() {
  *
  ***************************************************************/
 
-
-// SORT OUT
-function timeDifference() {
-  const endTime = new Date();
-  answersObject.time = -diff_minutes(startTime, endTime);
-}
-function diff_minutes(dt2, dt1) {
-  const diff = (dt2 - dt1) / 1000;
-  return (diff);
-}
-
-
 export async function submitQuiz() {
+  if (questionDataObject[0].restrict === true) {
+    window.localStorage.setItem(uid.id, true);
+  }
   FX.submitAnimation();
-  timeDifference();
   const submit = await fetch('/api/submit/' + uid.id, {
     method: 'POST',
     body: JSON.stringify(answersObject),
@@ -315,11 +313,10 @@ export async function submitQuiz() {
       'Content-Type': 'application/json',
     },
   });
-
   if (submit.ok) {
-    createToast('Quiz Submitted!', false);
+    createToast('Quiz Submitted');
   } else {
-    createToast('Submission Failed!', true);
+    createToast('Submission Failed', true);
   }
 
   // CHANGE THIS TO RENDERTEXT, USE EVENTHANDLER JS
