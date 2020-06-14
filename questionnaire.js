@@ -139,20 +139,19 @@ async function saveQuestionnaire(optiondata) {
   data.forEach(async question => {
     console.log(question)
     if (question.deleted === true) {
-      // const id = parseInt(question.id);
-      // const remove = 'DELETE FROM Questions WHERE id = $1';
-      // await sql.query(remove, [id]);
+      const id = parseInt(question.id);
+      const remove = 'DELETE FROM Questions WHERE id = $1';
+      await sql.query(remove, [id]);
     } else {
-      let id = parseInt(question.id);
-      console.log(id)
+      const id = parseInt(question.id);
       const option = question.options;
       const type = question.type;
       const title = question.title;
       const required = Boolean(question.required);
-      // const min = (question.min !== null) ? parseInt(question.min) : 0;
-      // const max = (question.max !== null) ? parseInt(question.max) : 0;
-      const updateq = 'UPDATE Questions SET input = $1, options = $2, question = $3, required = $4 WHERE id = $5';
-      await sql.query(updateq, [type, option, title, required, id]);
+      const min = parseInt(question.min);
+      const max = parseInt(question.max);
+      const updateq = 'UPDATE Questions SET input = $1, options = $2, question = $3, required = $4, min = $5, max = $6 WHERE id = $7';
+      await sql.query(updateq, [type, option, title, required, min, max, id]);
     }
   });
   return true;
