@@ -135,6 +135,7 @@ async function saveQuestionnaire(optiondata) {
     console.log(isNaN(question.max));
 
   });
+  console.log(data)
   const quizid = data[0].id;
   const title = data[0].quiztitle;
   const enabled = Boolean(data[0].enabled);
@@ -142,6 +143,8 @@ async function saveQuestionnaire(optiondata) {
   const allowBack = Boolean(data[0].allowback);
   const questionnaireq = 'UPDATE Quizzes SET title = $1, enabled = $2, restrict = $3, allowback = $4 WHERE quizid = $5';
   await sql.query(questionnaireq, [title, enabled, restricted, allowBack, quizid]);
+  const removedData = data.splice(0,1)
+  console.log(data)
   data.forEach(async question => {
     if (question.deleted === true) {
       const id = parseInt(question.id);
@@ -156,7 +159,7 @@ async function saveQuestionnaire(optiondata) {
       const min = parseInt(question.min);
       const max = parseInt(question.max);
       const updateq = 'UPDATE Questions SET input = $1, options = $2, question = $3, required = $4, min = $5, max = $6 WHERE id = $7';
-      await sql.query(updateq, [type, option, title, required, 0, 0, id]);
+      await sql.query(updateq, [type, option, title, required, min, max, id]);
     }
   });
   return true;
