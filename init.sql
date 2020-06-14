@@ -16,8 +16,8 @@ CREATE TABLE questions (
     quizid TEXT,
     input TEXT,
     options TEXT [],
-    min INT,
-    max INT,
+    min TEXT,
+    max TEXT,
     required BOOLEAN
 );
 
@@ -38,7 +38,7 @@ INSERT INTO questions (question, quizid, input) VALUES('What is your name?', 'jf
 INSERT INTO questions (question, quizid, input, min, max) VALUES('How old are you?', 'jf8OBN6779', 'number', '30', '60');
 INSERT INTO questions (question, quizid, input, required) VALUES('This is a required question, leave it blank and try to hit next!', 'jf8OBN6779', 'text', true);
 INSERT INTO questions (question, quizid, options, input) VALUES('What is your experience using this app?', 'jf8OBN6779', '{Absolutely Amazing, Seen Better, God Awful}', 'single-select');
-INSERT INTO questions (question, quizid, input, min, max) VALUES('What grade do you think this is worth?', 'jf8OBN6779', 'number', 70, 100);
+INSERT INTO questions (question, quizid, input, min, max) VALUES('What grade do you think this is worth?', 'jf8OBN6779', 'number', '70', '100');
 INSERT INTO questions (question, quizid, input) VALUES('When do I get my results back?', 'jf8OBN6779', 'text');
 
 INSERT INTO questions (question, quizid, input) VALUES('What is your name?', '94jwbfsT6s', 'text');

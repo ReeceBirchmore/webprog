@@ -144,11 +144,7 @@ async function saveQuestionnaire(optiondata) {
       await sql.query(remove, [id]);
     } else {
       console.log(parseInt(question.min), question.min, '[parsed not parsed]');
-      let id = parseInt(question.id);
-      if (typeof id != "number") {
-        console.log('This is not number');
-        console.log(id)
-    }
+      let id = parseInt(question.id, 10);
       const option = question.options;
       const type = question.type;
       const title = question.title;
