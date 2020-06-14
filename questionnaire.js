@@ -128,32 +128,35 @@ async function addAQuestion(quizid) {
 async function saveQuestionnaire(optiondata) {
   // Declare all the variables for simplification
   const data = JSON.parse(optiondata).arr;
-  // console.log(data[0])
-  // const quizid = data[0].id;
-  // const title = data[0].quiztitle;
-  // const enabled = Boolean(data[0].enabled);
-  // const restricted = Boolean(data[0].restricted);
-  // const allowBack = Boolean(data[0].allowback);
-  // const questionnaireq = 'UPDATE Quizzes SET title = $1, enabled = $2, restrict = $3, allowback = $4 WHERE quizid = $5';
-  // await sql.query(questionnaireq, [title, enabled, restricted, allowBack, quizid]);
+  console.log(data[0])
+  const quizid = data[0].id;
+  const title = data[0].quiztitle;
+  const enabled = Boolean(data[0].enabled);
+  const restricted = Boolean(data[0].restricted);
+  const allowBack = Boolean(data[0].allowback);
+  const questionnaireq = 'UPDATE Quizzes SET title = $1, enabled = $2, restrict = $3, allowback = $4 WHERE quizid = $5';
+  await sql.query(questionnaireq, [title, enabled, restricted, allowBack, quizid]);
   data.forEach(async question => {
     console.log(question)
     if (question.deleted === true) {
-      // const id = parseInt(question.id);
-      // const remove = 'DELETE FROM Questions WHERE id = $1';
-      // await sql.query(remove, [id]);
-    } else {
-      console.log(parseInt(question.min), question.min, '[parsed not parsed]')
       const id = parseInt(question.id);
-      console.log(id)
+      const remove = 'DELETE FROM Questions WHERE id = $1';
+      await sql.query(remove, [id]);
+    } else {
+      console.log(parseInt(question.min), question.min, '[parsed not parsed]');
+      let id = parseInt(question.id);
+      if (typeof id != "number") {
+        console.log('This is not number');
+        console.log(id)
+    }
       const option = question.options;
       const type = question.type;
       const title = question.title;
       const required = Boolean(question.required);
-      // const min = parseInt(question.min);
-      // const max = parseInt(question.max);
+      // const min = (question.min !== null) ? parseInt(question.min) : 0;
+      // const max = (question.max !== null) ? parseInt(question.max) : 0;
       const updateq = 'UPDATE Questions SET input = $1, options = $2, question = $3, required = $4 WHERE id = $5';
-      await sql.query(updateq, [type, option, title, required, parseInt(question.id)]);
+      await sql.query(updateq, [type, option, title, required, id]);
     }
   });
   return true;
