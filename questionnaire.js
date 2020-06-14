@@ -147,8 +147,8 @@ async function saveQuestionnaire(optiondata) {
       const type = question.type;
       const title = question.title;
       const required = Boolean(question.required);
-      const min = question.min;
-      const max = question.max;
+      const min = (question.min !== null) ? parseInt(question.min) : 0;
+      const max = (question.max !== null) ? parseInt(question.max) : 0;
       const updateq = 'UPDATE Questions SET input = $1, options = $2, question = $3, required = $4, min = $5, max = $6 WHERE id = $7';
       await sql.query(updateq, [type, option, title, required, min, max, id]);
     }
