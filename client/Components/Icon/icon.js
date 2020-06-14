@@ -1,12 +1,13 @@
 'use strict';
 
-import { html } from '../../Javascript/render.js';
+import { html } from '/Javascript/render.js';
 import eventHandler from '/Javascript/eventhandlers.js';
 
 /*********************************************************************
  *
  *  @typedef  {Object}  Props
- *  @property {String}  props.id Must reference a name in the CSS containing links to the icon (REQUIRED)
+ *  @property {String}  props.id Optional, yet recommended
+ *  @property {String}  props.icon The Icon to use, MUST have a matching CSS class with links to the icon image
  *  @property {Function} props.actions The function to be called upon by the icon, no action if left blank.
  *  @property {HTMLElement} props.renderPoint The reference to the element on which to attach the icon (REQUIRED)
  *
@@ -36,6 +37,6 @@ export default class Icon {
   }
 
   assignIcon(props) {
-    this.el.classList.add('icon', props.id);
+    this.el.classList.add('icon', props.class);
   }
 }

@@ -118,6 +118,29 @@ if ('ontouchstart' in document.documentElement) {
 
 
 // #endregion
+// ////////////////////////////////////////////////////////////// Response Type Detail
+// #region Detect Response Type
+
+export function responseType(card, question) {
+// Create the option type text to appear above the question
+  let info;
+  switch (question.input) {
+    case 'number':
+    case 'text':
+      info = 'Enter your response';
+      break;
+    case 'single-select':
+      info = 'Select one';
+      break;
+    case 'multi-select':
+      info = 'Select one or more';
+      break;
+  }
+  return renderText(card, info, 'p', 'type-info', 'subtext');
+}
+
+
+// #endregion
 // ////////////////////////////////////////////////////////////// EXPORTS
 // #region Exports
 

@@ -10,7 +10,7 @@ import { $, renderText, html, render, pointer } from '/Javascript/render.js';
 import * as Admin from '/Containers/Admin/index.js';
 import * as Edit from '/Containers/Edit/index.js';
 
-import { optionTextCount, addOption, removeOptionEventListeners, changeQuestionTitle, changeRequired, changeMinValue, changeMaxValue } from '/Containers/Edit/index.js';
+import { deleteQuestion, addOption, removeOptionEventListeners, changeQuestionTitle, changeRequired, changeMinValue, changeMaxValue } from '/Containers/Edit/index.js';
 
 export default class EditCard {
   constructor(props) {
@@ -32,8 +32,16 @@ export default class EditCard {
   createEditCardTemplate(props) {
     // Question Number and Required Toggle
     const titleContainer = html('div', '', this.el, 'card-title-container');
-    renderText(titleContainer, 'Question ' + props.questionNum, 'h2');
-    renderText(titleContainer, 'Required Question', 'p', 'text-' + props.qid, 'small');
+    this.icon = new Icon({
+      id: 'bin-' + props.qid,
+      class: 'bin',
+      renderPoint: titleContainer,
+    });
+    this.deleteQuestionHandler(props);
+
+    renderText(titleContainer, 'Question ' + props.questionNum, 'h2', 'number-' + props.qid, 'title');
+
+    renderText(titleContainer, 'Required', 'p', 'text-' + props.qid, 'small');
     this.toggle = new Toggle({
       id: 'toggle-' + props.qid,
       renderPoint: titleContainer,
@@ -68,6 +76,24 @@ export default class EditCard {
     // Append a pre-prepared group to the card
     this.group = html('div', 'group-' + props.qid, $('card-' + props.qid));
     this.group.setAttribute('data-type', props.input);
+  }
+
+
+  /******************************************************************************
+   *
+   * This function will handle the question being deleted
+   *
+   ******************************************************************************/
+
+  deleteQuestionHandler(props) {
+    this.icon.addEventListener('click', function () {
+      const undo = html('div', 'undo-' + props.qid, $('card-' + props.qid), 'undo_delete');
+      renderText(undo, 'Undo', 'h2', 'undotext-' + props.qid);
+      undo.addEventListener('click', function (e) {
+        $('card-' + props.qid).removeChild($('undo-' + props.qid));
+      });
+      deleteQuestion(props.qid);
+    });
   }
 
 
@@ -211,7 +237,6 @@ export default class EditCard {
    *
    * The below function will attach event listeners to the icons so we can delete
    * or insert questions
-   *
    *
    ******************************************************************************/
 

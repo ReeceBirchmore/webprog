@@ -4,12 +4,10 @@
 import EditCard from '/Components/Card/editcard.js';
 import Nav from '/Components/Nav/nav.js';
 import Screen from '/Components/Screen/screen.js';
-
-import Divider from '/Components/Divider/divider.js';
+import Button from '/Components/Button/button.js';
 import Input from '/Components/Input/input.js';
 import SettingsCard from '/Components/Card/settingscard.js';
 
-import * as Admin from '/Containers/Admin/index.js';
 import { $, createToast, renderText, html, pointer } from '/Javascript/render.js';
 
 
@@ -73,8 +71,6 @@ async function gatherDetails(quizid) {
   });
 }
 
-
-
 let editedQuestionObject;
 
 function deployCards() {
@@ -86,6 +82,8 @@ function deployCards() {
     restricted: questionnaireData[0].restrict,
     allowBack: questionnaireData[0].allowback,
   });
+
+  console.log(questionnaireData[0].allowback)
 
   editedQuestionObject = Object.create(optionObject);
   editedQuestionObject.id = questionnaireData[0].quizid;
@@ -109,6 +107,7 @@ function deployCards() {
     editedQuestionObject.min = (question.min === null) ? null : question.min;
     editedQuestionObject.max = (question.max === null) ? null : question.max;
     editedQuestionObject.required = question.required;
+    editedQuestionObject.deleted = false;
     arrOfQuiz.arr.push(editedQuestionObject);
 
 
@@ -124,7 +123,18 @@ function deployCards() {
       required: question.required,
       min: question.min,
       max: question.max,
+      deleted: false,
     });
+  });
+
+
+  // Generate a Button to add a new question
+
+  const button = new Button({
+    id: 'add-question',
+    icon: 'plus',
+    action: function () { addQuestion(); },
+    class: 'fab',
   });
 }
 
@@ -310,12 +320,29 @@ function multiType(id) {
 
 /******************************************************************************
  *
+ * This function is triggered whenever the user presses a delete button
+ * It will gray out the question to prep it for deletion, allowing the user to
+ * undo the option if they wish to.
+ *
+ ******************************************************************************/
+
+export function deleteQuestion(id) {
+  const inputIndex = arrOfQuiz.arr.findIndex(value => value.id === id);
+  if (arrOfQuiz.arr[inputIndex].deleted === false) {
+    arrOfQuiz.arr[inputIndex].deleted = true;
+  } else {
+    arrOfQuiz.arr[inputIndex].deleted = false;
+  }
+}
+
+
+/******************************************************************************
+ *
  * These functions are triggered whenever the user edits the Min/Max constratints
  *
  ******************************************************************************/
 
 export function changeMinValue(value, id) {
-  console.log(id);
   const inputIndex = arrOfQuiz.arr.findIndex(value => value.id === id);
   if (parseInt($('max-' + id).value) > parseInt($('min-' + id).value)) {
     createToast('Min Must Be Lower than Max', true);
@@ -334,6 +361,40 @@ export function changeMaxValue(value, id) {
   }
 }
 
+/******************************************************************************
+ *
+ * This function is triggered whenever the new question button is triggered
+ *
+ ******************************************************************************/
+
+async function addQuestion() {
+  const newQuestionID = await fetch('/api/create/question/' + uid);
+  if (newQuestionID.ok) {
+    const id = await newQuestionID.json();
+    const card = new EditCard({
+      id: 'card-' + id[0].id,
+      title: 'New Question',
+      questionNum: questionNumber++,
+      options: null,
+      input: 'text',
+      qid: id[0].id,
+      min: null,
+      max: null,
+      required: false,
+      deleted: false,
+    });
+    editedQuestionObject = Object.create(optionObject);
+    editedQuestionObject.title = 'New Question'; // Title of the question
+    editedQuestionObject.type = 'text'; // Input type of the question
+    editedQuestionObject.id = id[0].id; // ID of the question
+    editedQuestionObject.options = null; // Options for the question
+    editedQuestionObject.min = null;
+    editedQuestionObject.max = null;
+    editedQuestionObject.required = false;
+    editedQuestionObject.deleted = false;
+    arrOfQuiz.arr.push(editedQuestionObject);
+  }
+}
 
 /******************************************************************************
  *
@@ -352,6 +413,7 @@ export function enableQuiz(value) {
 
 export function enableBack(value) {
   arrOfQuiz.arr[0].allowback = value;
+  console.log(arrOfQuiz.arr[0].allowback);
 }
 
 export function enableRestrict(value) {
@@ -427,9 +489,6 @@ export function addOption(value, id) {
       createToast('Duplicate Entry', true);
       return false;
     }
-  } else {
-    createToast('Option Required', true);
-    return false;
   }
 }
 
@@ -468,7 +527,6 @@ export function removeOption(qid, value) {
  *
  ****************************************************************/
 
-
 async function saveQuestionnaire() {
   for (let i = 0; i < arrOfQuiz.arr.length; i++) {
     if (arrOfQuiz.arr[i].type === 'single-select' || arrOfQuiz.arr[i].type === 'multi-select') {
@@ -478,7 +536,6 @@ async function saveQuestionnaire() {
       }
     }
   }
-
   const updateQuestions = await fetch('/api/quizzes/update/' + uid, {
     method: 'PUT',
     body: JSON.stringify(arrOfQuiz),
@@ -489,6 +546,7 @@ async function saveQuestionnaire() {
   const questionResponse = await updateQuestions.json();
   if (questionResponse === true) {
     createToast('Quiz Updated Succesfully');
+    buildEditor(uid);
   } else {
     createToast('Quiz Update Failed', true);
   }

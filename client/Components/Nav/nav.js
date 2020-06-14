@@ -48,6 +48,7 @@ export default class Nav {
         if (props.icons[0] !== null) {
           const icon = new Icon({
             id: props.icons[i],
+            class: props.icons[i],
             renderPoint: this.el,
             actions: props.actions[i],
           });

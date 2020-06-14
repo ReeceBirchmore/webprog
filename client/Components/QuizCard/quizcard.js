@@ -65,10 +65,10 @@ export default class QuizCard {
 
 
     // Icon Generation
-    this.bin = new Icon({ id: 'bin', renderPoint: this.buttonsContainer });
-    this.linkIcon = new Icon({ id: 'link', renderPoint: this.buttonsContainer });
-    this.barchartIcon = new Icon({ id: 'barchart', renderPoint: this.buttonsContainer });
-    this.editIcon = new Icon({ id: 'edit', renderPoint: this.buttonsContainer });
+    this.bin = new Icon({ id: 'bin', class: 'bin', renderPoint: this.buttonsContainer });
+    this.linkIcon = new Icon({ id: 'link', class: 'link', renderPoint: this.buttonsContainer });
+    this.barchartIcon = new Icon({ id: 'barchart', class: 'barchart', renderPoint: this.buttonsContainer });
+    this.editIcon = new Icon({ id: 'edit', class: 'edit', renderPoint: this.buttonsContainer });
   }
 
   addHandlers(props) {

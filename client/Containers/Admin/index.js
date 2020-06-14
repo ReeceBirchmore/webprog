@@ -25,7 +25,7 @@ export function createUpload() {
   filebutton.type = 'file';
   filebutton.accept = '.json';
   label.setAttribute('for', 'file-upload');
-  //const icon = new Icon({ id: 'add', renderPoint: label });
+  const icon = new Icon({ id: 'add', class: 'add', renderPoint: label });
   filebutton.addEventListener('change', function () {
     uploadJSON();
   });

@@ -59,7 +59,8 @@ export default class Toast {
 
   attachIcon(props) {
     const toastIcon = new Icon({
-      id: (props.error === true) ? 'close' : 'tick',
+      id: 'toast-icon',
+      class: (props.error === true) ? 'close' : 'tick',
       renderPoint: this.el,
     });
   }

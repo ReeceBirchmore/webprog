@@ -101,9 +101,7 @@ export default class SettingsCard {
     renderText(restrictContainer, restrict, 'p', 'text-enablerestrict', 'small');
     $('text-enablerestrict').style.color = (props.restricted === true) ? 'black' : '#AAA5AF';
     this.enableRestrictHandler(props);
-
   }
-
 
 
   titleChangeHandler() {

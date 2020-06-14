@@ -91,16 +91,16 @@ async function createQuiz(req, res) {
 
 async function addQuestion(req, res) {
   try {
-    const result = await q.addAQuestion(JSON.stringify(req.body));
+    const result = await q.addAQuestion(req.params.id);
     res.json(result);
   } catch (error) {
     res.status(404).send('No match for that ID.');
   }
 }
 
-async function addOption(req, res) {
+async function saveQuestionnaire(req, res) {
   try {
-    const result = await q.addAOption(JSON.stringify(req.body));
+    const result = await q.saveQuestionnaire(JSON.stringify(req.body));
     res.json(result);
   } catch (error) {
     res.status(404).send('No match for that ID.');
@@ -131,9 +131,7 @@ async function deleteQuestion(req, res) {
 async function getAnswers(req, res) {
   try {
     const result = await q.getAnswerData(req.params.id);
-    console.log(result);
     res.json(result);
-
   } catch (error) {
     res.status(404).send('No match for that ID.');
   }
@@ -152,13 +150,13 @@ router.get('/questions/:id', asyncWrap(getQuestions));
 router.get('/quizzes/:id', asyncWrap(getQuizzes));
 router.get('/quizzes', asyncWrap(getAllQuizzes));
 router.get('/answers/:id', asyncWrap(getAnswers));
+router.get('/create/question/:id', asyncWrap(addQuestion));
 
 router.delete('/delete/quiz/:id', asyncWrap(deleteQuiz));
 router.delete('/delete/question/:id/', asyncWrap(deleteQuestion));
 
-router.put('/quizzes/update/:id', express.json(), asyncWrap(addOption));
+router.put('/quizzes/update/:id', express.json(), asyncWrap(saveQuestionnaire));
 
-router.post('/create/question/', express.json(), asyncWrap(addQuestion));
 router.post('/create/quiz/', express.json(), asyncWrap(createQuiz));
 router.post('/submit/:id', express.json(), asyncWrap(submitQuiz));
 router.post('/upload', express.json(), asyncWrap(uploadQuiz));

@@ -10,10 +10,9 @@ import Footer from '/Components/Footer/footer.js';
 import Nav from '/Components/Nav/nav.js';
 import Screen from '/Components/Screen/screen.js';
 
-
-import * as Admin from '/Containers/Admin/index.js';
-import { $, renderText, createToast, html } from '/Javascript/render.js';
+import { $, renderText, createToast, html, render, responseType, pointer } from '/Javascript/render.js';
 import * as FX from '/Javascript/fx.js';
+import eventHandler from '/Javascript/eventhandlers.js';
 import { shuffle } from '/Javascript/stackManagement.js';
 
 
@@ -24,15 +23,12 @@ import { shuffle } from '/Javascript/stackManagement.js';
 export const answersObject = { responses: [], time: '' }; // Object Array used to store answers as the user progresses
 export let flowCount = 0; // Card Stack Position Counter
 export const arrOfCards = []; // Array of HTML card elements generated for the quiz
-export const cardStackArr = { cards: [] }; // cardStackArray
+export const cardStackArr = { cards: [] }; // cardStackArray, used for visible cards on screen
 export let questions; // Used to store questions array pulled from database
 
 let questionDataObject; // Questionnaire Data Object pulled from database
 let uid; // Quiz ID
 
-
-// Sort these
-let startTime;
 
 // #endregion Variables
 // ////////////////////////////////////////////////////////////// GENERATE PAGE
@@ -59,65 +55,94 @@ export function generateQuiz(param) {
 // ////////////////////////////////////////////////////////////// GENERATE CARDS AND INPUTS
 // #region Generate Cards and Inputs
 
-/****************************************************************
- *
- *  This function will start the process of pulling the data
- *  from the database, dragging out quiz data (settings)
- *
- ***************************************************************/
+/****************************************************************************************
+*
+*  This function will start the process of pulling the data
+*  from the database, dragging out quiz data (settings)
+*  If the data fetch is succesful, it will begin to load some
+*  elements onto the screen
+*
+*  1) Run the fetch request to retrieve the questionnaire data
+*  2) Store this data in the questionnaireDataObject variable
+*  3) Perform a check to ensure the data being pulled is correctly formatted
+*  4) Perform a check to ensure the questionnaire is enabled (via the editor)
+*  5) Check if the questionnaire has restricted the submission attempts
+*     - Perform a check to ensure the user isn't attempting to return for a second submission
+*     - IF the user has already submitted once, end the loading process and do NOT proceed.
+*  6) Generate the Footer
+*  7) Generate the Next Button, append it to Footer and attach the increase(); action
+*  8) Perform a check to see if the questionnaire allows for use of the back button
+*     - IF yes, generate the Previous button
+*     - IF no, do not generate a button
+*  9) run the generateQuestions() function, pass through the UID (quizID)
+*
+****************************************************************************************/
 
 export async function generateQuestionnaire(uid) {
   const questionnaire = await fetch('/api/quizzes/' + uid.id);
   if (questionnaire.ok) {
     questionDataObject = await questionnaire.json();
   } else {
-    questionDataObject = [{ msg: 'Failed to load cards' }];
+    createToast('Failed To Load The Quiz', true);
     return;
   }
 
   if (questionDataObject[0] !== undefined) {
+    // Prevent loading if the questionnaire has been disabled
+    if (questionDataObject[0].enabled === false) {
+      createToast('This Questionnaire Has Been Disabled', true);
+      return;
+    }
+
+
     // Prevent multiple submissions if the questionnaire has the submission restrictions enabled
     if (questionDataObject[0].restrict === true && window.localStorage.getItem(uid.id) === 'true') {
       createToast('You Are Only Allowed One Attempt', true);
       return;
     }
-    // Build the footer
+
+    // Generate the footer
     const footer = new Footer();
-    // Build the Next Button
+
+    // Generate the Next Button
     const button = new Button({
       id: 'nextbtn',
       text: 'Next',
       action: function () { increase(); },
       render: 'Footer',
-      type: 'next',
+      class: 'right',
     });
 
-    // We will perform the questionnaire restriction checks here
-    // If the questionnaire does not allow the back button, disable it and enlarge the next button
+    // Generate the Back Button (IF allowback is enabled)
     if (questionDataObject[0].allowback !== false) {
       const button = new Button({
         id: 'prevbtn',
         text: 'Previous',
         action: function () { decrease(); },
         render: 'Footer',
-        type: 'previous',
+        class: 'left',
       });
       $('nextbtn').style.width = '8rem';
     }
-    
+
+    // Run the generateQuestions function, pass through the UID (quiz ID)
     generateQuestions(uid);
   } else {
-    console.error('This questionnaire does not exist');
+    createToast('This Quiz Does Not Exist', true);
   }
 }
 
 
 /****************************************************************
  *
- *  This function will start the process of pulling data from
- *  the database in order for the questionnaire to display.
- *  It also handles the generation of input, card and text
- *  components
+ *  This function will pull that questions from the database,
+ *  based off the ID (uid.id) pulled from the URL above.
+ *
+ *  If the fetch is succeful, it will start the generateCards
+ *  function and create an object variable named questions.
+ *
+ *  Generate the Navbar, the details on the nav are dependant on
+ *  whether the fetch requests were succesful
  *
  ***************************************************************/
 
@@ -129,15 +154,46 @@ async function generateQuestions(uid) {
   } else {
     createToast('Failed to Load Questions', true);
   }
+  const nav = new Nav({
+    id: 'nav',
+    title: questionDataObject[0].title,
+    icons: [(questionDataObject[0].allowback !== false) ? 'clear' : null],
+    actions: [function () { if (questionDataObject[0].allowback !== false) { location.reload(); } }],
+  });
 }
 
 
-/****************************************************************
- *
- *  This function does the heavy lifting of generating each
- *  card, giving the cards the appropriate data and such
- *
- ***************************************************************/
+/****************************************************************************************
+*
+*  function generateCards(questions)
+*
+*  @property {Object} questions - The array of all questions retrieved for the questionnaire
+*
+*  This function will setup the Progress Bar, Cards and Inputs
+*  for the page.
+*
+*  1) Load the progress bar, we will use the questions.length
+*     to measure the progress of the questionnaire
+*  2) Define the qNum, this is to keep track of the question
+*     number as it is created.
+*  3) Load up a forEach loop on the questions object array:
+*     - Create a new card object, ID as card-qNum.
+*     - Create the text of the question using question.question.
+*     - Set the text to For the input (to allow better accessibility).
+*     - Create the question containers, the container is of a fixed
+*       size to ensure scrolling is forced if overflowing.
+*     - Iterate over the questions that have multiple options.
+*        - Create a new input, give it the appropriate type, name, ID and options
+*          And set its renderPoint to the container created above.
+*        - Ensure the input creation contains any and all restrictions required.
+*     - Iterate over the questions that are not multiple input.
+*        - Create a new input, give it the appropriate type, name, ID and set its
+*          renderPoint to the container created above.
+*        - Ensure the input creation contains any and all restrictions required.
+*  4) Push the newly created card (with all attached components) to the array arrOfCards
+*  5) Once complete, run the shuffle function (located in the stackManagement.js)
+*
+***************************************************************************************/
 
 function generateCards(questions) {
   // Generate the progress bar
@@ -146,45 +202,27 @@ function generateCards(questions) {
     qnum: '1 of ' + questions.length,
   });
 
-  // Generate the NavBar
-  const nav = new Nav({
-    id: 'nav',
-    title: questionDataObject[0].title,
-    icons: [(questionDataObject[0].allowback !== false) ? 'clear' : null],
-    actions: [function () { if (questionDataObject[0].allowback !== false) { location.reload(); } }],
-  });
-
-  // Define the question number (Primarily used for IDs)
+  // Define the question number (Used for IDs)
   let qNum = 1;
 
   // Begin looping through the returned questions array
   questions.forEach(question => {
-    const card = new Card({ id: 'card-' + qNum++, required: true });
+    // Generate A Card
+    const card = new Card({ id: 'card-' + qNum });
 
-    // Create the option type text to appear above the question
-    let info;
-    switch (question.input) {
-      case 'number':
-      case 'text':
-        info = 'Enter your response';
-        break;
-      case 'single-select':
-        info = 'Select one';
-        break;
-      case 'multi-select':
-        info = 'Select one or more';
-        break;
-    }
-    const typeinfo = renderText(card, info, 'p', 'type-info', 'subtext');
+    // Generate the Response Type Hint
+    responseType(card, question);
 
+    // Generate the Restrictions Hint
 
-    // We will now display the question text
+    // Generate The Question Text
     const text = renderText(card, question.question, 'label', '', 'label');
-
     text.setAttribute('for', 'input-question-' + qNum);
 
-    // Finally, we will setup the inputs (Multiple Choice)
-    const quesContainer = html('div', '', card, 'scroll-container');
+    // Generate A Container For Inputs
+    const questionContainer = html('div', '', card, 'scroll-container');
+
+    // Generate the Multiple Choice Question Variants
     if (question.options !== null && question.options.length > 0) {
       for (let x = 0; x < question.options.length; x++) {
         const input = new Input({
@@ -193,24 +231,28 @@ function generateCards(questions) {
           options: question.options[x],
           name: qNum,
           linkedQ: 3,
-          renderPoint: quesContainer,
+          renderPoint: questionContainer,
         });
       }
     } else {
-      // If not multiple options, display usual text input field
+      console.log(question.min, question.max);
+      // Generate the Other Question Variants
       const input = new Input({
         id: 'input-question-' + qNum,
         type: question.input,
         title: question.question,
-        renderPoint: quesContainer,
+        renderPoint: questionContainer,
         min: question.min,
         max: question.max,
       });
-      console.log(question.min, question.max);
     }
-    // Push newly generated card to the ArrayOfCards
+
+
+    // Push Card Into Array
     arrOfCards.push(card);
+    qNum++;
   });
+  // Run the Shuffle Function (stackManagement JS)
   shuffle();
 }
 
@@ -230,7 +272,7 @@ export function handleAnswers() {
   // Answer object to be created to store user data
   const response = {
     qid: flowCount + 1,
-    choices: (options.choices.length === 0) ? ['No Answer'] : [options.choices],
+    choices: (options.choices.length === 0) ? [''] : [options.choices],
     title: questions[flowCount].question,
     type: options.type,
   };
@@ -273,6 +315,7 @@ export function increase() {
     if (flowCount < arrOfCards.length) {
       flowCount++;
       $('card-' + flowCount).classList.add('card-remove');
+
       shuffle('shuffle');
       FX.progressCheck(flowCount, arrOfCards.length + 1);
     }
@@ -318,15 +361,9 @@ export async function submitQuiz() {
   } else {
     createToast('Submission Failed', true);
   }
-
-  // CHANGE THIS TO RENDERTEXT, USE EVENTHANDLER JS
-  const link = document.createElement('p');
-  link.addEventListener('click', function () {
-    downloadCSV({ filename: questionDataObject[0].title + '.csv' });
-  });
-  link.classList.add('result-message-sent');
-  link.textContent = 'Tap here to download your answers';
-  $('root').appendChild(link);
+  console.log(answersObject);
+  const link = renderText($('root'), pointer + ' here to download your answers as a CSV', 'p', '', 'result-message-sent');
+  eventHandler(link, '', function () { downloadCSV({ filename: questionDataObject[0].title + '.csv' }, answersObject.responses); });
 }
 
 
@@ -336,55 +373,29 @@ export async function submitQuiz() {
  *
  ********************************************************/
 
-function downloadCSV(args) {
-  let csv = convertArrayOfObjectsToCSV({
-    data: answersObject.responses,
-  });
-  if (csv == null) return;
 
-  const filename = args.filename || 'export.csv';
-
-  if (!csv.match(/^data:text\/csv/i)) {
-    csv = 'data:text/csv;charset=utf-8,' + csv;
-  }
+function downloadFile(fileName, urlData) {
+  const aLink = document.createElement('a');
+  const csv = 'data:text/csv;charset=utf-8,';
   const data = encodeURI(csv);
+  const link = document.createElement('a');
+  link.setAttribute('href', data);
+  link.setAttribute('download', 'test.csv');
+  link.click();
+}
 
+
+export function downloadCSV(args, file) {
+  const filename = 'export.csv';
+
+  const csv = 'data:text/csv;charset=utf-8,' + csv;
+
+  const data = encodeURI(csv);
   const link = document.createElement('a');
   link.setAttribute('href', data);
   link.setAttribute('download', filename);
   link.click();
 }
-
-function convertArrayOfObjectsToCSV(args) {
-  let result, ctr, keys, columnDelimiter, lineDelimiter, data;
-
-  data = args.data || null;
-  if (data == null || !data.length) {
-    return null;
-  }
-
-  columnDelimiter = args.columnDelimiter || ',';
-  lineDelimiter = args.lineDelimiter || '\n';
-
-  keys = Object.keys(data[0]);
-
-  result = '';
-  result += keys.join(columnDelimiter);
-  result += lineDelimiter;
-
-  data.forEach(function (item) {
-    ctr = 0;
-    keys.forEach(function (key) {
-      if (ctr > 0) result += columnDelimiter;
-
-      result += item[key];
-      ctr++;
-    });
-    result += lineDelimiter;
-  });
-  return result;
-}
-
 
 /**
  * Take an array of objects of similar structure and convert it to a CSV.
@@ -423,3 +434,32 @@ export default ({ data = null, columnDelimiter = ',', lineDelimiter = '\n' }) =>
 
   return result;
 };
+
+function convertArrayOfObjectsToCSV(args) {
+  let result, ctr, keys, columnDelimiter, lineDelimiter, data;
+
+  data = args.data || null;
+  if (data == null || !data.length) {
+    return null;
+  }
+
+  columnDelimiter = args.columnDelimiter || ',';
+  lineDelimiter = args.lineDelimiter || '\n';
+
+  keys = Object.keys(data[0]);
+
+  result = '';
+  result += keys.join(columnDelimiter);
+  result += lineDelimiter;
+
+  data.forEach(function (item) {
+    ctr = 0;
+    keys.forEach(function (key) {
+      if (ctr > 0) result += columnDelimiter;
+      result += item[key];
+      ctr++;
+    });
+    result += lineDelimiter;
+  });
+  return result;
+}

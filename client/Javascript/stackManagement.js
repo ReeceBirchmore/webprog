@@ -39,7 +39,7 @@ export function shuffle(val) {
       const button = new Button({
         id: 'submitbtn',
         text: 'Submit',
-        type: 'submit',
+        class: 'submit',
         action: function () { submitQuiz(); },
       });
       $('nextbtn').style.display = 'none';

@@ -1,3 +1,4 @@
+/* eslint-disable no-new-object */
 'use strict';
 
 
@@ -7,6 +8,7 @@
 
 const Postgres = require('pg').Client;
 const config = require('./config.json');
+
 
 // // //#endregion
 // // ////////////////////////////////////////////////////////////// Connect to the Database
@@ -30,6 +32,17 @@ function makeid(length) {
   return result;
 }
 
+
+// CSV
+async function getCSVData(quizid) {
+  const q = 'SELECT * FROM Answers WHERE quizid =  $1;';
+  const result = await sql.query(q, [quizid]);
+  const responses = [];
+  result.rows.forEach(question => {
+    responses.push(JSON.parse(question.answers));
+  });
+  return responses;
+}
 
 // // #endregion
 // // ////////////////////////////////////////////////////////////// LIST QUESTIONNAIRES
@@ -91,13 +104,11 @@ async function deleteAQuiz(uid) {
 
 async function quizUpload(data) {
   // Step 1, run the ID Generator
-  const uid = makeid(5);
+  const uid = makeid(10);
   // Step 2, create the quiz entry in the quizzes table
-  console.log(data);
-  const allowBack = !!((data.allowBack === undefined || data.allowBack === true));
-  const restrict = !!((data.restrict === undefined || data.restrict === true));
-  const enabled = !!((data.enabled === undefined || data.enabled === true));
-
+  const allowBack = (!!((data.allowBack === undefined || data.allowBack === true)));
+  const restrict = ((data.restrict === true));
+  const enabled = (!!((data.enabled === undefined || data.enabled === true)));
   const quizq = 'INSERT INTO Quizzes (title, quizid, allowback, restrict, enabled) VALUES ($1, $2, $3, $4, $5)';
   await sql.query(quizq, [data.name, uid, allowBack, restrict, enabled]);
   // Step 3, insert the questions into the database
@@ -123,52 +134,41 @@ async function generateNewQuiz(data) {
 // // #region Edit Questionnaire
 
 async function addAQuestion(quizid) {
-  const uid = JSON.parse(quizid).id;
-  const q = 'INSERT INTO Questions (quizid) VALUES($1) ';
+  const uid = quizid;
+  const q = 'INSERT INTO Questions (quizid) VALUES($1) RETURNING id';
   const result = await sql.query(q, [uid]);
-  console.log(result.rows);
   return result.rows;
 }
 
 
-async function addAOption(optiondata) {
+async function saveQuestionnaire(optiondata) {
+  // Declare all the variables for simplification
+  console.log('bigman');
   const data = JSON.parse(optiondata).arr;
-
   const quizid = data[0].id;
   const title = data[0].quiztitle;
-  const enabled = data[0].enabled;
-  const restricted = data[0].restricted;
-  const allowBack = data[0].allowback;
-
-
-  const questionnaireq = 'UPDATE Quizzes SET title = $1, enabled = $2, restrict = $3, allowback = $4 WHERE quizid = $5';
+  const enabled = Boolean(data[0].enabled);
+  const restricted = Boolean(data[0].restricted);
+  const allowBack = Boolean(data[0].allowback);
+  const questionnaireq = 'UPDATE Quizzes SET title = $1, enabled = $2, restrict = $3, allowback = $4 WHERE quizid = $5::text';
   await sql.query(questionnaireq, [title, enabled, restricted, allowBack, quizid]);
-
   data.forEach(async question => {
-    const option = question.options;
-    const id = question.id;
-    const type = question.type;
-    const title = question.title;
-    const required = question.required;
-    const min = question.min;
-    const max = question.max;
-    // Step 1. Update the questions type
-    const typeq = 'UPDATE Questions SET input = $1 WHERE id = $2';
-    await sql.query(typeq, [type, id]);
-    // Step 2. Update the Array of options
-    const optionq = 'UPDATE Questions SET options = $1 WHERE id = $2';
-    await sql.query(optionq, [option, id]);
-    // Step 3. Update the question title
-    const titleq = 'UPDATE Questions SET question = $1 WHERE id = $2';
-    await sql.query(titleq, [title, id]);
-    // Step 4. Update required status
-    const requiredq = 'UPDATE Questions SET required = $1 WHERE id = $2';
-    await sql.query(requiredq, [required, id]);
-    // Step 5. Update MinMax values
-    const minq = 'UPDATE Questions SET min = $1 WHERE id = $2';
-    await sql.query(minq, [min, id]);
-    const maxq = 'UPDATE Questions SET max = $1 WHERE id = $2';
-    await sql.query(maxq, [max, id]);
+    console.log(question)
+    if (question.deleted === true) {
+      const id = parseInt(question.id);
+      const remove = 'DELETE FROM Questions WHERE id = $1';
+      await sql.query(remove, [id]);
+    } else {
+      const id = parseInt(question.id);
+      const option = question.options;
+      const type = question.type;
+      const title = question.title;
+      const required = Boolean(question.required);
+      const min = question.min;
+      const max = question.max;
+      const updateq = 'UPDATE Questions SET input = $1, options = $2, question = $3, required = $4, min = $5, max = $6 WHERE id = $7';
+      await sql.query(updateq, [type, option, title, required, min, max, id]);
+    }
   });
   return true;
 }
@@ -191,7 +191,6 @@ async function getAnswerData(quizid) {
   result.rows.forEach(question => {
     responses.push(JSON.parse(question.answers));
   });
-  console.log(responses);
   return responses;
 }
 
@@ -210,5 +209,6 @@ module.exports = {
   generateNewQuiz,
   deleteAQuestion,
   addAQuestion,
-  addAOption,
+  saveQuestionnaire,
+  getCSVData,
 };

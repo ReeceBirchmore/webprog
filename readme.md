@@ -390,21 +390,25 @@ The function simplifies the deployment of the snackbar, it takes 2 inputs (with 
 
 - Quiz Features:
     - Review Answers before submitting
+    - Card Stacked Design
+    - Built In Error Validation
     - Download CSV Format answers
 
 - Edit Quiz Page:
     - Restrict inputs (Min/Max amount for Number)
     - Allow Hiding the previous/restart button
-    - Timed Quizzes
     - Force Required Questions
     - Add new questions
+    - Delete Questions
     - Change question input types
     - Add and remove options (for multiple option types)
-    - Restrict to one questionnaire response per device
+    - Restrict to one questionnaire response
+    - Error Validation
 
 - Response Page Features:
     - Number of responses
     - Bar charts to show % of checkbox/radio responses
+    - Range Slider Average and Responses
     - Download CSV formatted responses
     
 - Admin Panel Features:
@@ -417,6 +421,9 @@ The function simplifies the deployment of the snackbar, it takes 2 inputs (with 
 
 The application currently supports:
 - Reduced Motion (System Setting) - Disables any and all animations
+
+It currently partially supports:
+- Dark Mode - Flips colours to dark
 
 
 <br/>

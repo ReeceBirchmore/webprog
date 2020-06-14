@@ -3,8 +3,8 @@
 
 CREATE TABLE quizzes (
     id SERIAL PRIMARY KEY,
-    title  text,
-    quizid text,
+    title  TEXT,
+    quizid TEXT,
     allowback BOOLEAN,
     restrict BOOLEAN,
     enabled BOOLEAN
@@ -16,8 +16,8 @@ CREATE TABLE questions (
     quizid TEXT,
     input TEXT,
     options TEXT [],
-    min TEXT,
-    max TEXT,
+    min INT,
+    max INT,
     required BOOLEAN
 );
 
