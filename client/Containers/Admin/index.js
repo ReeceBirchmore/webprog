@@ -65,6 +65,7 @@ export function generatePage() {
 *******************************************************************************/
 
 async function createNewQuiz() {
+  console.log('TEST')
   const questionnaire = await fetch('/api/create/quiz/', {
     method: 'POST',
     headers: {
@@ -72,8 +73,11 @@ async function createNewQuiz() {
     },
   });
   if (questionnaire.ok) {
+    console.log('passed')
     const quizid = await questionnaire.json();
     window.location = './#/admin/edit/' + quizid;
+  } else {
+    console.log('error')
   }
 }
 
