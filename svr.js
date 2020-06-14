@@ -14,10 +14,10 @@ const q = require('./questionnaire');
 
 const app = express();
 const router = express.Router();
-const dev = express.Router();
 const port = 8080;
 
 app.use('/api', router);
+
 app.use(express.static(__dirname + '/client'));
 
 app.get('*', (req, res) => {

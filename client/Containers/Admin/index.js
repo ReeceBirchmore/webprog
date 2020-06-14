@@ -23,11 +23,10 @@ export function generatePage() {
     id: 'admin-console',
     class: 'adminScreen',
   });
-  if (!$('Footer')) {
-    const footer = new Footer({
-      id: 'Footer',
-    });
-  }
+  if ($('Footer')) $('Footer').remove();
+  const footer = new Footer({
+    id: 'Footer',
+  });
 
   const nav = new Nav({
     id: 'nav',
