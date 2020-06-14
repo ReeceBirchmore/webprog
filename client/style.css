@@ -296,10 +296,6 @@ h2 {
   padding: 1rem;
 }
 
-.card-quiz-list:nth-child(2) {
-  margin-top: 30px;
-}
-
 .card-title-container {
   display: flex;
   position: relative;
