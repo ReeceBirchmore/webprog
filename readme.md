@@ -21,7 +21,7 @@ This application was designed with mobile first in mind, but the layout is remin
 
 I have not had the chance to test on a higher res display than a typical 1080p monitor, so a macbook may scale the website in an odd manner, preferably testing would be done in Chrome (Or FireFox) device emulator mode for the best result (Phones such as the iPhone 5 and Nexus 5 are too small, so a larger displayed phone is preferable)
 
-THIS APPLICATION DOES NOT WORK ON SAFARI OR ANY SAFARI WRAPPED BROWSER
+THIS APPLICATION DOES NOT WORK ON SAFARI OR ANY SAFARI WRAPPED BROWSER (Chrome and FireFox are okay, refer to Known Issues for more)
 
 
 ## Stage 1
