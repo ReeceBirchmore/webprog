@@ -137,8 +137,9 @@ function deployCards() {
     modifiedQuestionObject.type = question.input; // Input type of the question
     modifiedQuestionObject.id = parseInt(question.id); // ID of the question
     modifiedQuestionObject.options = (question.options === null) ? null : question.options; // Options for the question
-    modifiedQuestionObject.min = (question.min === null) ? parseInt(0) : parseInt(question.min);
-    modifiedQuestionObject.max = (question.max === null) ? parseInt(0) : parseInt(question.max);
+    console.log(question.options)
+    modifiedQuestionObject.min = (question.min === null) ? 0 : parseInt(question.min);
+    modifiedQuestionObject.max = (question.max === null) ? 0 : parseInt(question.max);
     modifiedQuestionObject.required = question.required;
     modifiedQuestionObject.deleted = false;
     modifiedQuestionsArr.arr.push(modifiedQuestionObject);
