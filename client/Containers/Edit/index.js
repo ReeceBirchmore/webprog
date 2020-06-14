@@ -140,10 +140,6 @@ function deployCards() {
     
     modifiedQuestionObject.min = (question.min === null) ? 0 : parseInt(question.min);
     modifiedQuestionObject.max = (question.max === null) ? 0 : parseInt(question.max);
-    console.log(question.min)
-    console.log(question.max)
-    console.log(modifiedQuestionObject.min)
-    console.log(modifiedQuestionObject.max)
     modifiedQuestionObject.required = question.required;
     modifiedQuestionObject.deleted = false;
     modifiedQuestionsArr.arr.push(modifiedQuestionObject);
