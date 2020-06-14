@@ -31,7 +31,7 @@ function makeid(length) {
 // // #region Fetch Quiz Details
 
 async function listAllQuizzes() {
-  const q = 'SELECT * FROM quizzes;';
+  const q = 'SELECT * FROM quizzes ORDER BY id;';
   const result = await sql.query(q);
   return result.rows;
 }

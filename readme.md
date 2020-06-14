@@ -23,7 +23,6 @@ I have not had the chance to test on a higher res display than a typical 1080p m
 
 THIS APPLICATION DOES NOT WORK ON SAFARI OR ANY SAFARI WRAPPED BROWSER
 
-// NOTE: For some reason, when saving the questionnaire from the editor you may have an error within node relating to "NaN" not being of type INT, it is to do with the values being passed through, which I have parseInt() for every INT value. The questionnaire still saves (at least it does on my VM and machine) but the error still occurs, not entirely sure why, if it doesn't work for you, check out the questionnaire.js 'saveQuestionnaire()' function. The values required as INT are parsed before and after being sent.
 
 ## Stage 1
 
