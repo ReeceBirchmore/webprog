@@ -146,12 +146,9 @@ function checkboxEventListener(el) {
       }
     } else {
       if (answersObject.responses[inputIndex]) {
-        console.log(answersObject.responses[inputIndex])
         const valueToDelete = answersObject.responses[inputIndex].choices[0].findIndex(choice => choice === e.target.value);
         if (valueToDelete !== -1) {
           answersObject.responses[inputIndex].choices[0].splice(valueToDelete, 1);
-          console.log('splice out')
-          console.log(answersObject.responses[inputIndex])
         }
       } else {
         const valueToDelete = options.choices.findIndex(choice => choice === e.target.value);
@@ -168,15 +165,10 @@ function keyUpEventListener(el) {
     if (parseInt(el.value) > parseInt(el.max)) {
       el.value = el.max;
       e.preventDefault();
-      createToast('Entry Must Be Below ' + el.max, true);
+      createToast('Entry Must Be Between ' + el.max + ' and ' + el.min, true);
       return;
     }
-    if (parseInt(el.value) < parseInt(el.min)) {
-      el.value = el.min;
-      e.preventDefault();
-      createToast('Entry Must Be Above ' + el.min, true);
-      return;
-    }
+   
     options.qNumber = cardCounter + 1;
     options.choices[0] = el.value;
     options.type = el.type;

@@ -4,24 +4,30 @@ WebProg - UP850149
 
 Contents:
 
-1. Commonly used shorthand functions explained
-1. Components explained
-2. Containers explained
-3. Features
-4. Accessibility Considerations
+1. How To Use
+2. Known Issues
+3. Shorthand Functions
+4. Features
+5. Accessibility Considerations
 6. Design Choices and Data Handling Decisions
 7. API Lanes
-
+8. JSON Example
 
 
 
 # How to use
 
+This application was designed with mobile first in mind, but the layout is reminiscent of a scaled up mobile layout. 
+
+I have not had the chance to test on a higher res display than a typical 1080p monitor, so a macbook may scale the website in an odd manner, preferably testing would be done in Chrome (Or FireFox) device emulator mode for the best result (Phones such as the iPhone 5 and Nexus 5 are too small, so a larger displayed phone is preferable)
+
+THIS APPLICATION DOES NOT WORK ON SAFARI OR ANY SAFARI WRAPPED BROWSER
+
+
 
 ## Stage 1
 
 Run "npm i" in the directory to install and update any packages included within the package.json file
-
 
 ## Stage 2
 
@@ -59,7 +65,7 @@ Sometimes when first loading a quiz the buttons can lock up and be a bit unrespo
 
 Sometimes when loading a page by changing the URL hash, buttons may not appear at all - this is to do with the method of my router and a disagreement between my routers desires and the powers that be in the Chromium Dev Team, if the buttons do not appear, refresh the page.
 
-When uploading a quiz, unless you follow a JSON that has the same structure as the example one, it will throw an error at you. I'm calling this a design choice.
+When uploading a quiz, unless you follow a JSON that has the same structure as the one specified at the end of this README, it will throw an error at you. I'm calling this a design choice.
 
 
 # Shorthand Functions
@@ -89,7 +95,6 @@ console.log($('card'))
 In the above demo, the first element with the ID of card will be returned and displayed within the console.
 
 <br/>
-<br/>
 
 ## html('tag', 'id', 'renderElement', 'class');
 
@@ -102,7 +107,7 @@ function html(tag, id, renderPoint, css) {
   const el = document.createElement(tag);
   if (id !== '') el.id = id;
   if (css !== '') el.classList.add(css);
-  if (renderPoint !== '') renderPoint.append(el);
+  if (renderPoint !== '' && renderPoint !== undefined) renderPoint.appendChild(el);
   return el;
 }
 ```
@@ -116,9 +121,8 @@ In the above demo, we created a div element, gave it an ID, gave it no render po
 The returned element will not be rendered directly onto the page or any other element, as such we can choose to render it at any point later on by calling the id with $('id') or with the variable name card (provided it is in the same scope).
 
 
+<br/>
 
-<br/>
-<br/>
 
 ## renderText('element', 'text', 'tag');
 
@@ -127,7 +131,6 @@ This is a shorthand method of creating a text node to apply to an element. It wi
 The full function:
 
 ```
-
 function renderText(el, propText, tag, id, css) {
   const textTag = tag || 'p';
   const text = document.createElement(textTag);
@@ -151,9 +154,6 @@ renderText($('card-id'), "This is a demo", "h2", 'demo-id', 'small-text-css');
 In the demo above, $('card-id') is used to located the card, however, as the components are generated within the same scope, 'card' can be used to refer to the card HTML element.
 
 <br/>
-<br/>
-<br/>
-
 
 
 ## render('element', 'renderPoint');
@@ -164,215 +164,21 @@ The full function:
 
 ```
 function render(el, domNode) {
-    domNode.appendChild(el);
-    return;
+  ((domNode === undefined) ? $('root') : domNode).appendChild(el);
 }
 ```
-
->This function must be passed an element to attach itself to else it will not attach on the page. Page generation will not suffer from this, however the component will not appear if a valid, rendered component is not used.
 
 Example of use:
 
 ```
-render(input, card)
+render(card)
 ```
-In the demo above, the input will be rendered onto the card element.
+In the demo above, the input will be rendered onto the root.
 
 
 <br/>
 <br/>
 <br/>
-
-# Components
-
-All components are generated with the idea of flexibility, longevity and maintainability.
-Each element will take a predefined prop set, which will be explained under each component. When the main JS files call upon these new objects, it can choose to either send across specific requests to have the component generate differently, possess different types, methods or content.
-
-Any new features that the future developers would wish to add on can be done via these prop sets, including any extra information to pass through and generate on the component file.
-
-## Button
-
-<br/>
-<br/>
-
-## Card  
-The card is a generic component used throughout the site, with special options to determine the type, structure and styling of the card.
-By default, the card will have the 'card' and 'elevated' css styles applied when generated.
-
-The card is called upon by writing:
-```
-new Card();
-```
-And can be modified further by including the following:
-- <b>id: 'id'</b> -  this will attach an ID to the card
-- <b>required </b> - Boolean value to specify whether the question requires an answer before moving on.
-- <b> attachElement: 'element' </b> - by default, the card renders to the root of the page. Specifiyng a a position to render to here will override that.
-- <b> class: 'className' </b> - by default, the class of the card will be 'card', if the app needs to display a modified card it can pass through a new css class to override the card style.
-
-
-<br/>
-<br/>
-
-## Divider
-
-The divider is the element that allows for division of content on an element. 
-
-It is called upon by writing:
-```
-new Divider('renderElement, 'text');
-```
-The renderElement is the point in which the element will attach itself, the text element is the text you wish to have displayed in the middle. 
-
->This element must have an element to attach itself to else it will not attach on the page. Page generation will not suffer from this, however the component will not appear if a valid, rendered component is not used.
-
-
-<br/>
-<br/>
-
-
-## Input
-
-The inputs are all contained within one file, each input manages its own state through the use of event listeners and exports. 
-
-It is called upon by writing:
-
-```
-new Input();
-```
-
-The default creation for the above line would be a simple text box with no extra functions, ID, stylings or attachment points. In order to build up , we would add the following prop tags:
-
-```
-        const input = new Input({
-          id: 'input-' + x + '-question-' + qNum,
-          type: question.input,
-          options: question.options[x],
-          name: qNum,
-          renderPoint: HTMLElement,
-        });
-```
-
-<b>ID</b> The ID is the ID of the input, ti is not required but it is heavily required using it for future referencing
-
-<b>Type</b> The type of input to use (number, text, multi, single)
-
-<b>Options</b> If the question has multiple options, this will be an array of those options
-
-<b> Name </b> For multiple choice questions we require a group in order to collectively group radios and checkboxes. This can be left blank unless the type is of multiple selections.
-
-<b> renderPoint </b> The attachment point of which the input will stick to. Must be a valid HTMLElement currently appended to the webpage.
-
->This element must have an element to attach itself to else it will not attach on the page. Page generation will not suffer from this, however the component will not appear if a valid, rendered component is not used.
-
-<br/>
-<br/>
-
-
-## Nav
-
-The navigation bar is a component that builds itself onto the screen with each page generation. This is to keep the content on the nav updated and dynamic, I would have preffered keeping the nav as its own container to handle such big changes, but a lack of time has prevented this.
-
-It is called upon by writing:
-
-```
-new Nav({id, title, icons, actions});
-```
-
-The navigation bar will by default render to $('root'), this cannot be changed as the navbar is a fixed point that must not move in order to keep consistency.
-The ID and Title are two optional tags, but recomended for manipulation. Title will take a string and display it on the navbar. This can be used to display the question number, page title, quiz title etc.
-
-The nav also offers an optional tag to display icons. These icons are predetermined by the Icon generation component:
-```
-  const nav = new Nav({
-    id: 'nav',
-    title: questionDataObject[0].title,
-    icons: [(questionDataObject[0].allowback !== false) ? 'clear' : null],
-    actions: [function () { if (questionDataObject[0].allowback !== false) { location.reload(); } }],
-  });
-```
-The nav bar calls upon the Icon component as well as the eventHandler function, therefore when generating the nav it is important to use the following tags:
-
-icons: ['clear', 'return'] - The icons tag will tell the Icon component which icons to render in to view. The icon MUST exist in the Assets folder (and a class must exist to further position the icon within the CSS) in order for it to be visible, else it will not render onto the page.
-
-event: ['click', 'scroll'] - The event is, by default, click. If the buttons are only going to be click interactive, this tag is entirely optional and can be excluded from the code.
-
-action: [functionName(), functionName()] - This is a requirement in order for the icons to properly function, the function names can be placed here (They may need to be imported within the eventhandlers.js file in order to correctly fire.)
-<br/>
-<br/>
-
-## Progress
-
-Similar to the graph component, the progress component is used only once on the quiz view page. 
-
-It is called upon by writing:
-
-```
-new Progress({id});    
-```
-
-The element itself requires no work beyond including an ID, due to changing data being required the management of the width is handled by an external function, for example:
-
-```
-function progress(val) {
-    if ($('qnumber')) {
-    if (val < quizLength - 1) { $('qnumber').textContent = val + 1 + ' of ' + (quizLength - 1); }
-    if (val === quizLength - 1) { $('qnumber').textContent = 'Finished'; }
-  }
-  const prog = $('progressSpan');
-  prog.style.width = (val / (quizLength - 1)) * 100 + '%';
-}
-```
-
-Where *val* is the number being passed through (such as the current question number the user is on) and where quizLength - 1 would be the length of the quiz.
-
-
-
-<br/>
-<br/>
-
-## Screen
-
-Each screen is generated for each container. The screen is simple and does not have any required building tags
-
-It is called upon by writing:
-
-```
-new Screen({id, class});
-```
-
-Both tags on the screen are optional, yet recommended. The screen will render to the root of the document.
-
-
-
-<br/>
-<br/>
-
-## Snackbar
-
-The snackbar is a handy, small and informative message popup that display information relevant to the user at any given prompt. (For example - uploading a quiz, saving a quiz, error response from database)
-
-It is called upon by writing:
-
-```
-createToast('Text for the popup', ErrorBoolean);
-```
-
-The function simplifies the deployment of the snackbar, it takes 2 inputs (with the text being the only required value for any real world usage)
-
-<b> Text for the popup </b> - The body of the snackbar.
-
-<b> ErrorBoolean </b> - Whether or not the snackbar should display as an error or not (For errors, this value should be true) by default it is false, so if no boolean is given, it will not generate as an error.
-
-
-<br/>
-<br/>
-
-## Toggle
-
-<br/>
-<br/>
-
-
 
 # Containers
 
@@ -399,7 +205,7 @@ The function simplifies the deployment of the snackbar, it takes 2 inputs (with 
     - Allow Hiding the previous/restart button
     - Force Required Questions
     - Add new questions
-    - Delete Questions
+    - Delete Questions (Questions will not delete until saved, to prevent accidental deletions)
     - Change question input types
     - Add and remove options (for multiple option types)
     - Restrict to one questionnaire response
@@ -412,6 +218,7 @@ The function simplifies the deployment of the snackbar, it takes 2 inputs (with 
     - Download CSV formatted responses
     
 - Admin Panel Features:
+    - View all quizzes in a list
     - Quiz quick link generation
     - Upload a quiz JSON (Following the provided structure)
     - Generate a quiz from scratch
@@ -443,7 +250,13 @@ This will generate an input, we have not specified any extra tags for the input 
 In order to create an advanced Input, we can add tags to the object to pass into the class.
 
 ```
-new Input({id: 'input-1', type: 'multi-select', options: 'option 1', name: 'input-1', renderPoint: $('card')});
+new Input({
+  id: 'input-1', 
+  type: 'multi-select', 
+  options: ['option 1', 'option 2', 'option 2'], 
+  name: 'input-1', 
+  renderPoint: $('card')
+  });
 ```
 
 This is a very long statement, but it breaks down quite nicely and shows the strengths of this application. It will create an input type of multiple choice, give it an option (text tag) to display the questions text, a name for the text tag to refer to, and finally, display the created input on the renderPoint, in our case, the card.
@@ -458,48 +271,178 @@ By seperating the components up from the main JS we are able to introduce granul
 
 The list of available APIS is as such:
 
-### /question/:id - Gets the questions (requires a quizID)
 
-Example of use:
+## /questions/:id 
+
+Gets the questions with a specified quizID
+
+
+## /quizzes/:id
+
+Gets a specific questionnaire with a specified quizID
+
+
+## /quizzes
+
+Gets a list of all the quizzes
+
+## /answers/:id
+
+Gets all answers with a specified quizID
+
+## /create/question/:id
+
+Gets a new question ID to generate and add a question in the editor
+
+
+
+## /delete/quiz/:id
+
+Deletes a quiz with a specified quizID
+
+## /delete/questions/:id
+
+Deletes a question with a specified questionID
+
+
+
+## /quizzes/update/:id
+
+Updates the questionnaire once saved with a specified quizID
+
+
+
+## /create/quiz/
+
+Creates a new quiz and returns the ID
+
+## /submit/:id
+
+Creates a new entry to the answers database with the specified quizID
+
+## /upload
+
+Creates a new entry to the questions/quizzes tables with a file upload
+
+
+
+
+# JSON Example
+
+In order to upload content, you have two choices:
+ - Generate a questionnaire from scratch with the 'Generate' Button
+ - Upload your own JSON file with the 'Upload' button
+Both of these buttons can be accessed on the admin panel (./#/admin/)
+
+
+There are 4 input types to choose from:
+  - text
+  - number
+  - single-choice
+  - multi-choice
+
+  When uploading a JSON, it must follow the below structure or risk being rejected by the application.
+
+  Once uploaded, you are able to open it within the editor and completely modify the questions, types, questionnaire settings and restrictions etc
+
 ```
-async function generateQuestions(uid) {
-  const response = await fetch('/api/questions/' + uid.id);
-  if (response.ok) {
-    questions = await response.json();
-    generateCards(questions);
-  } else {
-    createToast("Failed to Load Questions", true)
-  }
-}
-```
-
-Where UID.id is the quizid for referencing questions with the associated quizid
-
-
-
-### /quizlist - Gets a list of all the quizzes
-
-Example of use:
-
-```
-async function displayQuizzes() {
-    const quizlist = await fetch('/api/quizlist/');
-    if (quizlist.ok) {
-      quizListObject = await quizlist.json();
-    } else {
-      createToast('Error Loading Quizzes', true);
-      return;
+export const quiz = [{
+  "name": "Example Questionnaire",
+  "questions": [
+    {
+      "id": "name",
+      "text": "What is your name?",
+      "type": "text"
+    },
+    {
+      "id": "quest",
+      "text": "What is your quest?",
+      "type": "text"
+    },
+    {
+      "id": "col",
+      "text": "What is your favourite colour?",
+      "type": "text"
+    },
+    {
+      "id": "velo",
+      "text": "What is the air-speed velocity of an unladen swallow?",
+      "type": "number"
+    },
+    {
+      "id": "lord",
+      "text": "Which is the best lord?",
+      "type": "single-select",
+      "options": [
+        "Lord of the Rings",
+        "Lord of the Flies",
+        "Lord of the Dance",
+        "Lorde"
+      ]
+    },
+    {
+      "id": "langs",
+      "text": "Which computer languages have you used?",
+      "type": "multi-select",
+      "options": [
+        "JavaScript",
+        "Java",
+        "C",
+        "Python",
+        "Ook",
+        "LISP"
+      ]
     }
+  ]
+},
+{
+  "name": "Example Questionnaire 2",
+  "questions": [
+    {
+      "id": "name",
+      "text": "Is you a bitch?",
+      "type": "text"
+    },
+    {
+      "id": "quest",
+      "text": "What is your quest?",
+      "type": "text"
+    },
+    {
+      "id": "col",
+      "text": "What is your favourite colour?",
+      "type": "text"
+    },
+    {
+      "id": "velo",
+      "text": "What is the air-speed velocity of an unladen swallow?",
+      "type": "number"
+    },
+    {
+      "id": "lord",
+      "text": "Which is the best lord?",
+      "type": "single-select",
+      "options": [
+        "Lord of the Rings",
+        "Lord of the Flies",
+        "Lord of the Dance",
+        "Lorde"
+      ]
+    },
+    {
+      "id": "langs",
+      "text": "Which computer languages have you used?",
+      "type": "multi-select",
+      "options": [
+        "JavaScript",
+        "Java",
+        "C",
+        "Python",
+        "Ook",
+        "LISP"
+      ]
+    }
+  ]
 }
-```
-
-
-
-
-### /answers/:id - Gets all answers for a given quizid
-
-Example of use:
-
-```
-
+]
 ```

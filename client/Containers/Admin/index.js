@@ -59,7 +59,6 @@ export function generatePage() {
 }
 
 
-
 /******************************************************************************
 *
 * This function will handle creating a new quiz from scratch

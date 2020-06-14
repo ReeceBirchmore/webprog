@@ -261,7 +261,6 @@ function modifyInputGroup(id) {
 ******************************************************************************/
 
 function numberType(id) {
-  console.log(id)
   if (!$('min-' + id)) {
     const min = new Input({
       id: 'min-' + id,
@@ -482,7 +481,6 @@ export function enableQuiz(value) {
 
 export function enableBack(value) {
   modifiedQuestionsArr.arr[0].allowback = value;
-  console.log(modifiedQuestionsArr.arr[0].allowback);
 }
 
 export function enableRestrict(value) {

@@ -27,7 +27,6 @@ router
   })
 
   .add(/admin\/edit\/(.*)/, (id) => {
-    console.log(id);
     Edit.buildEditor(id);
   })
 

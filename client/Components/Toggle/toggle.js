@@ -23,7 +23,6 @@ import { render } from '/Javascript/render.js';
 
 export default class Toggle {
   constructor(props) {
-    console.log(props)
     this.createToggleStructure(props);
     render(this.el, props.renderPoint);
     return this.el;

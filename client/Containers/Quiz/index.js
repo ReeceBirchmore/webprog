@@ -231,7 +231,6 @@ export function handleAnswers() {
     }
   }
 
-  console.log(answersObject.responses)
   // Clear the choices array again ready for the next question
   options.choices = [];
   options.type = '';

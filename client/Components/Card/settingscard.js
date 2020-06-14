@@ -86,7 +86,7 @@ export default class SettingsCard {
 
     // Restrict the amount of answers per device?
     const restrictContainer = html('div', '', this.el, 'card-title-container');
-    renderText(restrictContainer, 'Limit Attempts', 'h3');
+    renderText(restrictContainer, 'Limit Submissions', 'h3');
     this.enableBack = new Toggle({
       id: 'toggle-enablerestrict',
       renderPoint: restrictContainer,

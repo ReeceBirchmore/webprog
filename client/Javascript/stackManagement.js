@@ -79,7 +79,6 @@ export function shuffle(val) {
 function intialise() {
   for (let i = 0; i < 3; i++) {
     if (arrOfCards[i]) {
-      console.log(cardStackArr.cards);
       arrOfCards[i].classList.remove('card-remove');
       cardStackArr.cards.push(arrOfCards[i]);
       $('root').appendChild(cardStackArr.cards[i]);
