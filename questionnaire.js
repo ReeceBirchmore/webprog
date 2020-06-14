@@ -145,6 +145,7 @@ async function saveQuestionnaire(optiondata) {
     } else {
       console.log(parseInt(question.min), question.min, '[parsed not parsed]')
       const id = parseInt(question.id);
+      console.log(id)
       const option = question.options;
       const type = question.type;
       const title = question.title;
@@ -152,7 +153,7 @@ async function saveQuestionnaire(optiondata) {
       const min = parseInt(question.min);
       const max = parseInt(question.max);
       const updateq = 'UPDATE Questions SET input = $1, options = $2, question = $3, required = $4 WHERE id = $5';
-      await sql.query(updateq, [type, option, title, required, id]);
+      await sql.query(updateq, [type, option, title, required, parseInt(question.id)]);
     }
   });
   return true;
