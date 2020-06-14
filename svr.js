@@ -119,7 +119,7 @@ async function uploadQuiz(req, res) {
 
 async function createQuiz(req, res) {
   try {
-    const result = await q.createQuiz();
+    const result = await q.generateNewQuiz();
     res.json(result);
   } catch (error) {
     res.status(404).send('No match for that ID.');
