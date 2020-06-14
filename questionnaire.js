@@ -143,7 +143,7 @@ async function saveQuestionnaire(optiondata) {
       // const remove = 'DELETE FROM Questions WHERE id = $1';
       // await sql.query(remove, [id]);
     } else {
-      let id = parseInt(question.id, 10);
+      let id = parseInt(question.id);
       console.log(id)
       const option = question.options;
       const type = question.type;

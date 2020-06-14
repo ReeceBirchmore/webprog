@@ -11,7 +11,7 @@ CREATE TABLE quizzes (
 );
 
 CREATE TABLE questions (
-    id TEXT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     question  TEXT,
     quizid TEXT,
     input TEXT,
