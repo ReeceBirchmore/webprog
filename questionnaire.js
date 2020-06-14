@@ -136,6 +136,7 @@ async function saveQuestionnaire(optiondata) {
   const questionnaireq = 'UPDATE Quizzes SET title = $1, enabled = $2, restrict = $3, allowback = $4 WHERE quizid = $5::text';
   await sql.query(questionnaireq, [title, enabled, restricted, allowBack, quizid]);
   data.forEach(async question => {
+    console.log(question)
     if (question.deleted === true) {
       const id = parseInt(question.id);
       const remove = 'DELETE FROM Questions WHERE id = $1';
