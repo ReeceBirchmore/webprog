@@ -137,8 +137,8 @@ function deployCards() {
     modifiedQuestionObject.type = question.input; // Input type of the question
     modifiedQuestionObject.id = parseInt(question.id); // ID of the question
     modifiedQuestionObject.options = (question.options === null) ? null : question.options; // Options for the question
-    modifiedQuestionObject.min = (question.min === null) ? 0 : parseInt(question.min);
-    modifiedQuestionObject.max = (question.max === null) ? 0 : parseInt(question.max);
+    modifiedQuestionObject.min = (question.min === null) ? parseInt(0) : parseInt(question.min);
+    modifiedQuestionObject.max = (question.max === null) ? parseInt(0) : parseInt(question.max);
     modifiedQuestionObject.required = question.required;
     modifiedQuestionObject.deleted = false;
     modifiedQuestionsArr.arr.push(modifiedQuestionObject);
@@ -395,8 +395,8 @@ async function addQuestion() {
     modifiedQuestionObject.type = 'text'; // Input type of the question
     modifiedQuestionObject.id = parseInt(id[0].id); // ID of the question
     modifiedQuestionObject.options = null; // Options for the question
-    modifiedQuestionObject.min = 0;
-    modifiedQuestionObject.max = 0;
+    modifiedQuestionObject.min = parseInt(0);
+    modifiedQuestionObject.max = parseInt(0);
     modifiedQuestionObject.required = false;
     modifiedQuestionObject.deleted = false;
     modifiedQuestionsArr.arr.push(modifiedQuestionObject);
