@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-vars */
+
 'use strict';
 
 import EditCard from '/Components/Card/editcard.js';
@@ -12,38 +12,64 @@ import { $, createToast, renderText, html, pointer } from '/Javascript/render.js
 
 
 // #endregion
-// ////////////////////////////////////////////////////////////// EDIT
-// #region Edit Quizzes
+// ////////////////////////////////////////////////////////////// DECLARATIONS
+// #region Declare variables
+
+let id; // Questionnaire ID
+let questionnaireData; // Data on the questionnaire
+let questionData; // Data on the questions
+let modifiedQuestionObject; // Data on the modified question=
+const modifiedQuestionsArr = { arr: [] }; // Final object array to store the modified data
+const object = {}; // New object to put modified data into
+let questionNumber = 1; // Keep track of the question numbers
+let errorFlag = false; // Allow for error detection
 
 
-let uid;
-const questionArray = [];
-const arrOfQuiz = { arr: [] };
-const optionObject = {};
-export const optionTextCount = 0;
-let questionNumber = 1;
+/******************************************************************************
+*
+* This function will handle generating the main structure of the page
+*
+* 1) Set the UID to the passed questionnaireID
+* 2) Reset the variables (to prevent unintended buildup)
+* 3) Generate a screen
+* 4) Run the gatherDetails(); function
+*
+*******************************************************************************/
 
-
-export function buildEditor(quizid) {
-  uid = quizid;
-  const arrOfQuiz = { arr: [] };
+export function buildEditor(questionnaireID) {
+  // Reset all the main variables to prevent buildup
+  id = questionnaireID;
   questionNumber = 1;
+  questionnaireData = [];
+  questionData = [];
+  modifiedQuestionsArr.arr = [];
+
   const screen = new Screen({
     id: 'edit-screen',
-    class: 'adminScreen',
+    class: 'noFooter',
   });
-  gatherDetails(quizid);
+  if ($('Footer')) $('Footer').remove();
+  gatherDetails(id);
 }
 
 
-// The two main portions of the editor, the questionnaire data and the question data
-
-let questionnaireData;
-let questionData;
-
+/******************************************************************************
+*
+* This function will handle gathering all the data required for the page to
+* operate
+*
+* 1) Perform a GET request to gather data on the current questionnaire
+* 2) IF the responses is okay, and the responses length is not 0, proceed
+* 3) Perform a GET request to gather the data for all the questions in the
+*   questionnaire
+* 4) IF responses is okay, set questionData to the retrieved object
+* 5) Run the deployCards(); function to start displaying cards on the screen
+* 6) Generate the Nav, title will be the questionnaire title, with the action
+*    buttons set to 'Return' and 'Save', with appropriate actions for both
+*
+******************************************************************************/
 
 async function gatherDetails(quizid) {
-  // Grab the quiz details
   const questionnaire = await fetch('/api/quizzes/' + quizid);
   if (questionnaire.ok) {
     questionnaireData = await questionnaire.json();
@@ -55,10 +81,10 @@ async function gatherDetails(quizid) {
     createToast('Invalid Questionnaire ID', true);
   }
   // Grab the questions
-  const question = await fetch('/api/questions/' + uid);
+  const question = await fetch('/api/questions/' + id);
   if (question.ok) {
     questionData = await question.json();
-    deployCards(); // Move in future, ensure both conditions have been met before proceeding!
+    deployCards();
   } else {
     createToast('Failed to Load Questions', true);
   }
@@ -71,10 +97,24 @@ async function gatherDetails(quizid) {
   });
 }
 
-let editedQuestionObject;
+
+/******************************************************************************
+*
+* This function will handle creating an object for the passed through
+* questionnaire and question data. These objects are needed to store the modified
+* data for upload should the user wish to save.
+*
+* 1) Deploy a settings card (For the questionnaire settings)
+* 2) Create an object (object) for the questionnaire data
+* 3) Loop through the questionData and create a new object for each question
+* 4) Push the new object into an array (arrOfQuestionnaire)
+* 5) Generate a new card, containing all details gathered from the questionData
+*    response. The EditCard.js file will handle this data
+* 6) Create a new Button to allow for adding questions
+*
+******************************************************************************/
 
 function deployCards() {
-  console.log(questionnaireData[0])
   const quizSettingsCard = new SettingsCard({
     id: 'settings-card',
     title: questionnaireData[0].title,
@@ -82,34 +122,26 @@ function deployCards() {
     restricted: questionnaireData[0].restrict,
     allowBack: questionnaireData[0].allowback,
   });
+  modifiedQuestionObject = Object.create(object);
+  modifiedQuestionObject.id = questionnaireData[0].quizid;
+  modifiedQuestionObject.quiztitle = questionnaireData[0].title; // Title of the questionnaire
+  modifiedQuestionObject.enabled = questionnaireData[0].enabled; // Enable the questionnaire
+  modifiedQuestionObject.restricted = questionnaireData[0].restrict; // restrict submissions
+  modifiedQuestionObject.allowback = questionnaireData[0].allowback; // Allow the back button
+  modifiedQuestionsArr.arr.push(modifiedQuestionObject);
 
-  console.log(questionnaireData[0].allowback)
-
-  editedQuestionObject = Object.create(optionObject);
-  editedQuestionObject.id = questionnaireData[0].quizid;
-  editedQuestionObject.quiztitle = questionnaireData[0].title; // Title of the questionnaire
-  editedQuestionObject.enabled = questionnaireData[0].enabled; // Enable the questionnaire
-  editedQuestionObject.restricted = questionnaireData[0].restrict; // restrict submissions
-  editedQuestionObject.allowback = questionnaireData[0].allowback; // Allow the back button
-  arrOfQuiz.arr.push(editedQuestionObject);
-
-  console.log(arrOfQuiz.arr[0]);
-
-
-
+  // Prefabricating an object to store the edited questions
   questionData.forEach(question => {
-    // Prefabricating an object to store the edited questions in (Try to neaten this bit up)
-    editedQuestionObject = Object.create(optionObject);
-    editedQuestionObject.title = question.question; // Title of the question
-    editedQuestionObject.type = question.input; // Input type of the question
-    editedQuestionObject.id = question.id; // ID of the question
-    editedQuestionObject.options = (question.options === null) ? null : question.options; // Options for the question
-    editedQuestionObject.min = (question.min === null) ? null : question.min;
-    editedQuestionObject.max = (question.max === null) ? null : question.max;
-    editedQuestionObject.required = question.required;
-    editedQuestionObject.deleted = false;
-    arrOfQuiz.arr.push(editedQuestionObject);
-
+    modifiedQuestionObject = Object.create(object);
+    modifiedQuestionObject.title = question.question; // Title of the question
+    modifiedQuestionObject.type = question.input; // Input type of the question
+    modifiedQuestionObject.id = question.id; // ID of the question
+    modifiedQuestionObject.options = (question.options === null) ? null : question.options; // Options for the question
+    modifiedQuestionObject.min = (question.min === null) ? null : question.min;
+    modifiedQuestionObject.max = (question.max === null) ? null : question.max;
+    modifiedQuestionObject.required = question.required;
+    modifiedQuestionObject.deleted = false;
+    modifiedQuestionsArr.arr.push(modifiedQuestionObject);
 
     // Generate a card for each question
     // The card contains all the inputs and components
@@ -127,9 +159,7 @@ function deployCards() {
     });
   });
 
-
   // Generate a Button to add a new question
-
   const button = new Button({
     id: 'add-question',
     icon: 'plus',
@@ -139,45 +169,43 @@ function deployCards() {
 }
 
 
-/***************************************************************
- *
- * This function handles changing the questions type, upon a
- * change in question type, the relevant inputs will appear
- * for further customisation.
- *
- * The function can be broken down as such:
- * 1) Function is called with the ID of the question as a parameter
- * 2) Check to see where the ID is inside the arrOfQuiz object array
- * 3) Modify the objects type value to match the new selection
- *
- * The switch statement broken down:
- *
- * 1) First, create a group for the new inputs (for easier removal)
- * 1A) If the group is already there, delete it and recreate it
- * 2) Determine which input type was selected
- * 3) Run the relevant functions
- *
- * NOTE: If the user switches from a MULTIPLE optioned question
- * to a SINGLE input question, the options array will be WIPED
- *
- ***************************************************************/
+/******************************************************************************
+*
+* This function handles changing the questions type, upon a
+* change in question type, the relevant inputs will appear
+* for further customisation.
+*
+* The function can be broken down as such:
+* 1) Function is called with the ID of the question as a parameter
+* 2) Check to see where the ID is inside the modifiedQuestionsArr object array
+* 3) Modify the objects type value to match the new selection
+*
+* The switch statement broken down:
+*
+* 1) First, create a group for the new inputs (for easier removal)
+*    - If the group is already there, delete it and recreate it
+* 2) Determine which input type was selected
+* 3) Run the relevant functions
+*
+* // NOTE: If the user switches from a MULTIPLE optioned question to a SINGLE
+*          input question, the options array will be WIPED
+*
+******************************************************************************/
 
 export function changeQuestionType(id) {
-  const inputIndex = arrOfQuiz.arr.findIndex(option => option.id === parseInt(id));
-  arrOfQuiz.arr[inputIndex].type = $('selector-' + id).value;
-
+  const inputIndex = modifiedQuestionsArr.arr.findIndex(option => option.id === parseInt(id));
+  modifiedQuestionsArr.arr[inputIndex].type = $('selector-' + id).value;
   $('group-' + id).setAttribute('data-type', $('selector-' + id).value);
   modifyInputGroup(id);
-
   switch ($('selector-' + id).value) {
     case 'text':
       if ($('options-' + id)) $('card-' + id).removeChild($('options-' + id));
-      arrOfQuiz.arr[inputIndex].options = null;
+      modifiedQuestionsArr.arr[inputIndex].options = null;
       break;
 
     case 'number':
       if ($('options-' + id)) $('card-' + id).removeChild($('options-' + id));
-      arrOfQuiz.arr[inputIndex].options = null;
+      modifiedQuestionsArr.arr[inputIndex].options = null;
       numberType(id);
       break;
 
@@ -187,13 +215,8 @@ export function changeQuestionType(id) {
       multiType(id);
       break;
 
-    case 'date':
-      arrOfQuiz.arr[inputIndex].options = null;
-      // dateType(id);
-      break;
-
     case 'range':
-      arrOfQuiz.arr[inputIndex].options = null;
+      modifiedQuestionsArr.arr[inputIndex].options = null;
       // rangeType(id);
       break;
   }
@@ -201,18 +224,18 @@ export function changeQuestionType(id) {
 
 
 /******************************************************************************
- *
- * The below function handles modifying the input type when the
- * dropdown menu detects a change in selection
- *
- * 1) Detect if the new type is of multi or single choice, if it is NOT
- * 1A) Remove the options group (containing the multiple options)
- * 3) Append the new input group
- *
- * The reasoning behind this method is so that when switching from multi-select
- * to single-select, the list of options you have created is NOT wiped away
- *
- ******************************************************************************/
+*
+* The below function handles modifying the input type when the
+* dropdown menu detects a change in selection
+*
+* 1) Detect if the new type is of multi or single choice, if it is NOT
+*    - Remove the options group (containing the multiple options)
+* 3) Append the new input group
+*
+* The reasoning behind this method is so that when switching from multi-select
+* to single-select, the list of options you have created is NOT wiped away
+*
+******************************************************************************/
 
 function modifyInputGroup(id) {
   if ($('group-' + id).dataset.type !== 'multi-select' || $('group-' + id).dataset.type !== 'single-select') {
@@ -226,18 +249,19 @@ function modifyInputGroup(id) {
 
 
 /******************************************************************************
- *
- * This function will trigger whenever the Number selection is
- * detected
- *
- * 1) Detect if the original min/max inputs are on the screen
- *    if they arent, render them on.
- *
- * Then we add the event listeners to ensure we can add the min and max values
- *
- ******************************************************************************/
+*
+* This function will trigger whenever the Number selection is
+* detected
+*
+* 1) Detect if the original min/max inputs are on the screen
+*    if they arent, render them on.
+*
+* Then we add the event listeners to ensure we can add the min and max values
+*
+******************************************************************************/
 
 function numberType(id) {
+  console.log(id)
   if (!$('min-' + id)) {
     const min = new Input({
       id: 'min-' + id,
@@ -266,31 +290,30 @@ function numberType(id) {
 
 
 /******************************************************************************
- *
- * This function is triggered whenever a multiple option type
- * selection is detected
- *
- * 1) Check if the input is already visible, if not, append.
- * 2) Attach the event listeners to the new input
- *
- * The event listeners will allow for the user to enter an option
- * and press the enter button to submit it as an option.
- *
- * 1) Detect if the enter key has been pressed
- * 2) Run the addOption function (to add the new value to the end of the options
- *    array relative to the question)
- * 2A) IF the addOption returns true (Value isn't a duplicate) proceed, else, stop
- * 3) Search through the edited questions array, find the questions
- *    index
- * 4) Use this index to then search through the array of options
- *    within the object and find the index
- * 5) Create a new object, give the object the ID found in step 4
- * 6) Append the value to the new element
- * 7) Clear the input ready for the next value
- *
- *
+*
+* This function is triggered whenever a multiple option type
+* selection is detected
+*
+* 1) Check if the input is already visible, if not, append.
+* 2) Attach the event listeners to the new input
+*
+* The event listeners will allow for the user to enter an option
+* and press the enter button to submit it as an option.
+*
+* 1) Detect if the enter key has been pressed
+* 2) Run the addOption function (to add the new value to the end of the options
+*    array relative to the question)
+*    - IF the addOption returns true (Value isn't a duplicate) proceed, else, stop
+* 3) Search through the edited questions array, find the questions
+*    index
+* 4) Use this index to then search through the array of options
+*    within the object and find the index
+* 5) Create a new object, give the object the ID found in step 4
+* 6) Append the value to the new element
+* 7) Clear the input ready for the next value
+*
+*
 ******************************************************************************/
-
 
 function multiType(id) {
   if (!$('optionInput-' + id)) {
@@ -306,8 +329,8 @@ function multiType(id) {
       const parsedID = parseInt(id);
       if (e.key === 'Enter') {
         if (addOption($('optionInput-' + id).value, id) === true) {
-          const findQuestion = arrOfQuiz.arr.findIndex(id => id.id === parsedID);
-          const optionArrPos = arrOfQuiz.arr[findQuestion].options.findIndex(option => option === $('optionInput-' + id).value);
+          const findQuestion = modifiedQuestionsArr.arr.findIndex(id => id.id === parsedID);
+          const optionArrPos = modifiedQuestionsArr.arr[findQuestion].options.findIndex(option => option === $('optionInput-' + id).value);
           const newOption = html('div', 'options-' + id + '-option-' + optionArrPos, $('options-' + id), 'option_row');
           renderText(newOption, $('optionInput-' + id).value, 'p', '', 'option_text');
           removeOptionEventListeners(id, optionArrPos, $('optionInput-' + id).value);
@@ -318,57 +341,41 @@ function multiType(id) {
   }
 }
 
+
 /******************************************************************************
  *
  * This function is triggered whenever the user presses a delete button
- * It will gray out the question to prep it for deletion, allowing the user to
- * undo the option if they wish to.
+ * It will darken the question to prep it for deletion, allowing the user to
+ * undo the option if they wish to
+ *
+ * It will flag the cards appropriate object.deleted boolean to match whether
+ * the user is about to delete, once the quiz submits it will remain deleted
  *
  ******************************************************************************/
 
 export function deleteQuestion(id) {
-  const inputIndex = arrOfQuiz.arr.findIndex(value => value.id === id);
-  if (arrOfQuiz.arr[inputIndex].deleted === false) {
-    arrOfQuiz.arr[inputIndex].deleted = true;
+  const inputIndex = modifiedQuestionsArr.arr.findIndex(value => value.id === id);
+  if (modifiedQuestionsArr.arr[inputIndex].deleted === false) {
+    modifiedQuestionsArr.arr[inputIndex].deleted = true;
   } else {
-    arrOfQuiz.arr[inputIndex].deleted = false;
+    modifiedQuestionsArr.arr[inputIndex].deleted = false;
   }
 }
 
-
-/******************************************************************************
- *
- * These functions are triggered whenever the user edits the Min/Max constratints
- *
- ******************************************************************************/
-
-export function changeMinValue(value, id) {
-  const inputIndex = arrOfQuiz.arr.findIndex(value => value.id === id);
-  if (parseInt($('max-' + id).value) > parseInt($('min-' + id).value)) {
-    createToast('Min Must Be Lower than Max', true);
-  } else {
-    console.log(arrOfQuiz.arr[inputIndex]);
-    arrOfQuiz.arr[inputIndex].min = parseInt($('min-' + id).value);
-  }
-}
-
-export function changeMaxValue(value, id) {
-  const inputIndex = arrOfQuiz.arr.findIndex(value => value.id === id);
-  if (parseInt($('max-' + id).value) < parseInt($('min-' + id).value)) {
-    createToast('Max Must Be Greater Than Min', true);
-  } else {
-    arrOfQuiz.arr[inputIndex].max = parseInt($('max-' + id).value);
-  }
-}
 
 /******************************************************************************
  *
  * This function is triggered whenever the new question button is triggered
  *
+ * 1) Perform a GET request to get the ID for the new question
+ * 2) IF the response is okay, create a new EditCard with all relevant prop tags
+ * 3) Create a new object for the question and push into the arrOfQuestionnaire
+ *    array
+ *
  ******************************************************************************/
 
 async function addQuestion() {
-  const newQuestionID = await fetch('/api/create/question/' + uid);
+  const newQuestionID = await fetch('/api/create/question/' + id);
   if (newQuestionID.ok) {
     const id = await newQuestionID.json();
     const card = new EditCard({
@@ -383,42 +390,53 @@ async function addQuestion() {
       required: false,
       deleted: false,
     });
-    editedQuestionObject = Object.create(optionObject);
-    editedQuestionObject.title = 'New Question'; // Title of the question
-    editedQuestionObject.type = 'text'; // Input type of the question
-    editedQuestionObject.id = id[0].id; // ID of the question
-    editedQuestionObject.options = null; // Options for the question
-    editedQuestionObject.min = null;
-    editedQuestionObject.max = null;
-    editedQuestionObject.required = false;
-    editedQuestionObject.deleted = false;
-    arrOfQuiz.arr.push(editedQuestionObject);
+    modifiedQuestionObject = Object.create(object);
+    modifiedQuestionObject.title = 'New Question'; // Title of the question
+    modifiedQuestionObject.type = 'text'; // Input type of the question
+    modifiedQuestionObject.id = id[0].id; // ID of the question
+    modifiedQuestionObject.options = null; // Options for the question
+    modifiedQuestionObject.min = null;
+    modifiedQuestionObject.max = null;
+    modifiedQuestionObject.required = false;
+    modifiedQuestionObject.deleted = false;
+    modifiedQuestionsArr.arr.push(modifiedQuestionObject);
   }
 }
 
+
 /******************************************************************************
  *
- * These functions are triggered whenever a questionnaire setting is toggled
+ * These functions are triggered whenever the user edits the Min/Max constraints
+ *
+ * 1) Find the edited questions object in the arrOfQuestionnaire Array
+ * 2) Check if the value in the box is correct compared to the other
+ * 3) IF incorrect, enable errorFlag (disables saving until remedied)
+ * 4) IF correct, store new values in arrOfQuestionnaire array object
  *
  ******************************************************************************/
 
-export function editTitle(value) {
-  arrOfQuiz.arr[0].quiztitle = value;
-  $('nav-title').textContent = 'Edit ' + value;
+export function changeMinValue(value, id) {
+  const inputIndex = modifiedQuestionsArr.arr.findIndex(value => value.id === id);
+  if (parseInt($('max-' + id).value) < parseInt($('min-' + id).value)) {
+    errorFlag = true;
+    createToast('Min Must Be Lower than Max', true);
+  } else {
+    errorFlag = false;
+    modifiedQuestionsArr.arr[inputIndex].min = parseInt($('min-' + id).value);
+  }
 }
 
-export function enableQuiz(value) {
-  arrOfQuiz.arr[0].enabled = value;
+export function changeMaxValue(value, id) {
+  const inputIndex = modifiedQuestionsArr.arr.findIndex(value => value.id === id);
+  if (parseInt($('max-' + id).value) < parseInt($('min-' + id).value)) {
+    createToast('Max Must Be Greater Than Min', true);
+    errorFlag = true;
+  } else {
+    errorFlag = false;
+    modifiedQuestionsArr.arr[inputIndex].max = parseInt($('max-' + id).value);
+  }
 }
 
-export function enableBack(value) {
-  arrOfQuiz.arr[0].allowback = value;
-  console.log(arrOfQuiz.arr[0].allowback);
-}
-
-export function enableRestrict(value) {
-  arrOfQuiz.arr[0].restricted = value;
-}
 
 /******************************************************************************
  *
@@ -426,11 +444,10 @@ export function enableRestrict(value) {
  *
  ******************************************************************************/
 
-
 export function changeRequired(value, id) {
-  const inputIndex = arrOfQuiz.arr.findIndex(title => title.id === parseInt(id));
+  const inputIndex = modifiedQuestionsArr.arr.findIndex(title => title.id === parseInt(id));
   $('text-' + id).style.color = (value === true) ? 'black' : '#AAA5AF';
-  arrOfQuiz.arr[inputIndex].required = value;
+  modifiedQuestionsArr.arr[inputIndex].required = value;
 }
 
 
@@ -440,11 +457,38 @@ export function changeRequired(value, id) {
  *
  ******************************************************************************/
 
-
 export function changeQuestionTitle(value, id) {
-  const inputIndex = arrOfQuiz.arr.findIndex(title => title.id === parseInt(id));
-  arrOfQuiz.arr[inputIndex].title = value;
+  const inputIndex = modifiedQuestionsArr.arr.findIndex(title => title.id === parseInt(id));
+  modifiedQuestionsArr.arr[inputIndex].title = value;
 }
+
+
+/******************************************************************************
+ *
+ * These functions are triggered whenever a questionnaire setting is toggled
+ *
+ * // NOTE: These functions are called from SettingsCard js
+ *
+ ******************************************************************************/
+
+export function editTitle(value) {
+  modifiedQuestionsArr.arr[0].quiztitle = value;
+  $('nav-title').textContent = 'Edit ' + value;
+}
+
+export function enableQuiz(value) {
+  modifiedQuestionsArr.arr[0].enabled = value;
+}
+
+export function enableBack(value) {
+  modifiedQuestionsArr.arr[0].allowback = value;
+  console.log(modifiedQuestionsArr.arr[0].allowback);
+}
+
+export function enableRestrict(value) {
+  modifiedQuestionsArr.arr[0].restricted = value;
+}
+
 
 /******************************************************************************
  *
@@ -463,7 +507,7 @@ export function removeOptionEventListeners(qid, oid, value) {
 }
 
 
-/***************************************************************
+/******************************************************************************
  *
  * When the user adds an option, this function is called (From the
  * editcard.js file addEventHandler function)
@@ -474,16 +518,16 @@ export function removeOptionEventListeners(qid, oid, value) {
  *    set it to type array
  * 3) Push the passed value "value" to the end of the array
  *
- ****************************************************************/
+******************************************************************************/
 
 export function addOption(value, id) {
   if ($('optionInput-' + id).value.length !== 0) {
-    const inputIndex = arrOfQuiz.arr.findIndex(option => option.id === parseInt(id));
-    if (arrOfQuiz.arr[inputIndex].options === null) {
-      arrOfQuiz.arr[inputIndex].options = [];
+    const inputIndex = modifiedQuestionsArr.arr.findIndex(option => option.id === parseInt(id));
+    if (modifiedQuestionsArr.arr[inputIndex].options === null) {
+      modifiedQuestionsArr.arr[inputIndex].options = [];
     }
-    if (arrOfQuiz.arr[inputIndex].options.findIndex(option => option === value) === -1) {
-      arrOfQuiz.arr[inputIndex].options.push(value);
+    if (modifiedQuestionsArr.arr[inputIndex].options.findIndex(option => option === value) === -1) {
+      modifiedQuestionsArr.arr[inputIndex].options.push(value);
       return true;
     } else {
       createToast('Duplicate Entry', true);
@@ -493,10 +537,9 @@ export function addOption(value, id) {
 }
 
 
-/***************************************************************
+/******************************************************************************
  *
- * This function is triggered whenever a user clicks on an option
- * to remove it
+ * This function is triggered whenever a user clicks on an option to remove it
  *
  * 1) It will use the passed ID to find the position of the question
  *    in the array, getting its index in the array
@@ -504,50 +547,58 @@ export function addOption(value, id) {
  *    options array
  * 2) Splice out the passed value "value" from the array
  *
- ****************************************************************/
+******************************************************************************/
 
 export function removeOption(qid, value) {
   const parsedID = parseInt(qid);
-  const findQuestion = arrOfQuiz.arr.findIndex(id => id.id === parsedID);
-  const indexToSplice = arrOfQuiz.arr[findQuestion].options.findIndex(option => option === value);
-  arrOfQuiz.arr[findQuestion].options.splice(indexToSplice, 1);
+  const findQuestion = modifiedQuestionsArr.arr.findIndex(id => id.id === parsedID);
+  const indexToSplice = modifiedQuestionsArr.arr[findQuestion].options.findIndex(option => option === value);
+  modifiedQuestionsArr.arr[findQuestion].options.splice(indexToSplice, 1);
 }
 
 
-/***************************************************************
+/******************************************************************************
  *
- * This function is triggered when the user presses the save button
+ * This function is triggered when the user presses the save button, it will
+ * perform a quick check to validate the integrity of the questionnaire then
+ * save if all conditions are met
  *
  * 1) It will perform an initial check to ensure there are no multi
  *    option type questions with missing arrays, it will notify the
  *    user if it detects any.
- * 2) It will stringify the arrOfQuiz object generated earlier and
+ * 2) Check for errorFlag === true, if it does, notify the user to check their
+ *    questions
+ * 3) It will stringify the modifiedQuestionsArr object generated earlier and
  *    ship it off to the server for handling
- * 2) Splice out the passed value "value" from the array
+ * 4) Splice out the passed value "value" from the array
  *
- ****************************************************************/
+ ******************************************************************************/
 
 async function saveQuestionnaire() {
-  for (let i = 0; i < arrOfQuiz.arr.length; i++) {
-    if (arrOfQuiz.arr[i].type === 'single-select' || arrOfQuiz.arr[i].type === 'multi-select') {
-      if (arrOfQuiz.arr[i].options === null || arrOfQuiz.arr[i].options.length === 0) {
-        createToast('Please Check Question ' + (i + 1), true);
+  for (let i = 0; i < modifiedQuestionsArr.arr.length; i++) {
+    if (modifiedQuestionsArr.arr[i].type === 'single-select' || modifiedQuestionsArr.arr[i].type === 'multi-select') {
+      if (modifiedQuestionsArr.arr[i].options === null || modifiedQuestionsArr.arr[i].options.length === 0) {
+        createToast('Please Check Question ' + (i), true);
         return;
       }
     }
   }
-  const updateQuestions = await fetch('/api/quizzes/update/' + uid, {
-    method: 'PUT',
-    body: JSON.stringify(arrOfQuiz),
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-  const questionResponse = await updateQuestions.json();
-  if (questionResponse === true) {
-    createToast('Quiz Updated Succesfully');
-    buildEditor(uid);
+  if (errorFlag === false) {
+    const updateQuestions = await fetch('/api/quizzes/update/' + id, {
+      method: 'PUT',
+      body: JSON.stringify(modifiedQuestionsArr),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const questionResponse = await updateQuestions.json();
+    if (questionResponse === true) {
+      createToast('Quiz Updated Succesfully');
+      buildEditor(id);
+    } else {
+      createToast('Quiz Update Failed', true);
+    }
   } else {
-    createToast('Quiz Update Failed', true);
+    createToast('Please Check Your Questions', true);
   }
 }

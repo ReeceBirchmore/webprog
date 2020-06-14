@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 'use strict';
 
 import Divider from '/Components/Divider/divider.js';
@@ -16,7 +15,7 @@ import { $, render, renderText, html, createToast } from '/Javascript/render.js'
  *  @property {String}  props.uid ID of the questionnaire (REQUIRED)
  *
  *
- *  Example of use:
+ *  The QuizCard is called upon in the Admin index.js file.
  *
  *  const card = new QuizCard({
  *    id: quiz.quizid,
@@ -31,7 +30,7 @@ export default class QuizCard {
     this.createCard(props);
     this.constructTemplate(props);
     this.addHandlers(props);
-    render(this.el, $('root')); // This is classed as a persistent element, it will render itself onto the page
+    render(this.el); // This is classed as a persistent element, it will render itself onto the page
     return this.el;
   }
 
@@ -47,12 +46,8 @@ export default class QuizCard {
     renderText(titleContainer, props.quizTitle, 'h2');
     // Divider Generation
     const divider = new Divider(this.el, 'Actions');
-
-    this.buttonsContainer = document.createElement('div');
-    this.buttonsContainer.classList.add('card-buttons-container');
-    this.el.appendChild(this.buttonsContainer);
-
-
+    // Button container Generation
+    this.buttonsContainer = html('div', '', this.el, 'card_buttons_container');
     // Link generation
     this.linkInput = new Input({
       id: 'link-' + props.id,
@@ -62,18 +57,18 @@ export default class QuizCard {
       readOnly: true,
     });
     this.linkInput.setAttribute('readonly', true);
-
-
     // Icon Generation
     this.bin = new Icon({ id: 'bin', class: 'bin', renderPoint: this.buttonsContainer });
+    this.previewIcon = new Icon({ id: 'preview', class: 'preview', renderPoint: this.buttonsContainer });
     this.linkIcon = new Icon({ id: 'link', class: 'link', renderPoint: this.buttonsContainer });
     this.barchartIcon = new Icon({ id: 'barchart', class: 'barchart', renderPoint: this.buttonsContainer });
     this.editIcon = new Icon({ id: 'edit', class: 'edit', renderPoint: this.buttonsContainer });
   }
 
   addHandlers(props) {
-    this.el.addEventListener('click', function () {
+    this.el.addEventListener('click', function (e) {
       // Action on clicking the card
+      e.stopPropagation();
     });
 
     this.linkIcon.addEventListener('click', function () {
@@ -81,6 +76,13 @@ export default class QuizCard {
       $('link-' + props.id).setSelectionRange(0, 99999);
       document.execCommand('copy');
       createToast('Text Copied to Clipboard', 'clipboard');
+    });
+
+    this.previewIcon.addEventListener('click', function () {
+      const link = html('a');
+      link.href = '/#/quiz/' + props.id;
+      link.target = '_blank';
+      link.click();
     });
 
     this.barchartIcon.addEventListener('click', function () {

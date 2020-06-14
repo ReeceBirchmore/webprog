@@ -1,9 +1,8 @@
-/* eslint-disable no-unused-vars */
 'use strict';
 
-import SubmissionCard from '/Components/SubmissionCard/submissioncard.js';
+import SubmissionCard from '/Components/Card/submissioncard.js';
 import Button from '/Components/Button/button.js';
-import { arrOfCards, cardStackArr, flowCount, answersObject, submitQuiz } from '/Containers/Quiz/index.js';
+import { arrOfCards, cardStackArr, cardCounter, answersObject, submitQuiz } from '/Containers/Quiz/index.js';
 import { $ } from './render.js';
 
 
@@ -12,7 +11,7 @@ export function shuffle(val) {
 
 
   // Ugly code ahead, I apologise but there is not cute way to do this kind of stuff
-  if (flowCount === 0 && $('prevbtn')) {
+  if (cardCounter === 0 && $('prevbtn')) {
     $('prevbtn').disabled = true;
     $('prevbtn').classList.add('disabled');
   } else if ($('prevbtn')) {
@@ -20,7 +19,7 @@ export function shuffle(val) {
     $('prevbtn').classList.remove('disabled');
   }
 
-  if (flowCount !== arrOfCards.length) {
+  if (cardCounter !== arrOfCards.length) {
     if ($('submitbtn')) {
       $('nextbtn').style.display = 'block';
       $('submitbtn').style.display = 'none';
@@ -31,7 +30,7 @@ export function shuffle(val) {
   }
 
   // Display all given answers and give option to submit quiz if the question counter matrches the length of the array of cards
-  if (flowCount === arrOfCards.length) {
+  if (cardCounter === arrOfCards.length) {
     if ($('submitbtn')) {
       $('submitbtn').style.display = 'block';
       $('nextbtn').style.display = 'none';
@@ -62,7 +61,7 @@ export function shuffle(val) {
     intialise();
   } else {
     if (arrOfCards) {
-      cardStackArr.cards.push(arrOfCards[flowCount], arrOfCards[flowCount + 1], arrOfCards[flowCount + 2]);
+      cardStackArr.cards.push(arrOfCards[cardCounter], arrOfCards[cardCounter + 1], arrOfCards[cardCounter + 2]);
     }
     sortDeck();
   }
@@ -116,7 +115,7 @@ function sortDeck() {
 
 // Gather the next card for the arrOfCards to put into the bottom of the stack (end of cardStackArray)
 function nextCard() {
-  if (arrOfCards[flowCount + 2]) {
-    $('root').appendChild(arrOfCards[flowCount + 2]);
+  if (arrOfCards[cardCounter + 2]) {
+    $('root').appendChild(arrOfCards[cardCounter + 2]);
   }
 }

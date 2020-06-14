@@ -1,91 +1,122 @@
-/* eslint-disable no-unused-vars */
 'use strict';
 
 import Footer from '/Components/Footer/footer.js';
 import Nav from '/Components/Nav/nav.js';
-import QuizCard from '../../Components/QuizCard/quizcard.js';
+import QuizCard from '/Components/Card/quizcard.js';
 import Screen from '/Components/Screen/screen.js';
-import Icon from '/Components/Icon/icon.js';
-import { $, createToast, renderText, html } from '/Javascript/render.js';
+import Button from '/Components/Button/button.js';
+import { $, createToast, html } from '/Javascript/render.js';
 
-
-// #endregion
-// ////////////////////////////////////////////////////////////// Generate Quiz
-// #region  Generate Quiz Setup
 
 let quizListObject;
 let filebutton;
 
 
-// Make this neater
-export function createUpload() {
-  const label = html('label', 'upload-label', $('Footer'), 'upload');
-  label.classList.add('button');
-  filebutton = html('input', 'file-upload', label);
-  filebutton.type = 'file';
-  filebutton.accept = '.json';
-  label.setAttribute('for', 'file-upload');
-  const icon = new Icon({ id: 'add', class: 'add', renderPoint: label });
-  filebutton.addEventListener('change', function () {
-    uploadJSON();
-  });
-}
+/******************************************************************************
+*
+* This function will handle generating the main structure of the page
+*
+******************************************************************************/
 
-
-// Clean up all these functions
 export function generatePage() {
   const screen = new Screen({
     id: 'admin-console',
     class: 'adminScreen',
   });
-  const footer = new Footer({
-    id: 'Footer',
-  });
+  if (!$('Footer')) {
+    const footer = new Footer({
+      id: 'Footer',
+    });
+  }
+
   const nav = new Nav({
     id: 'nav',
     title: 'Administrator Panel',
     elevated: true,
   });
-  createUpload();
+
+  const createNew = new Button({
+    id: 'create-quiz',
+    render: 'Footer',
+    action: function () { createNewQuiz(); },
+    text: 'Generate',
+    class: 'create',
+  });
+
+  $('create-quiz').classList.add('large');
+  const label = html('label', 'upload-label', $('Footer'), 'create');
+  label.textContent = 'Upload';
+  label.classList.add('button', 'ripple', 'large');
+  filebutton = html('input', 'file-upload', label);
+  filebutton.type = 'file';
+  filebutton.accept = '.json';
+  label.setAttribute('for', 'file-upload');
+  filebutton.addEventListener('change', function () {
+    uploadJSON();
+  });
+
   displayQuizzes();
 }
 
 
-// #endregion
-// ////////////////////////////////////////////////////////////// DISPLAY THE QUIZZES AVAILABLE ON THE DATABASE
-// #region Display Available Quizzes
 
+/******************************************************************************
+*
+* This function will handle creating a new quiz from scratch
+*
+*******************************************************************************/
 
-async function displayQuizzes() {
-  let check = document.querySelectorAll('.card-quiz-list');
-  check.forEach(element => {
-    $('root').removeChild(element);
+async function createNewQuiz() {
+  const questionnaire = await fetch('/api/create/quiz/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
   });
-  check = null;
-  if (check === null) {
-    const quizlist = await fetch('/api/quizzes/', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    if (quizlist.ok) {
-      quizListObject = await quizlist.json();
-    } else {
-      createToast('Error Loading Quizzes', true);
-      return;
-    }
-    quizListObject.forEach(quiz => {
-      const card = new QuizCard({ id: quiz.quizid, quizTitle: quiz.title, type: 'quiz', uid: quiz.quizid });
-    });
+  if (questionnaire.ok) {
+    const quizid = await questionnaire.json();
+    window.location = './#/admin/edit/' + quizid;
   }
 }
 
 
-// #endregion
-// ////////////////////////////////////////////////////////////// DELETE
-// #region Delete Quizzes and Questions
+/******************************************************************************
+*
+* This function will retrieve the quizzes available from the database and
+* create a card for each one, displaying it onto the webpage
+*
+*******************************************************************************/
 
+async function displayQuizzes() {
+  const quizlist = await fetch('/api/quizzes/', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  if (quizlist.ok) {
+    quizListObject = await quizlist.json();
+    quizListObject.forEach(quiz => {
+      const card = new QuizCard({
+        id: quiz.quizid,
+        quizTitle: quiz.title,
+        type: 'quiz',
+        uid: quiz.quizid,
+      });
+    });
+  } else {
+    createToast('Error Loading Quizzes', true);
+  }
+}
+
+
+/******************************************************************************
+*
+* This function will handle deleting a questionnaire form the list
+*
+* // NOTE: This function is called from the QuizCard component (bin icon)
+*
+*******************************************************************************/
 
 export async function deleteQuiz(uid, quiztitle) {
   const deleteQuiz = await fetch('/api/delete/quiz/' + uid, {
@@ -95,7 +126,7 @@ export async function deleteQuiz(uid, quiztitle) {
     },
   });
   if (deleteQuiz.ok) {
-    displayQuizzes();
+    generatePage();
     createToast((!quiztitle) ? 'Quiz Deleted' : quiztitle + ' Deleted', 'tick');
   } else {
     createToast('Failed to Delete Quiz', true);
@@ -103,27 +134,15 @@ export async function deleteQuiz(uid, quiztitle) {
 }
 
 
-// #endregion
-// ////////////////////////////////////////////////////////////// CREATE/UPLOAD
-// #region Upload or create a new quiz
-
-
-export async function createNewQuiz() {
-  const upload = await fetch('/api/create/quiz', {
-    method: 'POST',
-    body: JSON.stringify(title),
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-  displayQuizzes();
-  if (upload.ok) {
-    createToast('Quiz Created Succesfully');
-  } else {
-    createToast('Quiz Creation Failed', true);
-  }
-}
-
+/******************************************************************************
+*
+* This function will handle upload a JSON file to be put onto the database
+*
+* // NOTE: If the file structure of the uploaded JSON does NOT meet the spec
+* //       outlined in the README.md, the upload will be rejected and it will
+*          fail.
+*
+*******************************************************************************/
 
 export async function uploadJSON() {
   const jsonfile = await filebutton.files[0].text();
@@ -138,8 +157,8 @@ async function upload(jsonfile) {
       'Content-Type': 'application/json',
     },
   });
-  displayQuizzes();
   if (upload.ok === true) {
+    generatePage();
     createToast('Quiz Uploaded Succesfully');
     filebutton.value = '';
   } else {

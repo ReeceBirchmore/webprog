@@ -1,7 +1,6 @@
 'use strict';
 
-
-import { renderText, render } from '../../Javascript/render.js';
+import { renderText, render } from '/Javascript/render.js';
 
 
 /*********************************************************************

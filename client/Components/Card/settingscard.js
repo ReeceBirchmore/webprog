@@ -1,14 +1,8 @@
 'use strict';
 
 import Input from '/Components/Input/input.js';
-import Divider from '/Components/Divider/divider.js';
-import Icon from '/Components/Icon/icon.js';
 import Toggle from '/Components/Toggle/toggle.js';
-
-import { $, renderText, html, render, pointer } from '/Javascript/render.js';
-import * as Admin from '/Containers/Admin/index.js';
-import * as Edit from '/Containers/Edit/index.js';
-
+import { $, renderText, html, render } from '/Javascript/render.js';
 import { editTitle, enableQuiz, enableRestrict, enableBack } from '/Containers/Edit/index.js';
 
 
@@ -16,15 +10,21 @@ import { editTitle, enableQuiz, enableRestrict, enableBack } from '/Containers/E
  *
  *  @typedef  {Object}  Props
  *  @property {String}  props.id ID to assign the element, recommended for further referencing
- *  @property {Boolean} props.required This should be TRUE if the question is a required question, false by default
+ *  @property {Boolean} props.restricted Whether the questionnaire should have attempts restricted, false by default
+ *  @property {Boolean} props.enabled Wether the questionnaire is enabled, true by default
+ *  @property {Boolean} props.allowBack Whether the back button is allowed, true by default
  *
- *  The card is called upon in the quiz index.js file.
+ *
+ *  The SettingsCard is called upon in the Edit index.js file.
  *
  *  Example of use:
  *
- *  const card = new Card({
- *    id: 'card-' + qNum++,
- *    required: true,
+ *  const quizSettingsCard = new SettingsCard({
+ *    id: 'settings-card',
+ *    title: questionnaireData[0].title,
+ *    enabled: questionnaireData[0].enabled,
+ *    restricted: questionnaireData[0].restrict,
+ *    allowBack: questionnaireData[0].allowback,
  *  });
  *
  */
@@ -56,7 +56,6 @@ export default class SettingsCard {
     });
     this.titleChangeHandler();
 
-
     // Enable the quiz?
     const enableQuizContainer = html('div', '', this.el, 'card-title-container');
     renderText(enableQuizContainer, 'Enable Quiz', 'h3');
@@ -71,7 +70,6 @@ export default class SettingsCard {
     $('text-enablequiz').style.color = (props.enabled === true) ? 'black' : '#AAA5AF';
     this.enableQuizHandler(props);
 
-
     // Allow the back button?
     const backContainer = html('div', '', this.el, 'card-title-container');
     renderText(backContainer, 'Back Button', 'h3');
@@ -85,8 +83,6 @@ export default class SettingsCard {
     renderText(backContainer, backbutton, 'p', 'text-enableback', 'small');
     $('text-enableback').style.color = (props.allowBack === true) ? 'black' : '#AAA5AF';
     this.enableBackHandler(props);
-
-
 
     // Restrict the amount of answers per device?
     const restrictContainer = html('div', '', this.el, 'card-title-container');

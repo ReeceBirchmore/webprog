@@ -7,24 +7,6 @@ import * as Response from '/Containers/Responses/index.js';
 import * as Edit from '/Containers/Edit/index.js';
 
 
-// This code is used to determine the XY coords of the users touch (Used in the screens component)
-detectClickandTouch();
-export const cursorCoords = {};
-function detectClickandTouch() {
-  window.addEventListener('click', function (e) {
-    cursorCoords.x = e.pageX;
-    cursorCoords.y = e.pageY;
-  }, true);
-}
-
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./Javascript/sw.js')
-    .then(reg => console.log('service worker registered'))
-    .catch(err => console.log('service worker not registered', err));
-}
-
-
-
 // Local Routing, add new pre-defined routes here
 const router = new Router({
   mode: 'hash',

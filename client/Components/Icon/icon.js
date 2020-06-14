@@ -7,7 +7,7 @@ import eventHandler from '/Javascript/eventhandlers.js';
  *
  *  @typedef  {Object}  Props
  *  @property {String}  props.id Optional, yet recommended
- *  @property {String}  props.icon The Icon to use, MUST have a matching CSS class with links to the icon image
+ *  @property {String}  props.class The Icon to use, MUST have a matching CSS class with links to the icon image
  *  @property {Function} props.actions The function to be called upon by the icon, no action if left blank.
  *  @property {HTMLElement} props.renderPoint The reference to the element on which to attach the icon (REQUIRED)
  *
@@ -17,6 +17,7 @@ import eventHandler from '/Javascript/eventhandlers.js';
  *
  *  const icon = new Icon({
  *    id: props.icons[i],
+ *    class: 'bin',
  *    renderPoint: this.el,
  *    actions: props.actions[i],
  *  });

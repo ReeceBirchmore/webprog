@@ -25,6 +25,8 @@ import eventHandler from '/Javascript/eventhandlers.js';
  *    action: function () { increase(); },
  *    render: 'Footer',
  *    type: 'next',
+ *    class: 'fab',
+ *    icon: 'add',
  *  });
  *
  */
@@ -53,7 +55,7 @@ export default class Button {
 
   renderPoint(props) {
     if (!props.render) {
-      render(this.el, $('root'));
+      render(this.el);
     } else {
       render(this.el, $(props.render));
     }

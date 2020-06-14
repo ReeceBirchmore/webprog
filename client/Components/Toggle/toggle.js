@@ -1,29 +1,29 @@
 'use strict';
 
-import * as FX from '/Javascript/fx.js';
-import { render, renderText } from '/Javascript/render.js';
+import { render } from '/Javascript/render.js';
 
 
 /*********************************************************************
  *
- *  @typedef  {Object}    Props
- *  @property {String}    props.id ID is automatically assigned
- *  @property {String}    props.text Text for the snackbar
- *  @property {Boolean}   props.error True or False, To determine the snackbars colour, default is False.
- *
- *  The toast function is in the render.js file, call upon the createToast function instead of directly calling it!
- *
+ *  @typedef  {Object}      Props
+ *  @property {String}      props.id ID of the toggle, optional yet recommended
+ *  @property {String}      props.class Sometimes more granular control over the positioning is required
+ *  @property {Boolean}     props.checked Determine whether the toggle will be on or off, false by default
+ *  @property {HTMLElement} props.renderPoint The element on which to render the toggle
  *  Example of use:
  *
- *  const toast = new Toast({
- *    id: 'toast',
- *    text: message,
- *    error: error,
+ *  const toggle = new Toggle({
+ *    id: 'toggle-' + props.qid,
+ *    renderPoint: titleContainer,
+ *    checked: props.required,
+ *    class: 'left',
  *  });
+ *
  */
 
 export default class Toggle {
   constructor(props) {
+    console.log(props)
     this.createToggleStructure(props);
     render(this.el, props.renderPoint);
     return this.el;
@@ -31,25 +31,17 @@ export default class Toggle {
 
 
   createToggleStructure(props) {
-
     this.el = document.createElement('div');
     this.el.classList.add('material-toggle');
-
-    if (props.class) this.el.classList.add(props.class)
-
-
+    if (props.class) this.el.classList.add(props.class);
     this.input = document.createElement('input');
     this.input.id = props.id;
     this.input.type = 'checkbox';
     this.input.setAttribute('name', props.id);
     this.input.checked = props.checked;
-
     this.input.classList.add('switch');
-
     this.label = document.createElement('label');
     this.label.setAttribute('for', props.id);
-
-
     this.el.append(this.input, this.label);
   }
 }

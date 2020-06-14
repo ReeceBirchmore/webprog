@@ -1,35 +1,24 @@
-/* eslint-disable no-new-object */
-/* eslint-disable no-unused-vars */
 'use strict';
 
 import Card from '/Components/Card/card.js';
 import Divider from '/Components/Divider/divider.js';
 import Nav from '/Components/Nav/nav.js';
 import Screen from '/Components/Screen/screen.js';
-
 import { $, createToast, renderText, render, pointer, html } from '/Javascript/render.js';
-
-
 import eventHandler from '/Javascript/eventhandlers.js';
-
-
-// #endregion
-// ////////////////////////////////////////////////////////////// VARIABLES
-// #region  Variable Declaration
-
 
 let answerData;
 let questions;
 let quizInfo;
-let quizLength;
 let answerArray = [];
 let uid;
-
 let result;
 
-// #endregion
-// ////////////////////////////////////////////////////////////// DATA FETCHING DB
-// #region  Collect all required data from database (Quiz information, Questions, Answers)
+/****************************************************************************************
+*
+* Perform fetch requests to get all the data required
+*
+****************************************************************************************/
 
 
 export async function viewResponses(quizid) {
@@ -52,16 +41,15 @@ export async function viewResponses(quizid) {
   if (quizdetails.ok) {
     quizInfo = await quizdetails.json();
   }
-  // Pre-prepare the CSV for download
-  if (answerData.length > 0) mergeAnswers(answerData);
   generateResponsesPage(questions, answerData, quizInfo[0]);
 }
 
 
-// #endregion
-// ////////////////////////////////////////////////////////////// CSV GENERATOR
-// #region  Generate CSV
-
+/****************************************************************************************
+*
+* Generate the responses as a CSV
+*
+****************************************************************************************/
 
 function mergeAnswers(data) {
   const titles = [];
@@ -74,15 +62,9 @@ function mergeAnswers(data) {
   }
   // First Object Now Contains All Questions (For Top Of CSV Sheet)
   const keys = Object.values(titles);
-  // Build The Records
-  // Push all answers from one response sector into an array
-  // Join the array onto the current result variable (.join)
-  // Add new line at the end
-  // Rinse and repeat
-  // Download CSV
-  // This took me ages pls
   result = keys.join(',') + '\n';
-  for (let i = 0; i < 2; i++) {
+  // Build the Records
+  for (let i = 0; i < data.length; i++) {
     const rows = [];
     for (let j = 0; j < data[i].responses.length; j++) {
       if (data[i].responses[j].choices[0].length > 1) {
@@ -92,9 +74,12 @@ function mergeAnswers(data) {
         rows.push(data[i].responses[j].choices[0][0]);
       }
     }
+    // Push records into CSV
     currentrow[i] = rows;
     result += currentrow[i].join(',') + '\n';
   }
+  // Trigger Download
+  downloadCSV(result);
 }
 
 function downloadCSV(result) {
@@ -102,20 +87,24 @@ function downloadCSV(result) {
   const data = encodeURI(result);
   const link = document.createElement('a');
   link.setAttribute('href', data);
-  link.setAttribute('download', quizInfo[0].title + '.csv');
+  link.setAttribute('download', quizInfo[0].title + ' Responses.csv');
   link.click();
   return result;
 }
 
-// #endregion
-// ////////////////////////////////////////////////////////////// GENERATE PAGE STRUCTURE
-// #region  Generate Page
-
+/****************************************************************************************
+*
+* Generate The Page
+*
+****************************************************************************************/
 
 function generateResponsesPage(questions, answerData, quizdetails) {
   answerArray = []; // Reset the array with each load to prevent buildup
-  if (answerData.length !== 0) quizLength = answerData[0].responses.length;
-  const screen = new Screen({ id: 'admin-response-quiz', class: 'adminScreen', type: 'response', scroll: true });
+  if ($('Footer')) $('Footer').remove();
+  const screen = new Screen({
+    id: 'admin-response-quiz',
+    class: 'noFooter',
+  });
   const nav = new Nav({
     id: 'nav',
     title: answerData.length + ' Responses',
@@ -132,7 +121,7 @@ function generateResponsesPage(questions, answerData, quizdetails) {
     class: 'card-linear',
   });
 
-  render(detailsCard, $('root'));
+  render(detailsCard);
   renderText(detailsCard, quizdetails.title, 'h2');
   const divider = new Divider(detailsCard, 'Quiz Information');
 
@@ -140,18 +129,14 @@ function generateResponsesPage(questions, answerData, quizdetails) {
     renderText(detailsCard, 'This quiz has not had any responses yet.');
     return;
   } else {
-    const link = renderText(detailsCard, pointer + ' here to download your answers as a CSV', 'p');
-    eventHandler(link, '', function () { downloadCSV(result); });
+    const link = renderText(detailsCard, pointer + ' here to download all responses as a CSV', 'p');
+    eventHandler(link, '', function () { mergeAnswers(answerData); });
   }
 
-
-  // ---------------------------------------------------------------------- //
   questions.forEach(question => {
     const card = new Card({ id: 'card-' + numberCount++, class: 'card-linear' });
     const text = renderText(card, question.question, 'label', '', 'label');
-
     const divider = new Divider(card, 'Answers');
-
     if (question.input === 'multi-select' || question.input === 'single-select') {
       let optionContainer;
       for (let h = 0; h < question.options.length; h++) {
@@ -172,9 +157,11 @@ function generateResponsesPage(questions, answerData, quizdetails) {
 }
 
 
-// #endregion
-// ////////////////////////////////////////////////////////////// DATA COLLECTION
-// #region  Scrape the data from the database
+/****************************************************************************************
+*
+* Get the answer data together to form groups
+*
+****************************************************************************************/
 
 
 function scrapeData(questions, answerData) {
@@ -201,9 +188,11 @@ function scrapeData(questions, answerData) {
 }
 
 
-// #endregion
-// ////////////////////////////////////////////////////////////// BAR CHART
-// #region  Render the bar charts
+/****************************************************************************************
+*
+* Display bar charts for the groups if they are single or multi select
+*
+****************************************************************************************/
 
 
 function renderBars(answerArray, questions, answerData) {
@@ -221,10 +210,11 @@ function renderBars(answerArray, questions, answerData) {
 }
 
 
-// #endregion
-// ////////////////////////////////////////////////////////////// LIST ITEMS
-// #region  Render list items
-
+/****************************************************************************************
+*
+* Render a list of answers
+*
+****************************************************************************************/
 
 function renderList(answerData, k, list) {
   const load = $('card-' + (k + 1));

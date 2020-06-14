@@ -25,9 +25,16 @@ app.get('*', (req, res) => {
 });
 
 
+function asyncWrap(f) {
+  return (req, res, next) => {
+    Promise.resolve(f(req, res, next))
+      .catch((e) => next(e || new Error()));
+  };
+}
+
 // #endregion
-// ////////////////////////////////////////////////////////////// FUNCTIONS
-// #region Constants
+// ////////////////////////////////////////////////////////////// GET REQUESTS
+// #region
 
 async function getAllQuizzes(req, res) {
   try {
@@ -38,7 +45,6 @@ async function getAllQuizzes(req, res) {
   }
 }
 
-
 async function getQuizzes(req, res) {
   try {
     const result = await q.getQuiz(req.params.id);
@@ -47,7 +53,6 @@ async function getQuizzes(req, res) {
     res.sendStatus(400);
   }
 }
-
 
 async function getQuestions(req, res) {
   try {
@@ -58,36 +63,14 @@ async function getQuestions(req, res) {
   }
 }
 
-
-async function submitQuiz(req, res) {
+async function getAnswers(req, res) {
   try {
-    const result = await q.quizSubmission(req.body, req.params.id);
-    res.json(result);
-  } catch (error) {
-    res.sendStatus(400);
-  }
-}
-
-
-async function uploadQuiz(req, res) {
-  try {
-    const result = await q.quizUpload(req.body);
+    const result = await q.getAnswerData(req.params.id);
     res.json(result);
   } catch (error) {
     res.status(404).send('No match for that ID.');
   }
 }
-
-
-async function createQuiz(req, res) {
-  try {
-    const result = await q.generateNewQuiz(JSON.stringify(req.body));
-    res.json(result);
-  } catch (error) {
-    res.status(404).send('No match for that ID.');
-  }
-}
-
 
 async function addQuestion(req, res) {
   try {
@@ -98,6 +81,11 @@ async function addQuestion(req, res) {
   }
 }
 
+
+// #endregion
+// ////////////////////////////////////////////////////////////// PUT REQUESTS
+// #region
+
 async function saveQuestionnaire(req, res) {
   try {
     const result = await q.saveQuestionnaire(JSON.stringify(req.body));
@@ -107,6 +95,40 @@ async function saveQuestionnaire(req, res) {
   }
 }
 
+// #endregion
+// ////////////////////////////////////////////////////////////// POST REQUESTS
+// #region 
+
+async function submitQuiz(req, res) {
+  try {
+    const result = await q.quizSubmission(req.body, req.params.id);
+    res.json(result);
+  } catch (error) {
+    res.sendStatus(400);
+  }
+}
+
+async function uploadQuiz(req, res) {
+  try {
+    const result = await q.quizUpload(req.body);
+    res.json(result);
+  } catch (error) {
+    res.status(404).send('No match for that ID.');
+  }
+}
+
+async function createQuiz(req, res) {
+  try {
+    const result = await q.createQuiz();
+    res.json(result);
+  } catch (error) {
+    res.status(404).send('No match for that ID.');
+  }
+}
+
+// #endregion
+// ////////////////////////////////////////////////////////////// DELETE REQUESTS
+// #region
 
 async function deleteQuiz(req, res) {
   try {
@@ -117,7 +139,6 @@ async function deleteQuiz(req, res) {
   }
 }
 
-
 async function deleteQuestion(req, res) {
   try {
     const result = await q.deleteAQuestion(req.params.id);
@@ -126,25 +147,6 @@ async function deleteQuestion(req, res) {
     res.status(404).send('No match for that ID.');
   }
 }
-
-
-async function getAnswers(req, res) {
-  try {
-    const result = await q.getAnswerData(req.params.id);
-    res.json(result);
-  } catch (error) {
-    res.status(404).send('No match for that ID.');
-  }
-}
-
-
-function asyncWrap(f) {
-  return (req, res, next) => {
-    Promise.resolve(f(req, res, next))
-      .catch((e) => next(e || new Error()));
-  };
-}
-
 
 router.get('/questions/:id', asyncWrap(getQuestions));
 router.get('/quizzes/:id', asyncWrap(getQuizzes));

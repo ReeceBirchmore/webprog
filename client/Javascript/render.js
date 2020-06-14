@@ -70,7 +70,7 @@ function renderText(el, propText, tag, id, css) {
  *************************/
 
 function remove(el) {
-  $('body').removeChild(el);
+  $('root').removeChild(el);
 }
 
 
@@ -94,12 +94,20 @@ function createToast(message, error) {
 // ////////////////////////////////////////////////////////////// ELEMENT CREATION
 // #region Create Element
 
+/*********************************************************************
+ *
+ *  @property {String}   tag - The tag type to use ('div')
+ *  @property {String}   id - ID of the created item
+ *  @property {HTMLElement} renderPoint - Reference to a HTML element to render the new item on
+ *  @property {String}  css - CSS class to attach to the new item
+ *
+ */
 
 function html(tag, id, renderPoint, css) {
   const el = document.createElement(tag);
   if (id !== '') el.id = id;
   if (css !== '') el.classList.add(css);
-  if (renderPoint !== '') renderPoint.appendChild(el);
+  if (renderPoint !== '' && renderPoint !== undefined) renderPoint.appendChild(el);
   return el;
 }
 

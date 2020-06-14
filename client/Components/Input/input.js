@@ -1,8 +1,8 @@
 'use strict';
 
-import { renderText, $, render, html, createToast } from '/Javascript/render.js';
-import { flowCount, answersObject, increase, handleAnswers } from '/Containers/Quiz/index.js';
-import * as Edit from '/Containers/Edit/index.js';
+import { renderText, render, html, createToast } from '/Javascript/render.js';
+import { cardCounter, answersObject, increase, handleAnswers } from '/Containers/Quiz/index.js';
+import { changeQuestionType } from '/Containers/Edit/index.js';
 
 
 export const options = { qNumber: '', choices: [], title: '', type: '' };
@@ -18,6 +18,10 @@ export const options = { qNumber: '', choices: [], title: '', type: '' };
  *  @property {String}      props.type The type of input to be displayed
  *  @property {Int}         props.min The minimum value for a number input
  *  @property {Int}         props.min The maximum value for a number input
+ *  @property {Boolean}     props.eventListeners If true, use the event listeners built into this file, else, disregard
+ *
+ *
+ *  The inputs are called upon by all files (minus Response index.js)
  *
  *  Example of use:
  *
@@ -30,6 +34,7 @@ export const options = { qNumber: '', choices: [], title: '', type: '' };
  *     min: question.min,
  *     max: question.max
  *   });
+ *
  */
 
 
@@ -111,7 +116,7 @@ export default class Input {
 // Dropdown Event Listeners
 function dropdownEventListener(el) {
   el.addEventListener('change', function () {
-    Edit.changeQuestionType(el.dataset.number);
+    changeQuestionType(el.dataset.number);
   });
 }
 
@@ -119,7 +124,7 @@ function dropdownEventListener(el) {
 // Radio Event Listeners
 function radioEventListener(el) {
   el.addEventListener('change', function (e) {
-    options.qNumber = flowCount + 1;
+    options.qNumber = cardCounter + 1;
     options.choices = [e.target.value];
     options.linkedQ = e.target.getAttribute('data-link-q');
     options.type = el.type;
@@ -129,13 +134,13 @@ function radioEventListener(el) {
 // Checkbox Event Listeners
 function checkboxEventListener(el) {
   el.addEventListener('change', function (e) {
-    const inputIndex = answersObject.responses.findIndex(question => question.qid === flowCount + 1);
+    const inputIndex = answersObject.responses.findIndex(question => question.qid === cardCounter + 1);
     if (el.checked === true) {
       if (inputIndex !== -1) {
         answersObject.responses[inputIndex].choices[0].push(e.target.value);
         options.type = el.type;
       } else {
-        options.qNumber = flowCount + 1;
+        options.qNumber = cardCounter + 1;
         options.choices.push(e.target.value);
         options.type = el.type;
       }
@@ -172,7 +177,7 @@ function keyUpEventListener(el) {
       createToast('Entry Must Be Above ' + el.min, true);
       return;
     }
-    options.qNumber = flowCount + 1;
+    options.qNumber = cardCounter + 1;
     options.choices[0] = el.value;
     options.type = el.type;
   });

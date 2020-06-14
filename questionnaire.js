@@ -8,15 +8,9 @@
 
 const Postgres = require('pg').Client;
 const config = require('./config.json');
-
-
-// // //#endregion
-// // ////////////////////////////////////////////////////////////// Connect to the Database
-// // ////#region This module will connect to the db
-
 const sql = new Postgres(config);
-
 sql.connect();
+
 
 // // #endregion
 // // ////////////////////////////////////////////////////////////// QUESTIONNAIRE ID GENERATION
@@ -30,18 +24,6 @@ function makeid(length) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
   }
   return result;
-}
-
-
-// CSV
-async function getCSVData(quizid) {
-  const q = 'SELECT * FROM Answers WHERE quizid =  $1;';
-  const result = await sql.query(q, [quizid]);
-  const responses = [];
-  result.rows.forEach(question => {
-    responses.push(JSON.parse(question.answers));
-  });
-  return responses;
 }
 
 // // #endregion
@@ -77,7 +59,6 @@ async function listQuestions(quizid) {
 // // #region Submit Questionnaire
 
 async function quizSubmission(data, quizid) {
-  console.table(data);
   const quizdata = JSON.stringify(data);
   const q = 'INSERT INTO answers (answers, quizid) VALUES( $1, $2) ';
   const result = await sql.query(q, [quizdata, quizid]);
@@ -92,14 +73,15 @@ async function quizSubmission(data, quizid) {
 
 async function deleteAQuiz(uid) {
   const quiz = 'DELETE from Quizzes where quizid = $1;';
-  const result = await sql.query(quiz, [uid]);
+  await sql.query(quiz, [uid]);
+
   const question = 'DELETE FROM Questions WHERE quizid = $1;';
-  const questionresult = await sql.query(question, [uid]);
+  await sql.query(question, [uid]);
   return true;
 }
 
 // // #endregion
-// // ////////////////////////////////////////////////////////////// QUESTIONNAIRE CREATE
+// // ////////////////////////////////////////////////////////////// QUESTIONNAIRE CREATION
 // // #region Upload/Generate A Questionnaire
 
 async function quizUpload(data) {
@@ -120,11 +102,13 @@ async function quizUpload(data) {
 }
 
 
-async function generateNewQuiz(data) {
-  const uid = makeid(5);
-  const title = JSON.parse(data);
-  const quizq = 'INSERT INTO Quizzes (title, quizid) VALUES ($1, $2)';
-  await sql.query(quizq, [title.value, uid]);
+async function generateNewQuiz() {
+  const uid = makeid(10);
+  const title = 'Untitled Questionnaire';
+  const t = true;
+  const f = false;
+  const quizq = 'INSERT INTO Quizzes (title, quizid, allowback, restrict, enabled) VALUES ($1, $2, $3, $4, $5)';
+  await sql.query(quizq, [title, uid, t, f, t]);
   return uid;
 }
 
@@ -143,7 +127,6 @@ async function addAQuestion(quizid) {
 
 async function saveQuestionnaire(optiondata) {
   // Declare all the variables for simplification
-  console.log('bigman');
   const data = JSON.parse(optiondata).arr;
   const quizid = data[0].id;
   const title = data[0].quiztitle;
@@ -153,7 +136,6 @@ async function saveQuestionnaire(optiondata) {
   const questionnaireq = 'UPDATE Quizzes SET title = $1, enabled = $2, restrict = $3, allowback = $4 WHERE quizid = $5::text';
   await sql.query(questionnaireq, [title, enabled, restricted, allowBack, quizid]);
   data.forEach(async question => {
-    console.log(question)
     if (question.deleted === true) {
       const id = parseInt(question.id);
       const remove = 'DELETE FROM Questions WHERE id = $1';
@@ -210,5 +192,4 @@ module.exports = {
   deleteAQuestion,
   addAQuestion,
   saveQuestionnaire,
-  getCSVData,
 };

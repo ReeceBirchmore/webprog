@@ -1,16 +1,43 @@
-/* eslint-disable no-unused-vars */
 'use strict';
 
 import Input from '/Components/Input/input.js';
-import Divider from '/Components/Divider/divider.js';
 import Icon from '/Components/Icon/icon.js';
 import Toggle from '/Components/Toggle/toggle.js';
-
 import { $, renderText, html, render, pointer } from '/Javascript/render.js';
-import * as Admin from '/Containers/Admin/index.js';
-import * as Edit from '/Containers/Edit/index.js';
-
 import { deleteQuestion, addOption, removeOptionEventListeners, changeQuestionTitle, changeRequired, changeMinValue, changeMaxValue } from '/Containers/Edit/index.js';
+
+/*********************************************************************
+ *
+ *  @typedef  {Object}  Props
+ *  @property {String}  props.id ID to assign the element, recommended for further referencing
+ *  @property {Boolean} props.deleted Whether the question is to be prepped for deletion, false by default
+ *  @property {String}  props.input Input type to push onto the card, for the range of selectors, check the README.md file
+ *  @property {Int}     props.max The max value (for number types) Null by default
+ *  @property {Int}     props.min The min value (for number types) Null by default
+ *  @property {Array}   props.options The options available for a multiple-option question
+ *  @property {Int}     props.qid The question ID (from the database)
+ *  @property {Int}     props.questionNum The question Number (for the title)
+ *  @property {Boolean} props.required Whether the question is required
+ *  @property {String}  props.title The questions title
+ *
+ *  The card is called upon in the Edit index.js file
+ *
+ *  Example of use:
+ *
+ *  const card = new EditCard({
+ *    id: 'card-' + question.id,
+ *    title: question.question,
+ *    questionNum: questionNumber++,
+ *    input: question.input,
+ *    qid: question.id,
+ *    options: question.options,
+ *    required: question.required,
+ *    min: question.min,
+ *    max: question.max,
+ *    deleted: false,
+ *   });
+ *
+ */
 
 export default class EditCard {
   constructor(props) {
@@ -18,7 +45,6 @@ export default class EditCard {
     this.createEditCardTemplate(props);
     this.optionConstraints(props);
     if (props.options !== null) this.optionsGenerate(props);
-    this.addHandlers(props);
     return this.el;
   }
 
@@ -65,7 +91,7 @@ export default class EditCard {
     this.select = new Input({
       id: 'selector-' + props.qid,
       type: 'select',
-      types: ['text', 'number', 'single-select', 'multi-select', 'range', 'date'],
+      types: ['text', 'number', 'single-select', 'multi-select'], // Modify these
       value: props.input,
       qid: props.qid,
       eventListeners: false,
@@ -230,27 +256,5 @@ export default class EditCard {
         }
       }
     });
-  }
-
-
-  /******************************************************************************
-   *
-   * The below function will attach event listeners to the icons so we can delete
-   * or insert questions
-   *
-   ******************************************************************************/
-
-  addHandlers(props) {
-    if (this.binIcon) {
-      this.binIcon.addEventListener('click', function () {
-        const popup = window.confirm('Are you sure you want to delete ' + props.title);
-        if (popup === true) Admin.deleteQuestion(props.id, props.quizTitle);
-      });
-    }
-    if (props.type === 'add') {
-      this.el.addEventListener('click', function () {
-        Admin.addQuestion();
-      });
-    }
   }
 }

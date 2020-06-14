@@ -10,13 +10,13 @@ import { progressCheck } from '/Javascript/fx.js';
  *  @property {String}      props.id ID to assign the element, recommended for further referencing
  *  @property {String}      props.qnum For the initial text to appear (before being controlled by FX Manager)
  *
- *
  *  Example of use:
  *
  *  const progress = new Progress({
  *    id: 'progressBar',
  *    qnum: '1 of ' + questions.length,
  *  });
+ *
  */
 
 

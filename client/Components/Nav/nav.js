@@ -1,6 +1,5 @@
 'use strict';
 
-
 import Icon from '/Components/Icon/icon.js';
 import { $, render, renderText, html } from '/Javascript/render.js';
 
@@ -35,7 +34,7 @@ export default class Nav {
 
   createNav(props) {
     this.el = html('div', props.id, '', 'nav');
-    if (props.elevated) this.el.classList.add('elevated')
+    if (props.elevated) this.el.classList.add('elevated');
   }
 
   displayTitle(props) {

@@ -1,8 +1,6 @@
 'use strict';
 
 import { $, html } from '/Javascript/render.js';
-import { cursorCoords } from '/Javascript/app.js';
-
 
 /*********************************************************************
  *
@@ -17,26 +15,16 @@ import { cursorCoords } from '/Javascript/app.js';
  *    id: 'admin-console',
  *    class: 'adminScreen',
  *  });
+ * 
+ *  // NOTE: When a new screen is generated, the old screen and ALL of it's children
+ *           will be destroyed
  */
 
 
 export default class Screen {
   constructor(props) {
-    this.maths();
     this.generateStructure(props);
     this.deleteOldScreen();
-  }
-
-  maths() {
-    // Initially created to allow for the window to open based on the position touched, animations
-    // have since been removed to save on performance. Can be readded by adding a scale-up css keyframe
-    // animation to the screen class in question
-    const mainHeight = window.innerHeight; // Y value
-    const mainWidth = window.innerWidth; // X value
-    const ySum = cursorCoords.y / mainHeight;
-    this.yTotal = ySum * 100;
-    const xSum = cursorCoords.x / mainWidth;
-    this.xTotal = xSum * 100;
   }
 
 
@@ -46,16 +34,21 @@ export default class Screen {
       $('root').id = 'old-screen';
       if ($('nav')) $('body').removeChild($('nav'));
     }
-
-    this.screen = html('div', 'root', $('body'), props.class)
-    this.screen.style.transformOrigin = this.xTotal + '%' + this.yTotal + '%';
+    this.screen = html('div', 'root', $('body'), props.class);
   }
 
   deleteOldScreen() {
-    setTimeout(function () {
-      if ($('old-screen')) {
-        $('body').removeChild($('old-screen'));
-      }
-    }, 100);
+    if ($('old-screen')) {
+      removeAllChildNodes($('old-screen'));
+      $('body').removeChild($('old-screen'));
+    }
+  }
+
+}
+
+
+function removeAllChildNodes(parent) {
+  while (parent.firstChild) {
+    parent.removeChild(parent.firstChild);
   }
 }
