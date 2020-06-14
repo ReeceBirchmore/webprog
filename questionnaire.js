@@ -128,7 +128,6 @@ async function addAQuestion(quizid) {
 async function saveQuestionnaire(optiondata) {
   // Declare all the variables for simplification
   const data = JSON.parse(optiondata).arr;
-  console.log(data[0])
   const quizid = data[0].id;
   const title = data[0].quiztitle;
   const enabled = Boolean(data[0].enabled);
@@ -148,10 +147,10 @@ async function saveQuestionnaire(optiondata) {
       const type = question.type;
       const title = question.title;
       const required = Boolean(question.required);
-      const min = parseInt(question.min);
-      const max = parseInt(question.max);
-      const updateq = 'UPDATE Questions SET input = $1, options = $2, question = $3, required = $4, min = $5, max = $6 WHERE id = $7';
-      await sql.query(updateq, [type, option, title, required, min, max, id]);
+      // const min = parseInt(question.min);
+      // const max = parseInt(question.max);
+      const updateq = 'UPDATE Questions SET input = $1, options = $2, question = $3, required = $4 WHERE id = $5';
+      await sql.query(updateq, [type, option, title, required, id]);
     }
   });
   return true;

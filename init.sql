@@ -35,28 +35,28 @@ INSERT INTO quizzes (title, quizid, allowback, restrict, enabled) VALUES('Only O
 
 
 INSERT INTO questions (question, quizid, input) VALUES('What is your name?', 'jf8OBN6779', 'text');
-INSERT INTO questions (question, quizid, input, min, max) VALUES('How old are you?', 'jf8OBN6779', 'number', '30', '60');
+INSERT INTO questions (question, quizid, input, min, max) VALUES('How old are you?', 'jf8OBN6779', 'number', 30, 60);
 INSERT INTO questions (question, quizid, input, required) VALUES('This is a required question, leave it blank and try to hit next!', 'jf8OBN6779', 'text', true);
 INSERT INTO questions (question, quizid, options, input) VALUES('What is your experience using this app?', 'jf8OBN6779', '{Absolutely Amazing, Seen Better, God Awful}', 'single-select');
-INSERT INTO questions (question, quizid, input, min, max) VALUES('What grade do you think this is worth?', 'jf8OBN6779', 'number', '70', '100');
+INSERT INTO questions (question, quizid, input, min, max) VALUES('What grade do you think this is worth?', 'jf8OBN6779', 'number', 70, 100);
 INSERT INTO questions (question, quizid, input) VALUES('When do I get my results back?', 'jf8OBN6779', 'text');
 
 INSERT INTO questions (question, quizid, input) VALUES('What is your name?', '94jwbfsT6s', 'text');
-INSERT INTO questions (question, quizid, input, min, max) VALUES('How old are you?', '94jwbfsT6s', 'number', '30', '60');
+INSERT INTO questions (question, quizid, input, min, max) VALUES('How old are you?', '94jwbfsT6s', 'number', 30, 60);
 INSERT INTO questions (question, quizid, input, required) VALUES('This is a required question, leave it blank and try to hit next!', '94jwbfsT6s', 'text', true);
 INSERT INTO questions (question, quizid, options, input) VALUES('What is your experience using this app?', '94jwbfsT6s', '{Absolutely Amazing, Seen Better, God Awful}', 'single-select');
 INSERT INTO questions (question, quizid, input, min, max) VALUES('What grade do you think this is worth?', '94jwbfsT6s', 'number', 70, 100);
 INSERT INTO questions (question, quizid, input) VALUES('When do I get my results back?', '94jwbfsT6s', 'text');
 
 INSERT INTO questions (question, quizid, input) VALUES('What is your name?', '43rtvb703g', 'text');
-INSERT INTO questions (question, quizid, input, min, max) VALUES('How old are you?', '43rtvb703g', 'number', '30', '60');
+INSERT INTO questions (question, quizid, input, min, max) VALUES('How old are you?', '43rtvb703g', 'number', 30, 60);
 INSERT INTO questions (question, quizid, input, required) VALUES('This is a required question, leave it blank and try to hit next!', '43rtvb703g', 'text', true);
 INSERT INTO questions (question, quizid, options, input) VALUES('What is your experience using this app?', '43rtvb703g', '{Absolutely Amazing, Seen Better, God Awful}', 'single-select');
 INSERT INTO questions (question, quizid, input, min, max) VALUES('What grade do you think this is worth?', '43rtvb703g', 'number', 70, 100);
 INSERT INTO questions (question, quizid, input) VALUES('When do I get my results back?', '43rtvb703g', 'text');
 
 INSERT INTO questions (question, quizid, input) VALUES('What is your name?', 'fdsbfg4SDF', 'text');
-INSERT INTO questions (question, quizid, input, min, max) VALUES('How old are you?', 'fdsbfg4SDF', 'number', '30', '60');
+INSERT INTO questions (question, quizid, input, min, max) VALUES('How old are you?', 'fdsbfg4SDF', 'number', 30, 60);
 INSERT INTO questions (question, quizid, input, required) VALUES('This is a required question, leave it blank and try to hit next!', 'fdsbfg4SDF', 'text', true);
 INSERT INTO questions (question, quizid, options, input) VALUES('What is your experience using this app?', 'fdsbfg4SDF', '{Absolutely Amazing, Seen Better, God Awful}', 'single-select');
 INSERT INTO questions (question, quizid, input, min, max) VALUES('What grade do you think this is worth?', 'fdsbfg4SDF', 'number', 70, 100);
