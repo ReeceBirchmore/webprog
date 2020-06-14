@@ -16,8 +16,6 @@ CREATE TABLE questions (
     quizid TEXT,
     input TEXT,
     options TEXT [],
-    min INT,
-    max INT,
     required BOOLEAN
 );
 

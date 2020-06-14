@@ -389,11 +389,10 @@ async function addQuestion() {
       required: false,
       deleted: false,
     });
-    console.log(id[0].id)
     modifiedQuestionObject = Object.create(object);
     modifiedQuestionObject.title = 'New Question'; // Title of the question
     modifiedQuestionObject.type = 'text'; // Input type of the question
-    modifiedQuestionObject.id = parseInt(id[0].id); // ID of the question
+    modifiedQuestionObject.id = parseInt(id[0].id, 10); // ID of the question
     modifiedQuestionObject.options = null; // Options for the question
     modifiedQuestionObject.min = parseInt(0);
     modifiedQuestionObject.max = parseInt(0);
