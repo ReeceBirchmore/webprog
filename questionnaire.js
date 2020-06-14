@@ -139,9 +139,9 @@ async function saveQuestionnaire(optiondata) {
   data.forEach(async question => {
     console.log(question)
     if (question.deleted === true) {
-      const id = parseInt(question.id);
-      const remove = 'DELETE FROM Questions WHERE id = $1';
-      await sql.query(remove, [id]);
+      // const id = parseInt(question.id);
+      // const remove = 'DELETE FROM Questions WHERE id = $1';
+      // await sql.query(remove, [id]);
     } else {
       let id = parseInt(question.id, 10);
       console.log(id)
