@@ -389,6 +389,7 @@ async function addQuestion() {
       required: false,
       deleted: false,
     });
+    console.log(id[0].id)
     modifiedQuestionObject = Object.create(object);
     modifiedQuestionObject.title = 'New Question'; // Title of the question
     modifiedQuestionObject.type = 'text'; // Input type of the question
