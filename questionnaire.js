@@ -128,6 +128,7 @@ async function addAQuestion(quizid) {
 async function saveQuestionnaire(optiondata) {
   // Declare all the variables for simplification
   const data = JSON.parse(optiondata).arr;
+  console.log(data[0])
   const quizid = data[0].id;
   const title = data[0].quiztitle;
   const enabled = Boolean(data[0].enabled);
@@ -142,6 +143,7 @@ async function saveQuestionnaire(optiondata) {
       const remove = 'DELETE FROM Questions WHERE id = $1';
       await sql.query(remove, [id]);
     } else {
+      console.log(parseInt(question.min), question.min, '[parsed not parsed]')
       const id = parseInt(question.id);
       const option = question.options;
       const type = question.type;
