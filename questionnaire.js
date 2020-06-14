@@ -128,6 +128,13 @@ async function addAQuestion(quizid) {
 async function saveQuestionnaire(optiondata) {
   // Declare all the variables for simplification
   const data = JSON.parse(optiondata).arr;
+  data.forEach(question => {
+    console.log(question.title);
+    console.log(isNaN(question.id));
+    console.log(isNaN(question.min));
+    console.log(isNaN(question.max));
+
+  });
   const quizid = data[0].id;
   const title = data[0].quiztitle;
   const enabled = Boolean(data[0].enabled);
@@ -136,7 +143,6 @@ async function saveQuestionnaire(optiondata) {
   const questionnaireq = 'UPDATE Quizzes SET title = $1, enabled = $2, restrict = $3, allowback = $4 WHERE quizid = $5';
   await sql.query(questionnaireq, [title, enabled, restricted, allowBack, quizid]);
   data.forEach(async question => {
-    console.log(question)
     if (question.deleted === true) {
       const id = parseInt(question.id);
       const remove = 'DELETE FROM Questions WHERE id = $1';
