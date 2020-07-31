@@ -163,4 +163,4 @@ router.post('/create/quiz/', express.json(), asyncWrap(createQuiz));
 router.post('/submit/:id', express.json(), asyncWrap(submitQuiz));
 router.post('/upload', express.json(), asyncWrap(uploadQuiz));
 
-app.listen(port);
+app.listen(process.env.PORT || port);
